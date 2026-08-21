@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - Lo quieres, te lo vendo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css"> 
+</head>
+<body class="bg-light">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary justify-content-center">
+            <a class="nav-link text-white fw-bold mx-3" href="index.html">Inicio</a>
+            <a class="nav-link text-white fw-bold mx-3" href="contacto.html">Contacto</a>
+            <a class="nav-link text-white fw-bold mx-3" href="productos.html">Productos</a>
+        </nav>  
+    </header>
+
+    <main class="container my-5">
+        <section class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <h2 class="text-center mb-4">Contáctanos para tu pedido</h2>
+                
+               <form id="contactForm" action="#" method="POST" class="p-4 border rounded shadow-sm bg-white">
+    <div class="mb-3">
+        <label for="nombre" class="form-label fw-bold">Nombre completo:</label>
+        <input type="text" class="form-control" id="nombre" name="nombre" required minlength="3" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo letras y espacios" aria-required="true">
+        <!-- El span de error del profe (le sumé text-danger de Bootstrap para que si escriben un error, salga en rojo) -->
+        <span class="error-msg text-danger small" id="error-nombre" aria-live="polite"></span>
+    </div>
+    
+    <div class="mb-3">
+        <label for="correo" class="form-label fw-bold">Correo electrónico:</label>
+        <input type="email" class="form-control" id="email" name="email" required aria-required="true">
+        <span class="error-msg text-danger small" id="error-email" aria-live="polite"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="tipo-pedido" class="form-label fw-bold">Tipo de producto:</label>
+        <select class="form-select" id="tipo-pedido" name="tipo-pedido" required aria-required="true">
+            <option value="" disabled selected>Selecciona...</option>
+            <option value="computacion">Computación</option>
+            <option value="almacen">Almacén</option>
+        </select>
+        <span class="error-msg text-danger small" id="error-tipo" aria-live="polite"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="mensaje" class="form-label fw-bold">Detalle:</label>
+        <!-- El profe pide un minlength de 10 aquí -->
+        <textarea class="form-control" id="mensaje" name="mensaje" rows="4" required minlength="10" aria-required="true"></textarea>
+        <span class="error-msg text-danger small" id="error-mensaje" aria-live="polite"></span>
+    </div>
+    
+    <button type="submit" class="btn btn-primary w-100 fw-bold">Enviar Pedido</button>
+</form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p class="mb-0">Equipo de Desarrollo - 2026</p>
+        <p class="mb-0">| Paulo Catalan | Mauricio Ahumada | Branco Aliaga | Alexander Arancibia | </p>
+        <p class="mb-0">Todos los derechos reservados &copy; 2026</p>
+        
+    </footer>
+</body>
+</html>
