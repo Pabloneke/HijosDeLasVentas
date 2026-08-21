@@ -18,9 +18,7 @@
 
     <main>
         <div class="cinta-promocional">
-            <div class="contenedor-infinito">
-                <span class="texto-movil">💸 HIJOS DE LAS VENTAS - 🔥 HIJOS DE LAS VENTAS - 💸 HIJOS DE LAS VENTAS - 🔥 HIJOS DE LAS VENTAS - 💸 HIJOS DE LAS VENTAS - 🔥 HIJOS DE LAS VENTAS - </span>
-                <span class="texto-movil">💸 HIJOS DE LAS VENTAS - 🔥 HIJOS DE LAS VENTAS - 💸 HIJOS DE LAS VENTAS - 🔥 HIJOS DE LAS VENTAS - 💸 HIJOS DE LAS VENTAS - 🔥 HIJOS DE LAS VENTAS - </span>
+            <div class="contenedor-infinito" id="cinta-dinamica">
             </div>
         </div>
 
@@ -79,5 +77,15 @@
         <p class="mb-0">Todos los derechos reservados &copy; 2026</p>
         
     </footer>
+    <script>
+        const frase = "🔥 HIJOS DE LAS VENTAS 💸 - ";
+        const fraseMultiplicada = frase.repeat(15);
+        
+        document.getElementById('cinta-dinamica').innerHTML = `
+            <span class="texto-movil">${fraseMultiplicada}</span>
+            <span class="texto-movil">${fraseMultiplicada}</span>
+        `;
+    </script>
+</body>
 </body>
 </html>
