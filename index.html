@@ -13,14 +13,40 @@
             <a class="nav-link text-white fw-bold mx-3" href="index.html">Inicio</a>
             <a class="nav-link text-white fw-bold mx-3" href="contacto.html">Contacto</a>
             <a class="nav-link text-white fw-bold mx-3" href="productos.html">Productos</a>
+            <a class="nav-link text-white fw-bold mx-3" href="estadistica.html">Estadisticas</a>
         </nav>  
+    <main>
+        <div class="cinta-promocional">
+            <div class="contenedor-infinito" id="cinta-dinamica">
+            </div>
+        </div>
     </header>
 
     <main class="container my-5">
-        <section class="text-center mb-5 p-5 bg-white shadow-sm rounded">
-            <h2 class="mb-3">Bienvenido a tu tienda rápida y confiable</h2>
-            <p class="lead">Todo lo que buscas, gestionado directamente para ti.</p>
-            <a href="contacto.html" class="btn btn-warning btn-lg fw-bold mt-3">Hacer un pedido ahora</a>
+        <section class="hero-section text-center mb-5">
+            <div class="hero-content">
+                <div class="hero-badge">Tu tienda online</div>
+                <h2 class="hero-title">Bienvenido a tu <span class="highlight">tienda rápida</span> y confiable</h2>
+                <p class="hero-subtitle">Todo lo que buscas, gestionado directamente para ti con rapidez, confianza y atención personalizada.</p>
+                <div class="hero-actions">
+                    <a href="contacto.html" class="btn btn-warning btn-lg fw-bold">Hacer un pedido ahora</a>
+                    <a href="productos.html" class="btn btn-outline-primary btn-lg fw-bold">Ver productos</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <strong>+500</strong>
+                        <span>pedidos</span>
+                    </div>
+                    <div class="hero-stat">
+                        <strong>24h</strong>
+                        <span>respuesta</span>
+                    </div>
+                    <div class="hero-stat">
+                        <strong>100%</strong>
+                        <span>confianza</span>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section class="contenedor-extracto bg-white p-4 shadow-sm rounded mb-5">
@@ -36,5 +62,18 @@
         <p class="mb-0">Todos los derechos reservados &copy; 2026</p>
         
     </footer>
+
+    <script>
+        const frase = "🔥 HIJOS DE LAS VENTAS 💸 - ";
+        const fraseMultiplicada = frase.repeat(15);
+        
+        document.getElementById('cinta-dinamica').innerHTML = `
+            <span class="texto-movil">${fraseMultiplicada}</span>
+            <span class="texto-movil">${fraseMultiplicada}</span>
+        `;
+    </script>
+
+    <script src="funciones.js"></script>
+
 </body>
 </html>
