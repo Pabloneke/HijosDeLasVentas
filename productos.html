@@ -4,30 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Productos - Lo quieres, te lo vendo</title>
+    <!-- Bootstrap 5.3.3 vía CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Hoja de estilos personalizada -->
     <link rel="stylesheet" href="assets/style.css"> 
 </head>
 <body class="bg-light">
     <header>
+        <!-- Barra de navegación principal (esta versión sí incluye "Estadisticas") -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary justify-content-center">
             <a class="nav-link text-white fw-bold mx-3" href="index.html">Inicio</a>
             <a class="nav-link text-white fw-bold mx-3" href="contacto.html">Contacto</a>
             <a class="nav-link text-white fw-bold mx-3" href="productos.html">Productos</a>
+            <a class="nav-link text-white fw-bold mx-3" href="estadistica.html">Estadisticas</a>
         </nav>  
     </header>
 
     <main>
+        <!-- Cinta promocional animada, texto generado dinámicamente por JS más abajo -->
         <div class="cinta-promocional">
             <div class="contenedor-infinito" id="cinta-dinamica">
             </div>
         </div>
 
         <div class="container my-5">
-            <h2 class="text-center mb-5">Nuestro Catálogo</h2>
+            <!-- Encabezado del catálogo + botón para mostrar/ocultar el carrito -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                <h2 class="text-center mb-0">Nuestro Catálogo</h2>
+                <!-- Botón que probablemente abre/cierra el panel del carrito (lógica en funciones.js) -->
+                <button type="button" class="btn btn-dark btn-sm" id="toggleCartBtn">
+                    🛒 Carrito <span class="cart-count-badge" id="cartCountBadge">0</span>
+                </button>
+            </div>
+
+            <!-- Panel del carrito de compras -->
+            <aside class="cart-panel" id="cartPanel">
+                <div class="cart-header">
+                    <h5 class="mb-0">Tu carrito</h5>
+                    <!-- Botón para vaciar todos los productos del carrito -->
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="clearCartBtn">Vaciar</button>
+                </div>
+                <!-- Contenedor donde se listan los productos agregados (se llena vía JS) -->
+                <div class="cart-items" id="cartItems">
+                    <p class="text-muted mb-0">Tu carrito está vacío.</p>
+                </div>
+                <!-- Total del carrito, actualizado dinámicamente -->
+                <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-3">
+                    <span class="fw-bold">Total</span>
+                    <span class="cart-total" id="cartTotal">$0</span>
+                </div>
+            </aside>
             
+            <!-- Grilla de productos del catálogo -->
             <section class="row g-4 justify-content-center">
                 
-                <!-- Producto 1 -->
+                <!-- Producto 1: Perfume -->
                 <div class="col-md-4">
                     <article class="card h-100 shadow-sm border-0">
                         <img src="assets/img/RasasiHawas.webp" height="300" width="300" class="card-img-top" alt="Perfume Hawas" >
@@ -36,12 +67,14 @@
                             <p class="card-text text-muted">Rasasi Hawas Ice Edp 100ml. Fragancia con excelente proyección para destacar en el día a día.
                             </p>
                             <h4 class="text-primary fw-bold mt-auto">$45.990</h4>
-                            <a href="contacto.html" class="btn btn-outline-primary mt-3 fw-bold">Lo quiero</a>
+                            <!-- Ya no redirige a contacto.html: ahora agrega el producto al carrito -->
+                            <!-- data-name y data-price son leídos por funciones.js para armar el objeto del carrito -->
+                            <button type="button" class="btn btn-outline-primary mt-3 fw-bold add-to-cart-btn" data-name="Perfume Hawas for Men" data-price="45990">Lo quiero</button>
                         </div>
                     </article>
                 </div>
 
-                <!-- Producto 2 -->
+                <!-- Producto 2: Mousepad gamer -->
                 <div class="col-md-4">
                     <article class="card h-100 shadow-sm border-0">
                         <img src="assets/img/mousepadXXL.webp" height="300" width="300" class="card-img-top" alt="Mousepad Gamer">
@@ -49,12 +82,12 @@
                             <h5 class="card-title fw-bold">Mousepad Gamer XL</h5>
                             <p class="card-text text-muted">Mouse Pad gamer Redragon Flick de goma y tela pad para mouse xl 40cm x 90cm x 4mm negro</p>
                             <h4 class="text-primary fw-bold mt-auto">$12.500</h4>
-                            <a href="contacto.html" class="btn btn-outline-primary mt-3 fw-bold">Lo quiero</a>
+                            <button type="button" class="btn btn-outline-primary mt-3 fw-bold add-to-cart-btn" data-name="Mousepad Gamer XL" data-price="12500">Lo quiero</button>
                         </div>
                     </article>
                 </div>
                 
-                <!-- Producto 3 -->
+                <!-- Producto 3: Manga -->
                 <div class="col-md-4">
                     <article class="card h-100 shadow-sm border-0">
                         <img src="assets/img/Dorohedoro1.webp" height="300" width="300" class="card-img-top" alt="Manga Dorohedoro">
@@ -62,7 +95,7 @@
                             <h5 class="card-title fw-bold">Manga Dorohedoro - Tomo 1</h5>
                             <p class="card-text text-muted">Empieza a leer esta joya en tus tiempos muertos.</p>
                             <h4 class="text-primary fw-bold mt-auto">$9.990</h4>
-                            <a href="contacto.html" class="btn btn-outline-primary mt-3 fw-bold">Lo quiero</a>
+                            <button type="button" class="btn btn-outline-primary mt-3 fw-bold add-to-cart-btn" data-name="Manga Dorohedoro - Tomo 1" data-price="9990">Lo quiero</button>
                         </div>
                     </article>
                 </div>
@@ -71,21 +104,31 @@
         </div>
     </main>
 
+    <!-- Footer con créditos del equipo -->
     <footer>
         <p class="mb-0">Equipo de Desarrollo - 2026</p>
         <p class="mb-0">| Paulo Catalan | Mauricio Ahumada | Branco Aliaga | Alexander Arancibia | </p>
         <p class="mb-0">Todos los derechos reservados &copy; 2026</p>
         
     </footer>
+
+    <!-- Script que genera el texto repetido de la cinta promocional -->
     <script>
+        // Frase base que se repetirá para llenar la cinta
         const frase = "🔥 HIJOS DE LAS VENTAS 💸 - ";
+        // Se repite 15 veces para que el texto sea lo bastante largo y el loop se vea continuo
         const fraseMultiplicada = frase.repeat(15);
         
+        // Se inyecta el texto duplicado (dos <span>) dentro del contenedor de la cinta,
+        // esto permite que la animación CSS (loopContinuo) haga el efecto de scroll infinito sin cortes
         document.getElementById('cinta-dinamica').innerHTML = `
             <span class="texto-movil">${fraseMultiplicada}</span>
             <span class="texto-movil">${fraseMultiplicada}</span>
         `;
     </script>
-</body>
+
+    <!-- Script principal: maneja la lógica del carrito (agregar, vaciar, mostrar/ocultar, calcular total) -->
+    <script src="funciones.js"></script>
+
 </body>
 </html>
