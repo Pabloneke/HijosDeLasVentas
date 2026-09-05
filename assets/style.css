@@ -1,9 +1,491 @@
+/* ===== Variables globales de color ===== */
+:root {
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --warning: #ffc107;
+    --warning-dark: #e0a800;
+    --text-dark: #1f2937;
+}
+
+/* Estilos base del body */
 body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
 
+/* Contenedor genérico para extractos/resúmenes centrados */
 .contenedor-extracto { text-align: center; padding: 20px; margin: 0 auto; }
+
+/* Footer básico (versión simple, ver también la definición más completa más abajo) */
 footer { background-color: black; color: white; text-align: center; padding: 20px; margin-top: 40px; }
 
+/* ===== Cinta promocional animada (marquee/ticker) ===== */
 .cinta-promocional { background-color: #ffcc00; color: #000; overflow: hidden; padding: 10px 0; border-bottom: 2px solid #000; user-select: none; white-space: nowrap; }
+
+/* Contenedor interno que se mueve con la animación infinita */
 .contenedor-infinito { display: inline-block; animation: loopContinuo 45s linear infinite; }
+
+/* Texto individual dentro de la cinta */
 .texto-movil { display: inline-block; font-weight: bold; font-size: 18px; padding-right: 20px; }
+
+/* Animación de desplazamiento continuo (loop) de la cinta promocional */
 @keyframes loopContinuo { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+
+/* ===== Layout general de la página (sticky footer) ===== */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* El main crece para empujar el footer hacia abajo */
+main {
+    flex: 1;
+}
+
+/* ===== Barra de navegación (navbar) ===== */
+.navbar {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca) !important;
+    padding: 0.9rem 1rem;
+    gap: 0.6rem;
+    box-shadow: 0 10px 24px rgba(13, 110, 253, 0.18);
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Links de navegación con forma de "pastilla" */
+.navbar .nav-link {
+    color: #fff !important;
+    padding: 0.72rem 1.25rem !important;
+    border-radius: 999px;
+    font-weight: 700;
+    transition: all 0.25s ease;
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(255,255,255,0.05);
+    text-decoration: none;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+    min-width: 130px;
+    width: 130px;
+    height: 48px;
+    text-align: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+/* Estado hover/focus/activo de los links de navegación */
+.navbar .nav-link:hover,
+.navbar .nav-link:focus,
+.navbar .nav-link.active {
+    background: rgba(255,255,255,0.18);
+    color: #fff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+    border-color: rgba(255,255,255,0.3);
+}
+
+/* ===== Sección Hero (encabezado principal, ej. index.html) ===== */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+    border: none !important;
+    background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(240,245,255,0.96));
+    border-radius: 28px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+    padding: 4rem 2rem;
+}
+
+/* Círculo decorativo difuminado (esquina superior izquierda) */
+.hero-section::before {
+    content: "";
+    position: absolute;
+    inset: -30% auto auto -10%;
+    width: 240px;
+    height: 240px;
+    background: rgba(255, 193, 7, 0.18);
+    border-radius: 50%;
+    filter: blur(10px);
+}
+
+/* Círculo decorativo difuminado (esquina inferior derecha) */
+.hero-section::after {
+    content: "";
+    position: absolute;
+    inset: auto -8% -30% auto;
+    width: 240px;
+    height: 240px;
+    background: rgba(13, 110, 253, 0.12);
+    border-radius: 50%;
+    filter: blur(8px);
+}
+
+/* Asegura que el contenido quede sobre los círculos decorativos */
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Etiqueta/badge pequeña sobre el título del hero */
+.hero-badge {
+    display: inline-block;
+    background: rgba(255, 193, 7, 0.18);
+    color: #7a5200;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+/* Título principal del hero */
+.hero-title {
+    font-size: clamp(2.2rem, 4vw, 4rem);
+    font-weight: 900;
+    line-height: 1.05;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+/* Palabra o frase resaltada dentro del título */
+.hero-title .highlight {
+    color: #0d6efd;
+}
+
+/* Subtítulo descriptivo debajo del título */
+.hero-subtitle {
+    font-size: 1.12rem;
+    color: #4b5563;
+    max-width: 620px;
+    margin: 0 auto 1.5rem;
+}
+
+/* Contenedor de botones de acción del hero (ej. "Comprar ahora") */
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+/* Contenedor de estadísticas rápidas (ej. "500+ clientes") */
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+/* Cada bloque individual de estadística */
+.hero-stat {
+    text-align: center;
+    min-width: 120px;
+}
+
+/* Número/valor destacado de la estadística */
+.hero-stat strong {
+    display: block;
+    font-size: 1.6rem;
+    color: #0d6efd;
+    margin-bottom: 0.25rem;
+}
+
+/* Etiqueta descriptiva de la estadística */
+.hero-stat span {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+/* ===== Grilla de métricas (probablemente usada en estadistica.html) ===== */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Tarjeta individual de métrica */
+.metric-card {
+    background: linear-gradient(135deg, #ffffff, #f3f6ff);
+    border: 1px solid rgba(13,110,253,0.08);
+    border-radius: 18px;
+    padding: 1.25rem;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+/* Etiqueta pequeña (nombre de la métrica) */
+.metric-card .label {
+    display: block;
+    color: #6b7280;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.45rem;
+}
+
+/* Valor numérico principal de la métrica */
+.metric-card .value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* Indicador de tendencia (positiva, verde por defecto) */
+.metric-card .trend {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: #198754;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+/* Variante de tendencia en advertencia (color ámbar) */
+.metric-card.warning .trend {
+    color: #d97706;
+}
+
+/* Variante de tarjeta destacada con fondo de color primario */
+.metric-card.primary {
+    background: linear-gradient(135deg, #0d6efd, #3b82f6);
+    color: white;
+}
+
+/* Ajuste de colores de texto dentro de la tarjeta primaria (para contraste) */
+.metric-card.primary .label,
+.metric-card.primary .value,
+.metric-card.primary .trend {
+    color: white;
+}
+
+/* ===== Panel del carrito de compras ===== */
+.cart-panel {
+    background: #fff;
+    border: 1px solid rgba(13, 110, 253, 0.12);
+    border-radius: 20px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+}
+
+/* Encabezado del panel del carrito (título + badge de cantidad) */
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Badge circular que muestra la cantidad de items en el carrito */
+.cart-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.7rem;
+    height: 1.7rem;
+    padding: 0 0.45rem;
+    background: #ffc107;
+    color: #111;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+}
+
+/* Lista de items del carrito (contenedor vertical) */
+.cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+/* Fila individual de un producto en el carrito */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.65rem 0.75rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+/* Nombre del producto dentro del item del carrito */
+.cart-item strong {
+    display: block;
+    font-size: 0.95rem;
+}
+
+/* Texto secundario (ej. cantidad o precio unitario) */
+.cart-item small {
+    color: #6c757d;
+}
+
+/* Total general del carrito, destacado en color primario */
+.cart-total {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #0d6efd;
+}
+
+/* ===== Resumen de compra (usado en contacto.html) ===== */
+.cart-summary {
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 18px;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.05);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Variante de item de carrito dentro del resumen de compra */
+.cart-summary .cart-item {
+    background: #f3f6ff;
+}
+
+/* ===== Hero de la página de contacto ===== */
+.contact-hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ffffff, #eef4ff);
+    border-radius: 24px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(13,110,253,0.08);
+    padding: 2rem 1.5rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Círculo decorativo en la esquina superior derecha del hero de contacto */
+.contact-hero::before {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    background: rgba(13, 110, 253, 0.08);
+    border-radius: 50%;
+    top: -80px;
+    right: -45px;
+}
+
+/* Ajuste de margen del badge dentro del hero de contacto */
+.contact-hero .hero-badge {
+    margin-bottom: 0.8rem;
+}
+
+/* ===== Panel/contenedor del formulario de contacto ===== */
+.contact-panel {
+    background: linear-gradient(180deg, #ffffff, #f9fbff);
+    border: 1px solid rgba(13,110,253,0.08);
+    border-radius: 22px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.07);
+    padding: 1.5rem;
+}
+
+/* Color de las etiquetas (labels) del formulario */
+.contact-panel .form-label {
+    color: #1f2937;
+}
+
+/* Estilo de inputs y selects del formulario */
+.contact-panel .form-control,
+.contact-panel .form-select {
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    padding: 0.8rem 0.9rem;
+    transition: all 0.2s ease;
+}
+
+/* Estado focus de inputs y selects (resalta en azul primario) */
+.contact-panel .form-control:focus,
+.contact-panel .form-select:focus {
+    border-color: rgba(13,110,253,0.8);
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.12);
+}
+
+/* Botón principal del formulario de contacto */
+.contact-panel .btn-primary {
+    border-radius: 14px;
+    padding: 0.9rem 1.2rem;
+}
+
+/* ===== Footer definitivo (sticky al fondo gracias a margin-top: auto) ===== */
+footer {
+    margin-top: auto;
+    background-color: #000000; /* Variable de color(Se puede modificar) */
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+/* ===== Estilos generales de botones (base) ===== */
+.btn {
+    border-radius: 999px !important;
+    padding: 0.8rem 1.5rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    box-shadow: 0 8px 18px rgba(13, 110, 253, 0.18);
+}
+
+/* Efecto hover general de botones (se eleva y aclara un poco) */
+.btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.04);
+    box-shadow: 0 12px 24px rgba(13, 110, 253, 0.22);
+}
+
+/* Efecto al hacer click/presionar el botón */
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Variante de botón de advertencia (amarillo) */
+.btn-warning {
+    background: linear-gradient(135deg, var(--warning), #ffd64d) !important;
+    color: var(--text-dark) !important;
+    border: 1px solid rgba(224, 168, 0, 0.7) !important;
+}
+
+/* Hover/focus del botón de advertencia */
+.btn-warning:hover,
+.btn-warning:focus {
+    background: linear-gradient(135deg, #ffd64d, var(--warning-dark)) !important;
+    color: var(--text-dark) !important;
+}
+
+/* Variante de botón outline (contorno azul, fondo transparente) */
+.btn-outline-primary {
+    background: transparent !important;
+    border: 2px solid var(--primary) !important;
+    color: var(--primary) !important;
+    box-shadow: none !important;
+}
+
+/* Hover/focus del botón outline (se rellena con el color primario) */
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    color: #fff !important;
+    border-color: var(--primary-dark) !important;
+}
+
+/* Variante de botón primario (azul, usado en "Confirmar compra", etc.) */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    border: none !important;
+    color: #fff !important;
+    box-shadow: 0 12px 24px rgba(13, 110, 253, 0.22);
+}
+
+/* Hover/focus del botón primario (tono más oscuro) */
+.btn-primary:hover,
+.btn-primary:focus {
+    background: linear-gradient(135deg, var(--primary-dark), #084298) !important;
+    box-shadow: 0 14px 28px rgba(13, 110, 253, 0.28);
+}

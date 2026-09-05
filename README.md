@@ -1,4 +1,4 @@
-# Documentación del Proyecto: Tienda "Lo quieres, te lo vendo"
+# Documentación del Proyecto: Tienda "HijosDeLasVentas"
 
 ## 1. Tecnologías Implementadas
 * **HTML5 Semántico:** Estructuramos el código usando etiquetas modernas (`<header>`, `<nav>`, `<main>`, `<section>`, `<article>`) para cumplir con las buenas prácticas y mejorar el SEO del sitio.
