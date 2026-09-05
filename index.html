@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="assets/style.css"> 
 </head>
 <body class="bg-light">
+    <!-- NAVEGACIÓN PRINCIPAL: enlaces hacia las páginas del sitio -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary justify-content-center">
             <a class="nav-link text-white fw-bold mx-3" href="index.html">Inicio</a>
@@ -15,6 +16,7 @@
             <a class="nav-link text-white fw-bold mx-3" href="productos.html">Productos</a>
             <a class="nav-link text-white fw-bold mx-3" href="estadistica.html">Estadisticas</a>
         </nav>  
+    <!-- CINTA PROMOCIONAL: espacio donde JavaScript inserta el texto animado -->
     <main>
         <div class="cinta-promocional">
             <div class="contenedor-infinito" id="cinta-dinamica">
@@ -22,16 +24,20 @@
         </div>
     </header>
 
+    <!-- CONTENIDO PRINCIPAL: presentación y acceso rápido a la tienda -->
     <main class="container my-5">
+        <!-- SECCIÓN HERO: mensaje principal, descripción y llamadas a la acción -->
         <section class="hero-section text-center mb-5">
             <div class="hero-content">
                 <div class="hero-badge">Tu tienda online</div>
                 <h2 class="hero-title">Bienvenido a tu <span class="highlight">tienda rápida</span> y confiable</h2>
                 <p class="hero-subtitle">Todo lo que buscas, gestionado directamente para ti con rapidez, confianza y atención personalizada.</p>
+                <!-- BOTONES DE ACCIÓN: permiten hacer un pedido o revisar productos -->
                 <div class="hero-actions">
                     <a href="contacto.html" class="btn btn-warning btn-lg fw-bold">Hacer un pedido ahora</a>
                     <a href="productos.html" class="btn btn-outline-primary btn-lg fw-bold">Ver productos</a>
                 </div>
+                <!-- ESTADÍSTICAS: indicadores resumidos del servicio -->
                 <div class="hero-stats">
                     <div class="hero-stat">
                         <strong>+500</strong>
@@ -49,6 +55,7 @@
             </div>
         </section>
 
+        <!-- DESCRIPCIÓN DEL EMPRENDIMIENTO: información breve sobre la tienda -->
         <section class="contenedor-extracto bg-white p-4 shadow-sm rounded mb-5">
             <p class="mb-0" style="font-size: 14px; line-height: 1.6; color: #333;">
                 "Lo quieres, te lo vendo" es un emprendimiento hecho por amigos. Nos dedicamos a la venta rápida de productos en línea, ofreciendo desde artículos variados de almacén hasta especialidades de computacion y perfumeria. Actualmente gestionamos tus pedidos de forma directa para asegurar entregas oportunas en tu puerta.
@@ -56,6 +63,7 @@
         </section>
     </main>
 
+    <!-- PIE DE PÁGINA: integrantes del equipo y derechos reservados -->
     <footer>
         <p class="mb-0">Equipo de Desarrollo - 2026</p>
         <p class="mb-0">| Paulo Catalan | Mauricio Ahumada | Branco Aliaga | Alexander Arancibia | </p>
@@ -63,6 +71,7 @@
         
     </footer>
 
+    <!-- CINTA DINÁMICA: genera y repite el mensaje promocional con JavaScript -->
     <script>
         const frase = "🔥 HIJOS DE LAS VENTAS 💸 - ";
         const fraseMultiplicada = frase.repeat(15);
@@ -73,6 +82,7 @@
         `;
     </script>
 
+    <!-- FUNCIONES GENERALES: carga el archivo JavaScript externo del sitio -->
     <script src="funciones.js"></script>
 
 </body>

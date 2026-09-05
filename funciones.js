@@ -1,5 +1,7 @@
+// CONFIGURACIÓN: clave utilizada para guardar el carrito en localStorage.
 const CART_KEY = 'loQuieresCarrito';
 
+// FORMATEO DE MONEDA: convierte valores numéricos al formato de pesos chilenos.
 function formatCurrency(value) {
     return new Intl.NumberFormat('es-CL', {
         style: 'currency',
@@ -8,6 +10,7 @@ function formatCurrency(value) {
     }).format(value);
 }
 
+// LECTURA DEL CARRITO: recupera los productos guardados en localStorage.
 function getCart() {
     try {
         return JSON.parse(localStorage.getItem(CART_KEY)) || [];
@@ -16,14 +19,17 @@ function getCart() {
     }
 }
 
+// GUARDADO DEL CARRITO: convierte el carrito a JSON y lo almacena localmente.
 function saveCart(cart) {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
+// CÁLCULO DEL TOTAL: suma precio por cantidad de cada producto.
 function getCartTotal(cart) {
     return cart.reduce((total, item) => total + Number(item.price) * Number(item.quantity), 0);
 }
 
+// RENDERIZADO DEL CARRITO: actualiza contador, productos y total en pantalla.
 function renderCart() {
     const cart = getCart();
     const total = getCartTotal(cart);
@@ -57,6 +63,7 @@ function renderCart() {
     }
 }
 
+// RENDERIZADO DEL CARRITO DE CONTACTO: muestra el resumen del pedido en contacto.html.
 function renderContactCart() {
     const cart = getCart();
     const container = document.getElementById('contactCartItems');
@@ -83,6 +90,7 @@ function renderContactCart() {
     if (total) total.textContent = formatCurrency(getCartTotal(cart));
 }
 
+// AGREGAR PRODUCTOS: añade un producto nuevo o aumenta la cantidad existente.
 function addToCart(name, price) {
     const cart = getCart();
     const existingItem = cart.find(item => item.name === name);
@@ -98,13 +106,16 @@ function addToCart(name, price) {
     renderContactCart();
 }
 
+// VACIAR CARRITO: elimina todos los productos guardados.
 function clearCart() {
     saveCart([]);
     renderCart();
     renderContactCart();
 }
 
+// INICIALIZACIÓN: espera a que el HTML esté cargado antes de activar los eventos.
 document.addEventListener('DOMContentLoaded', () => {
+    // NAVEGACIÓN ACTIVA: identifica la página actual y marca su enlace.
     const links = document.querySelectorAll('.navbar .nav-link');
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
@@ -116,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // PANEL DEL CARRITO: muestra u oculta el contenido del carrito.
     const toggleCartBtn = document.getElementById('toggleCartBtn');
     const cartPanel = document.getElementById('cartPanel');
 
@@ -125,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // BOTONES AGREGAR AL CARRITO: escucha el clic y actualiza temporalmente el botón.
     document.querySelectorAll('.add-to-cart-btn').forEach(button => {
         button.addEventListener('click', () => {
             addToCart(button.dataset.name, button.dataset.price);
@@ -140,23 +153,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // BOTÓN VACIAR CARRITO: elimina todos los productos al hacer clic.
     const clearCartBtn = document.getElementById('clearCartBtn');
     if (clearCartBtn) {
         clearCartBtn.addEventListener('click', clearCart);
     }
 
+    // ACTUALIZACIÓN INICIAL: carga el estado guardado del carrito en la interfaz.
     renderCart();
     renderContactCart();
 
-    // 1. Obtener la referencia al formulario por su ID
+    // FORMULARIO DE CONTACTO: obtiene la referencia al formulario por su ID.
     const formulario = document.getElementById('contactForm');
 
     if (formulario) {
-        // 2. Escuchar el evento submit del formulario
+        // EVENTO SUBMIT: escucha el envío del formulario sin recargar la página.
         formulario.addEventListener('submit', (event) => {
             // 3. Evitar el envío por defecto (recarga de la página)
             event.preventDefault();
 
+            // CAMPOS DEL FORMULARIO: obtiene inputs, selects y textarea.
             // Obtener los elementos de input / select / textarea
             const inputNombre = document.getElementById('nombre');
             const inputEmail = document.getElementById('email');
@@ -164,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectTipoEntrega = document.getElementById('tipo-entrega');
             const txtMensaje = document.getElementById('mensaje');
 
+            // MENSAJES DE ERROR: referencias a los span que informan campos inválidos.
             // Obtener los elementos <span> para mostrar los mensajes de error
             const errorNombre = document.getElementById('error-nombre');
             const errorEmail = document.getElementById('error-email');
@@ -187,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (errorEntrega) errorEntrega.textContent = '';
             if (errorMensaje) errorMensaje.textContent = '';
 
+            // VALIDACIÓN DE CAMPOS: comprueba que los datos obligatorios no estén vacíos.
             // 4. Validación de campos vacíos (.value.trim() === '')
             
             // Validar Nombre completo
@@ -221,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (errorEntrega) errorEntrega.textContent = 'Debe seleccionar un tipo de entrega.';
             }
 
+            // PROCESAMIENTO DEL PEDIDO: muestra errores o genera el resumen de compra.
             // 5. Desplegar alerta o procesar el formulario
             if (tieneErrores) {
                 alert(`Por favor completa los siguientes campos vacíos:\n- ${camposVacios.join('\n- ')}`);
@@ -244,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-        // Inicialización de DataTables para la página de estadísticas
+    // DATATABLES: inicializa la tabla de estadísticas con paginación y diseño responsive.
     if (window.jQuery && typeof window.jQuery === 'function') {
         window.jQuery(function () {
             const tabla = document.getElementById('tablaEstadisticas');
