@@ -363,9 +363,5 @@ Este proyecto fue desarrollado con fines académicos y educativos.
 <p align="center">
   🛒 <strong>Hijos de las Ventas</strong> — Vendemos más que productos.
 </p>
-```
 
-Este README quedaría **mucho más presentable para entregar como proyecto académico o mostrar en GitHub**. Además, no inventé funcionalidades que el repositorio actual no tenga: las marqué como futuras cuando corresponden.
-
-Si quieres, también puedo hacerte una **versión todavía más profesional tipo README de proyecto real**, con **capturas de pantalla, badges, demo, tabla de funcionalidades y un diagrama Mermaid de la arquitectura actual**.
 
