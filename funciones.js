@@ -10,6 +10,12 @@ function formatCurrency(value) {
     }).format(value);
 }
 
+// VALIDACIÓN DE EMAIL: comprueba que el texto tenga forma de correo (texto@texto.dominio).
+function esEmailValido(email) {
+    const patronEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return patronEmail.test(email);
+}
+
 // LECTURA DEL CARRITO: recupera los productos guardados en localStorage.
 function getCart() {
     try {
@@ -215,12 +221,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (errorNombre) errorNombre.textContent = 'El nombre completo es obligatorio.';
             }
 
-            // Validar Correo electrónico
+            // Validar Correo electrónico: primero que no esté vacío, luego que tenga formato válido
             if (!inputEmail || inputEmail.value.trim() === '') {
                 tieneErrores = true;
                 camposVacios.push('Correo electrónico');
                 inputEmail.classList.add('is-invalid');
                 if (errorEmail) errorEmail.textContent = 'El correo electrónico es obligatorio.';
+            } else if (!esEmailValido(inputEmail.value.trim())) {
+                tieneErrores = true;
+                inputEmail.classList.add('is-invalid');
+                if (errorEmail) errorEmail.textContent = 'Ingresa un correo electrónico con formato válido (ej: nombre@dominio.com).';
             }
 
             // Validar Método de pago
