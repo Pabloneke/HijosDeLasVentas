@@ -47,7 +47,9 @@
                 
                 <!-- Formulario de contacto / confirmación de pedido -->
                 <!-- action="#" indica que el envío se maneja vía JavaScript, no hay backend definido -->
-               <form id="contactForm" action="#" method="POST" class="contact-panel">
+               <!-- novalidate: desactiva la validación nativa del navegador para que -->
+               <!-- corra siempre la validación personalizada de funciones.js (incluye mensajes propios) -->
+               <form id="contactForm" action="#" method="POST" class="contact-panel" novalidate>
 
                     <!-- Campo: Nombre completo -->
                     <!-- Validación: mínimo 3 caracteres, solo letras y espacios (incluye tildes y ñ) -->
