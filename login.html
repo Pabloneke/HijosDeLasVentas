@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión - Hijos de las Ventas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bg-light">
+    <header>
+        <!-- Barra de navegación principal, enlaza a todas las páginas públicas del sitio -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary justify-content-center position-relative">
+            <img src="assets/img/logo.png" alt="Logo" class="navbar-brand position-absolute start-0 top-50 translate-middle-y me-3" style="height: 80px;">
+            <a class="nav-link text-white fw-bold mx-3" href="index.html">Inicio</a>
+            <a class="nav-link text-white fw-bold mx-3" href="contacto.html">Contacto</a>
+            <a class="nav-link text-white fw-bold mx-3" href="productos.html">Productos</a>
+            <a class="nav-link text-white fw-bold mx-3" href="nosotros.html">Nosotros</a>
+            <a class="nav-link text-white fw-bold mx-3" href="blogs.html">Blogs</a>
+            <a class="nav-link text-white fw-bold mx-3" href="carrito.html">🛒 Carrito</a>
+            <a class="nav-link text-white mx-2 small" href="login.html">Iniciar sesión</a>
+            <a class="nav-link text-white mx-2 small" href="registro.html">Registrarse</a>
+            
+        </nav>
+    </header>
+
+    <main class="container my-5">
+        <section class="row justify-content-center">
+            <div class="col-md-6 col-lg-4 text-center">
+                <img src="assets/img/logo.png" alt="Logo Hijos de las Ventas" style="height:90px;" class="mb-3">
+                <h2 class="hero-title mb-4">Hijos de las Ventas</h2>
+
+                <!-- Formulario de inicio de sesión -->
+                <!-- Reglas de negocio (Anexo 1): correo requerido, max 100, solo dominios @duoc.cl / @profesor.duoc.cl / @gmail.com -->
+                <!-- Contraseña requerida, entre 4 y 10 caracteres -->
+                <form id="loginForm" action="#" method="POST" class="contact-panel text-start" novalidate>
+                    <h5 class="mb-3 text-center">Inicio de sesión</h5>
+
+                    <div class="mb-3">
+                        <label for="loginEmail" class="form-label fw-bold">Correo electrónico:</label>
+                        <input type="email" class="form-control" id="loginEmail" name="loginEmail"
+                               required maxlength="100"
+                               pattern="^[^\s@]+@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$"
+                               title="Solo se aceptan correos @duoc.cl, @profesor.duoc.cl o @gmail.com"
+                               aria-required="true">
+                        <span class="error-msg text-danger small" id="error-loginEmail" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="loginPassword" class="form-label fw-bold">Contraseña:</label>
+                        <input type="password" class="form-control" id="loginPassword" name="loginPassword"
+                               required minlength="4" maxlength="10" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-loginPassword" aria-live="polite"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Iniciar sesión</button>
+
+                    <p class="text-center small mt-3 mb-0">
+                        ¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a>
+                    </p>
+                    <p class="text-center small mt-2 mb-0 text-muted">
+                        Demo: admin@duoc.cl / admin123 (Administrador) &middot; vendedor@duoc.cl / vende123 (Vendedor) &middot; cualquier otro correo válido entra como Cliente.
+                    </p>
+                </form>
+            </div>
+        </section>
+    </main>
+    <!-- Pie de página con créditos del equipo de desarrollo -->
+    <footer>
+        <p class="mb-0">Equipo de Desarrollo - 2026</p>
+        <p class="mb-0">| Paulo Catalan | Mauricio Ahumada | Branco Aliaga | Alexander Arancibia | </p>
+        <p class="mb-0">Todos los derechos reservados &copy; 2026</p>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="funciones.js"></script>
+    <script>
+        // LOGIN: valida el formulario y, si es correcto, guarda la sesión (auth.js) y redirige según el rol.
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            if (!loginForm) return;
+
+            loginForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const inputEmail = document.getElementById('loginEmail');
+                const inputPassword = document.getElementById('loginPassword');
+                const errorEmail = document.getElementById('error-loginEmail');
+                const errorPassword = document.getElementById('error-loginPassword');
+
+                let tieneErrores = false;
+                [inputEmail, inputPassword].forEach(campo => campo.classList.remove('is-invalid'));
+                errorEmail.textContent = '';
+                errorPassword.textContent = '';
+
+                const dominioPermitidoRegex = /^[^\s@]+@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$/i;
+
+                if (!inputEmail.value.trim()) {
+                    tieneErrores = true;
+                    inputEmail.classList.add('is-invalid');
+                    errorEmail.textContent = 'El correo electrónico es obligatorio.';
+                } else if (!dominioPermitidoRegex.test(inputEmail.value.trim())) {
+                    tieneErrores = true;
+                    inputEmail.classList.add('is-invalid');
+                    errorEmail.textContent = 'Solo se aceptan correos @duoc.cl, @profesor.duoc.cl o @gmail.com.';
+                }
+
+                if (!inputPassword.value || inputPassword.value.length < 4 || inputPassword.value.length > 10) {
+                    tieneErrores = true;
+                    inputPassword.classList.add('is-invalid');
+                    errorPassword.textContent = 'La contraseña debe tener entre 4 y 10 caracteres.';
+                }
+
+                if (tieneErrores) return;
+
+                // Guarda la sesión simulada y redirige según el rol del usuario (ver auth.js).
+                const usuario = iniciarSesion(inputEmail.value.trim(), inputPassword.value);
+
+                if (usuario.tipo === 'administrador' || usuario.tipo === 'vendedor') {
+                    window.location.href = 'admin-home.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -334,3 +334,589 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// ============================================================================
+// PRIORIDAD 3 — CATÁLOGO DINÁMICO DE PRODUCTOS
+// Arreglo de objetos que reemplaza los productos estáticos de productos.html.
+// Se guarda en localStorage para que los cambios hechos en el mantenedor del
+// administrador (admin-productos.html) se reflejen en la tienda.
+// ============================================================================
+const PRODUCTOS_KEY = 'loQuieresProductos';
+
+const PRODUCTOS_INICIALES = [
+    {
+        codigo: 'PRD-001',
+        nombre: 'Perfume Hawas for Men',
+        descripcion: 'Rasasi Hawas Ice Edp 100ml. Fragancia con excelente proyección para destacar en el día a día.',
+        precio: 45990,
+        stock: 12,
+        stockCritico: 3,
+        categoria: 'Perfumería',
+        imagen: 'assets/img/RasasiHawas.webp'
+    },
+    {
+        codigo: 'PRD-002',
+        nombre: 'Mousepad Gamer XL',
+        descripcion: 'Mouse Pad gamer Redragon Flick de goma y tela pad para mouse xl 40cm x 90cm x 4mm negro.',
+        precio: 12500,
+        stock: 25,
+        stockCritico: 5,
+        categoria: 'Computación',
+        imagen: 'assets/img/MousePadXXL.webp'
+    },
+    {
+        codigo: 'PRD-003',
+        nombre: 'Manga Dorohedoro - Tomo 1',
+        descripcion: 'Empieza a leer esta joya en tus tiempos muertos.',
+        precio: 9990,
+        stock: 8,
+        stockCritico: 2,
+        categoria: 'Almacén',
+        imagen: 'assets/img/Dorohedoro1.webp'
+    }
+];
+
+// LECTURA DEL CATÁLOGO: si nunca se ha guardado nada, se usa el arreglo inicial.
+function getProductos() {
+    try {
+        const guardados = JSON.parse(localStorage.getItem(PRODUCTOS_KEY));
+        return (guardados && guardados.length) ? guardados : PRODUCTOS_INICIALES;
+    } catch (error) {
+        return PRODUCTOS_INICIALES;
+    }
+}
+
+// GUARDADO DEL CATÁLOGO.
+function saveProductos(productos) {
+    localStorage.setItem(PRODUCTOS_KEY, JSON.stringify(productos));
+}
+
+// RENDERIZAR CATÁLOGO EN productos.html: genera las cards a partir del arreglo de productos.
+function renderCatalogoProductos() {
+    const contenedor = document.getElementById('catalogoProductos');
+    if (!contenedor) return;
+
+    const productos = getProductos();
+
+    contenedor.innerHTML = productos.map(p => `
+        <div class="col-md-4">
+            <article class="card h-100 shadow-sm border-0">
+                <a href="detalle-producto.html">
+                    <img src="${p.imagen}" height="300" width="300" class="card-img-top" alt="${p.nombre}">
+                </a>
+                <div class="card-body d-flex flex-column text-center">
+                    <h5 class="card-title fw-bold">${p.nombre}</h5>
+                    <p class="card-text text-muted">${p.descripcion}</p>
+                    <h4 class="text-primary fw-bold mt-auto">${formatCurrency(p.precio)}</h4>
+                    <button type="button" class="btn btn-outline-primary mt-3 fw-bold add-to-cart-btn"
+                            data-name="${p.nombre}" data-price="${p.precio}">Lo quiero</button>
+                </div>
+            </article>
+        </div>
+    `).join('');
+
+    // Vuelve a enlazar los botones "Lo quiero" recién creados (los generados dinámicamente no
+    // existían cuando corrió el listener original de document.querySelectorAll('.add-to-cart-btn')).
+    contenedor.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            addToCart(button.dataset.name, button.dataset.price);
+            const originalText = button.textContent;
+            button.textContent = 'Agregado';
+            button.classList.add('btn-success');
+            button.classList.remove('btn-outline-primary');
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('btn-success');
+                button.classList.add('btn-outline-primary');
+            }, 1000);
+        });
+    });
+}
+
+// ============================================================================
+// PRIORIDAD 3 — VALIDACIÓN DE RUN CHILENO
+// Sin puntos ni guion (ej: 19011022K), largo entre 7 y 9, con dígito verificador
+// calculado mediante el algoritmo módulo 11.
+// ============================================================================
+function esRunValido(run) {
+    if (!run) return false;
+    const limpio = run.trim().toUpperCase();
+
+    if (limpio.length < 7 || limpio.length > 9) return false;
+    if (!/^[0-9]+[0-9K]$/.test(limpio)) return false;
+
+    const cuerpo = limpio.slice(0, -1);
+    const dv = limpio.slice(-1);
+
+    let suma = 0;
+    let multiplicador = 2;
+    for (let i = cuerpo.length - 1; i >= 0; i--) {
+        suma += parseInt(cuerpo[i], 10) * multiplicador;
+        multiplicador = (multiplicador === 7) ? 2 : multiplicador + 1;
+    }
+
+    const resto = 11 - (suma % 11);
+    let dvEsperado;
+    if (resto === 11) dvEsperado = '0';
+    else if (resto === 10) dvEsperado = 'K';
+    else dvEsperado = String(resto);
+
+    return dv === dvEsperado;
+}
+
+// ============================================================================
+// PRIORIDAD 3 — MANTENEDOR DE USUARIOS (admin-usuarios.html)
+// ============================================================================
+const USUARIOS_KEY = 'loQuieresUsuariosAdmin';
+
+const USUARIOS_INICIALES = [
+    { run: '190110226', nombre: 'Paulo', apellidos: 'Catalán', correo: 'admin@duoc.cl', tipo: 'administrador', direccion: 'Av. Siempre Viva 123', region: 'Región Metropolitana de Santiago', comuna: 'Santiago' },
+    { run: '182345678', nombre: 'Mauricio', apellidos: 'Ahumada', correo: 'vendedor@duoc.cl', tipo: 'vendedor', direccion: 'Calle Los Alerces 456', region: 'Región del Biobío', comuna: 'Concepción' },
+    { run: '209876543', nombre: 'Carla', apellidos: 'Gómez', correo: 'carla@gmail.com', tipo: 'cliente', direccion: 'Pasaje Las Rosas 789', region: 'Región de Valparaíso', comuna: 'Viña del Mar' }
+];
+
+function getUsuariosAdmin() {
+    try {
+        const guardados = JSON.parse(localStorage.getItem(USUARIOS_KEY));
+        return (guardados && guardados.length) ? guardados : USUARIOS_INICIALES;
+    } catch (error) {
+        return USUARIOS_INICIALES;
+    }
+}
+
+function saveUsuariosAdmin(usuarios) {
+    localStorage.setItem(USUARIOS_KEY, JSON.stringify(usuarios));
+}
+
+// ============================================================================
+// PRIORIDAD 1 — CARRITO.HTML: cantidad +/-, eliminar producto puntual y cupones
+// ============================================================================
+const CUPON_KEY = 'loQuieresCupon';
+
+// CUPONES DE DEMOSTRACIÓN: como no hay backend, se validan contra esta lista fija.
+const CUPONES_VALIDOS = {
+    'DUOC10': 0.10,
+    'BIENVENIDO': 0.15
+};
+
+function getCuponAplicado() {
+    try {
+        return JSON.parse(localStorage.getItem(CUPON_KEY));
+    } catch (error) {
+        return null;
+    }
+}
+
+// ACTUALIZAR CANTIDAD DE UN ÍTEM DEL CARRITO (botones +/- de carrito.html).
+function actualizarCantidadCarrito(name, delta) {
+    const cart = getCart();
+    const item = cart.find(i => i.name === name);
+    if (!item) return;
+
+    item.quantity += delta;
+    if (item.quantity <= 0) {
+        eliminarDelCarrito(name);
+        return;
+    }
+
+    saveCart(cart);
+    renderCart();
+    renderContactCart();
+    if (typeof renderCarritoPagina === 'function') renderCarritoPagina();
+}
+
+// ELIMINAR UN PRODUCTO PUNTUAL DEL CARRITO (botón 🗑 de carrito.html).
+function eliminarDelCarrito(name) {
+    const cart = getCart().filter(i => i.name !== name);
+    saveCart(cart);
+    renderCart();
+    renderContactCart();
+    if (typeof renderCarritoPagina === 'function') renderCarritoPagina();
+}
+
+// RENDERIZAR LA PÁGINA carrito.html COMPLETA: items con controles de cantidad,
+// subtotal, descuento por cupón y total final.
+function renderCarritoPagina() {
+    const cart = getCart();
+    const contenedor = document.getElementById('carritoDetalle');
+    if (!contenedor) return;
+
+    if (!cart.length) {
+        contenedor.innerHTML = '<p class="text-muted mb-0">Tu carrito está vacío. <a href="productos.html">Ir a productos</a></p>';
+    } else {
+        contenedor.innerHTML = cart.map(item => `
+            <div class="d-flex justify-content-between align-items-center border-bottom py-3 flex-wrap gap-2">
+                <div>
+                    <strong>${item.name}</strong>
+                    <div class="text-muted small">${formatCurrency(item.price)} c/u</div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary btn-cantidad-carrito" data-name="${item.name}" data-delta="-1">−</button>
+                    <span class="fw-bold" style="min-width: 20px; text-align:center;">${item.quantity}</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary btn-cantidad-carrito" data-name="${item.name}" data-delta="1">+</button>
+                    <span class="fw-bold ms-3" style="min-width: 90px; text-align:right;">${formatCurrency(item.price * item.quantity)}</span>
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-item-carrito" data-name="${item.name}" title="Eliminar">🗑</button>
+                </div>
+            </div>
+        `).join('');
+
+        contenedor.querySelectorAll('.btn-cantidad-carrito').forEach(btn => {
+            btn.addEventListener('click', () => actualizarCantidadCarrito(btn.dataset.name, Number(btn.dataset.delta)));
+        });
+        contenedor.querySelectorAll('.btn-eliminar-item-carrito').forEach(btn => {
+            btn.addEventListener('click', () => eliminarDelCarrito(btn.dataset.name));
+        });
+    }
+
+    const subtotal = getCartTotal(cart);
+    const cupon = getCuponAplicado();
+    const descuento = cupon ? subtotal * cupon.descuento : 0;
+    const total = subtotal - descuento;
+
+    const subtotalEl = document.getElementById('carritoSubtotal');
+    const descuentoEl = document.getElementById('carritoDescuento');
+    const totalEl = document.getElementById('carritoTotalFinal');
+
+    if (subtotalEl) subtotalEl.textContent = formatCurrency(subtotal);
+    if (descuentoEl) descuentoEl.textContent = descuento > 0 ? ('- ' + formatCurrency(descuento)) : formatCurrency(0);
+    if (totalEl) totalEl.textContent = formatCurrency(total);
+}
+
+// ============================================================================
+// INICIALIZACIÓN ESPECÍFICA DE LAS NUEVAS VISTAS (se agrega un segundo listener
+// DOMContentLoaded para no tocar el bloque original que ya existía en el archivo).
+// ============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- productos.html: renderiza el catálogo dinámico si existe el contenedor ---
+    renderCatalogoProductos();
+
+    // --- carrito.html: renderiza el detalle del carrito con cantidad y cupón ---
+    const contenedorCarritoDetalle = document.getElementById('carritoDetalle');
+    if (contenedorCarritoDetalle) {
+        renderCarritoPagina();
+
+        const btnAplicarCupon = document.getElementById('btnAplicarCupon');
+        if (btnAplicarCupon) {
+            btnAplicarCupon.addEventListener('click', () => {
+                const inputCupon = document.getElementById('inputCupon');
+                const mensajeCupon = document.getElementById('mensajeCupon');
+                const codigo = inputCupon.value.trim().toUpperCase();
+                const descuento = CUPONES_VALIDOS[codigo] || 0;
+
+                if (descuento > 0) {
+                    localStorage.setItem(CUPON_KEY, JSON.stringify({ codigo, descuento }));
+                    if (mensajeCupon) {
+                        mensajeCupon.textContent = `Cupón aplicado: ${Math.round(descuento * 100)}% de descuento.`;
+                        mensajeCupon.className = 'text-success small mt-1 d-block';
+                    }
+                } else {
+                    localStorage.removeItem(CUPON_KEY);
+                    if (mensajeCupon) {
+                        mensajeCupon.textContent = 'Cupón inválido o vencido.';
+                        mensajeCupon.className = 'text-danger small mt-1 d-block';
+                    }
+                }
+                renderCarritoPagina();
+            });
+        }
+
+        const btnPagar = document.getElementById('btnPagar');
+        if (btnPagar) {
+            btnPagar.addEventListener('click', () => {
+                if (!getCart().length) {
+                    alert('Tu carrito está vacío.');
+                    return;
+                }
+                alert('¡Gracias por tu compra! (simulación: aún no hay pasarela de pago real)');
+                clearCart();
+                localStorage.removeItem(CUPON_KEY);
+                renderCarritoPagina();
+            });
+        }
+    }
+
+    // --- registro.html y admin-usuario-nuevo/editar.html: validación de RUN en vivo ---
+    const inputRunGenerico = document.getElementById('regRun') || document.getElementById('userRun');
+    if (inputRunGenerico) {
+        inputRunGenerico.addEventListener('input', () => {
+            const errorId = inputRunGenerico.id === 'regRun' ? 'error-regRun' : 'error-userRun';
+            const errorRun = document.getElementById(errorId);
+            const valor = inputRunGenerico.value.trim();
+
+            if (!valor) {
+                inputRunGenerico.classList.remove('is-invalid');
+                if (errorRun) errorRun.textContent = '';
+            } else if (!esRunValido(valor)) {
+                inputRunGenerico.classList.add('is-invalid');
+                if (errorRun) errorRun.textContent = 'RUN inválido (sin puntos ni guion, ej: 19011022K).';
+            } else {
+                inputRunGenerico.classList.remove('is-invalid');
+                if (errorRun) errorRun.textContent = '';
+            }
+        });
+    }
+
+    // --- admin-productos.html: mantenedor de productos (listar, crear, editar, eliminar) ---
+    const tablaAdminProductosBody = document.getElementById('tablaAdminProductosBody');
+    if (tablaAdminProductosBody) {
+        let codigoEnEdicion = null;
+
+        function renderTablaAdminProductos() {
+            const productos = getProductos();
+            tablaAdminProductosBody.innerHTML = productos.map(p => `
+                <tr>
+                    <td>${p.codigo}</td>
+                    <td>${p.nombre}</td>
+                    <td>${formatCurrency(p.precio)}</td>
+                    <td>${p.stock}</td>
+                    <td>${p.categoria}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-primary btn-editar-producto" data-codigo="${p.codigo}" data-rol="administrador">Editar</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-producto" data-codigo="${p.codigo}" data-rol="administrador">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            tablaAdminProductosBody.querySelectorAll('.btn-editar-producto').forEach(btn => {
+                btn.addEventListener('click', () => cargarProductoEnFormulario(btn.dataset.codigo));
+            });
+            tablaAdminProductosBody.querySelectorAll('.btn-eliminar-producto').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!confirm('¿Eliminar este producto del catálogo?')) return;
+                    saveProductos(getProductos().filter(p => p.codigo !== btn.dataset.codigo));
+                    renderTablaAdminProductos();
+                });
+            });
+
+            // Vuelve a ocultar los botones "solo administrador" si quien está logueado es Vendedor.
+            if (typeof getSesion === 'function' && typeof aplicarMenuPorRol === 'function') {
+                aplicarMenuPorRol(getSesion());
+            }
+        }
+
+        function cargarProductoEnFormulario(codigo) {
+            const producto = getProductos().find(p => p.codigo === codigo);
+            if (!producto) return;
+
+            codigoEnEdicion = codigo;
+            document.getElementById('prodCodigo').value = producto.codigo;
+            document.getElementById('prodCodigo').disabled = true;
+            document.getElementById('prodNombre').value = producto.nombre;
+            document.getElementById('prodDescripcion').value = producto.descripcion || '';
+            document.getElementById('prodPrecio').value = producto.precio;
+            document.getElementById('prodStock').value = producto.stock;
+            document.getElementById('prodStockCritico').value = producto.stockCritico ?? '';
+            document.getElementById('prodCategoria').value = producto.categoria;
+            document.getElementById('tituloFormularioProducto').textContent = 'Editar producto';
+            document.getElementById('panelFormularioProducto').classList.remove('d-none');
+            document.getElementById('alertaStockCritico').classList.add('d-none');
+        }
+
+        const btnNuevoProducto = document.getElementById('btnNuevoProducto');
+        if (btnNuevoProducto) {
+            btnNuevoProducto.addEventListener('click', () => {
+                codigoEnEdicion = null;
+                document.getElementById('productoForm').reset();
+                document.getElementById('prodCodigo').disabled = false;
+                document.getElementById('tituloFormularioProducto').textContent = 'Nuevo producto';
+                document.getElementById('alertaStockCritico').classList.add('d-none');
+                document.getElementById('panelFormularioProducto').classList.remove('d-none');
+            });
+        }
+
+        const btnCancelarProducto = document.getElementById('btnCancelarProducto');
+        if (btnCancelarProducto) {
+            btnCancelarProducto.addEventListener('click', () => {
+                document.getElementById('panelFormularioProducto').classList.add('d-none');
+            });
+        }
+
+        const formProducto = document.getElementById('productoForm');
+        if (formProducto) {
+            formProducto.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const codigo = document.getElementById('prodCodigo').value.trim();
+                const nombre = document.getElementById('prodNombre').value.trim();
+                const descripcion = document.getElementById('prodDescripcion').value.trim();
+                const precio = Number(document.getElementById('prodPrecio').value);
+                const stock = Number(document.getElementById('prodStock').value);
+                const stockCriticoValor = document.getElementById('prodStockCritico').value;
+                const stockCritico = stockCriticoValor === '' ? null : Number(stockCriticoValor);
+                const categoria = document.getElementById('prodCategoria').value;
+                const imagen = document.getElementById('prodImagen');
+
+                if (!codigo || codigo.length < 3) { alert('El código debe tener al menos 3 caracteres.'); return; }
+                if (!nombre || nombre.length > 100) { alert('El nombre es obligatorio (máx. 100 caracteres).'); return; }
+                if (isNaN(precio) || precio < 0) { alert('El precio debe ser 0 o mayor.'); return; }
+                if (isNaN(stock) || stock < 0 || !Number.isInteger(stock)) { alert('El stock debe ser un número entero igual o mayor a 0.'); return; }
+                if (!categoria) { alert('Debes seleccionar una categoría.'); return; }
+
+                let productos = getProductos();
+
+                if (codigoEnEdicion) {
+                    productos = productos.map(p => p.codigo === codigoEnEdicion
+                        ? { ...p, nombre, descripcion, precio, stock, stockCritico, categoria }
+                        : p);
+                } else {
+                    if (productos.some(p => p.codigo === codigo)) {
+                        alert('Ya existe un producto con ese código.');
+                        return;
+                    }
+                    productos.push({
+                        codigo, nombre, descripcion, precio, stock, stockCritico, categoria,
+                        imagen: (imagen && imagen.files.length) ? URL.createObjectURL(imagen.files[0]) : 'assets/img/logo.png'
+                    });
+                }
+
+                saveProductos(productos);
+
+                // ALERTA DE STOCK CRÍTICO (Prioridad 3).
+                const alertaStock = document.getElementById('alertaStockCritico');
+                if (alertaStock) {
+                    if (stockCritico !== null && stock <= stockCritico) {
+                        alertaStock.textContent = `⚠ Atención: el stock ingresado (${stock}) quedó igual o por debajo del stock crítico (${stockCritico}).`;
+                        alertaStock.classList.remove('d-none');
+                    } else {
+                        alertaStock.classList.add('d-none');
+                    }
+                }
+
+                renderTablaAdminProductos();
+                if (!(document.getElementById('alertaStockCritico') && !document.getElementById('alertaStockCritico').classList.contains('d-none'))) {
+                    document.getElementById('panelFormularioProducto').classList.add('d-none');
+                }
+            });
+        }
+
+        renderTablaAdminProductos();
+    }
+
+    // --- admin-usuarios.html: mantenedor de usuarios (listar, crear, editar, eliminar) ---
+    const tablaAdminUsuariosBody = document.getElementById('tablaAdminUsuariosBody');
+    if (tablaAdminUsuariosBody) {
+        let runEnEdicion = null;
+
+        function renderTablaAdminUsuarios() {
+            const usuarios = getUsuariosAdmin();
+            const etiquetaTipo = { administrador: 'Administrador', vendedor: 'Vendedor', cliente: 'Cliente' };
+
+            tablaAdminUsuariosBody.innerHTML = usuarios.map(u => `
+                <tr>
+                    <td>${u.run}</td>
+                    <td>${u.nombre}</td>
+                    <td>${u.apellidos}</td>
+                    <td>${u.correo}</td>
+                    <td>${etiquetaTipo[u.tipo] || u.tipo}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-primary btn-editar-usuario" data-run="${u.run}">Editar</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-usuario" data-run="${u.run}">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            tablaAdminUsuariosBody.querySelectorAll('.btn-editar-usuario').forEach(btn => {
+                btn.addEventListener('click', () => cargarUsuarioEnFormulario(btn.dataset.run));
+            });
+            tablaAdminUsuariosBody.querySelectorAll('.btn-eliminar-usuario').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!confirm('¿Eliminar este usuario?')) return;
+                    saveUsuariosAdmin(getUsuariosAdmin().filter(u => u.run !== btn.dataset.run));
+                    renderTablaAdminUsuarios();
+                });
+            });
+        }
+
+        function cargarUsuarioEnFormulario(run) {
+            const usuario = getUsuariosAdmin().find(u => u.run === run);
+            if (!usuario) return;
+
+            runEnEdicion = run;
+            document.getElementById('userRun').value = usuario.run;
+            document.getElementById('userRun').disabled = true;
+            document.getElementById('userNombre').value = usuario.nombre;
+            document.getElementById('userApellidos').value = usuario.apellidos;
+            document.getElementById('userCorreo').value = usuario.correo;
+            document.getElementById('userTipo').value = usuario.tipo;
+            document.getElementById('userDireccion').value = usuario.direccion;
+
+            const selectRegion = document.getElementById('userRegion');
+            const selectComuna = document.getElementById('userComuna');
+            if (selectRegion) {
+                selectRegion.value = usuario.region || '';
+                selectRegion.dispatchEvent(new Event('change'));
+                setTimeout(() => {
+                    if (selectComuna) selectComuna.value = usuario.comuna || '';
+                }, 0);
+            }
+
+            document.getElementById('tituloFormularioUsuario').textContent = 'Editar usuario';
+            document.getElementById('panelFormularioUsuario').classList.remove('d-none');
+        }
+
+        const btnNuevoUsuario = document.getElementById('btnNuevoUsuario');
+        if (btnNuevoUsuario) {
+            btnNuevoUsuario.addEventListener('click', () => {
+                runEnEdicion = null;
+                document.getElementById('usuarioForm').reset();
+                document.getElementById('userRun').disabled = false;
+                document.getElementById('tituloFormularioUsuario').textContent = 'Nuevo usuario';
+                document.getElementById('panelFormularioUsuario').classList.remove('d-none');
+            });
+        }
+
+        const btnCancelarUsuario = document.getElementById('btnCancelarUsuario');
+        if (btnCancelarUsuario) {
+            btnCancelarUsuario.addEventListener('click', () => {
+                document.getElementById('panelFormularioUsuario').classList.add('d-none');
+            });
+        }
+
+        const formUsuario = document.getElementById('usuarioForm');
+        if (formUsuario) {
+            formUsuario.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const run = document.getElementById('userRun').value.trim().toUpperCase();
+                const nombre = document.getElementById('userNombre').value.trim();
+                const apellidos = document.getElementById('userApellidos').value.trim();
+                const correo = document.getElementById('userCorreo').value.trim();
+                const tipo = document.getElementById('userTipo').value;
+                const direccion = document.getElementById('userDireccion').value.trim();
+                const region = document.getElementById('userRegion') ? document.getElementById('userRegion').value : '';
+                const comuna = document.getElementById('userComuna') ? document.getElementById('userComuna').value : '';
+
+                // VALIDACIÓN DE RUN CHILENO (Prioridad 3).
+                if (!esRunValido(run)) {
+                    alert('El RUN ingresado no es válido. Debe ir sin puntos ni guion, ej: 19011022K.');
+                    return;
+                }
+                if (!nombre || nombre.length > 50) { alert('El nombre es obligatorio (máx. 50 caracteres).'); return; }
+                if (!apellidos || apellidos.length > 100) { alert('Los apellidos son obligatorios (máx. 100 caracteres).'); return; }
+                if (!correo || correo.length > 100) { alert('El correo es obligatorio (máx. 100 caracteres).'); return; }
+                if (!tipo) { alert('Debes seleccionar un tipo de usuario.'); return; }
+                if (!direccion || direccion.length > 300) { alert('La dirección es obligatoria (máx. 300 caracteres).'); return; }
+
+                let usuarios = getUsuariosAdmin();
+
+                if (runEnEdicion) {
+                    usuarios = usuarios.map(u => u.run === runEnEdicion
+                        ? { ...u, nombre, apellidos, correo, tipo, direccion, region, comuna }
+                        : u);
+                } else {
+                    if (usuarios.some(u => u.run === run)) {
+                        alert('Ya existe un usuario con ese RUN.');
+                        return;
+                    }
+                    usuarios.push({ run, nombre, apellidos, correo, tipo, direccion, region, comuna });
+                }
+
+                saveUsuariosAdmin(usuarios);
+                renderTablaAdminUsuarios();
+                document.getElementById('panelFormularioUsuario').classList.add('d-none');
+            });
+        }
+
+        renderTablaAdminUsuarios();
+    }
+});

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios - Hijos de las Ventas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bg-light">
+
+    <div class="d-flex" style="min-height: 100vh;">
+        <!-- Menú lateral del administrador (diseño libre, visible en todas las vistas admin) -->
+        <aside class="bg-dark text-white p-0" style="width: 240px; flex-shrink: 0;">
+            <div class="p-3 border-bottom border-secondary">
+                <strong>⬛ Hijos de las Ventas</strong>
+                <div class="small text-white-50" id="nombreUsuarioSesion">Panel administrador</div>
+            </div>
+            <nav class="list-group list-group-flush">
+                <a href="admin-home.html" class="list-group-item list-group-item-action bg-dark text-white border-secondary">🏠 Dashboard</a>
+                <a href="admin-productos.html" class="list-group-item list-group-item-action bg-dark text-white border-secondary">📦 Productos</a>
+                <a href="admin-usuarios.html" data-rol="administrador" class="list-group-item list-group-item-action bg-dark active bg-primary border-secondary">👥 Usuarios</a>
+                <a href="index.html" class="list-group-item list-group-item-action bg-dark text-warning border-secondary">↩ Volver a la tienda</a>
+                <a href="#" onclick="cerrarSesion(); return false;" class="list-group-item list-group-item-action bg-dark text-danger border-secondary">🚪 Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <!-- Contenido principal del panel: mantenedor de usuarios (solo Administrador, ver auth.js) -->
+        <main class="flex-grow-1 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Usuarios</h2>
+                <button type="button" class="btn btn-primary fw-bold" id="btnNuevoUsuario">+ Nuevo usuario</button>
+            </div>
+
+            <!-- Tabla del mantenedor: se llena dinámicamente desde USUARIOS_INICIALES (funciones.js) -->
+            <div class="table-responsive bg-white p-3 shadow-sm rounded mb-4">
+                <table class="table table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Run</th>
+                            <th>Nombre</th>
+                            <th>Apellidos</th>
+                            <th>Correo</th>
+                            <th>Tipo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <!-- funciones.js rellena este <tbody> con getUsuariosAdmin() -->
+                    <tbody id="tablaAdminUsuariosBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Panel de alta/edición de usuario (oculto hasta que se pulse "Nuevo usuario" o "Editar") -->
+            <div class="bg-white p-4 shadow-sm rounded d-none" id="panelFormularioUsuario">
+                <h4 class="mb-3" id="tituloFormularioUsuario">Nuevo usuario</h4>
+
+                <!-- Reglas de negocio (Anexo 1 - Usuario) -->
+                <form id="usuarioForm" action="#" method="POST" novalidate>
+                    <div class="mb-3">
+                        <label for="userRun" class="form-label fw-bold">Run (sin puntos ni guion, ej: 19011022K):</label>
+                        <input type="text" class="form-control" id="userRun" name="userRun" required minlength="7" maxlength="9" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-userRun" aria-live="polite"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="userNombre" class="form-label fw-bold">Nombre:</label>
+                            <input type="text" class="form-control" id="userNombre" name="userNombre" required maxlength="50" aria-required="true">
+                            <span class="error-msg text-danger small" id="error-userNombre" aria-live="polite"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="userApellidos" class="form-label fw-bold">Apellidos:</label>
+                            <input type="text" class="form-control" id="userApellidos" name="userApellidos" required maxlength="100" aria-required="true">
+                            <span class="error-msg text-danger small" id="error-userApellidos" aria-live="polite"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userCorreo" class="form-label fw-bold">Correo electrónico:</label>
+                        <input type="email" class="form-control" id="userCorreo" name="userCorreo" required maxlength="100"
+                               pattern="^[^\s@]+@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$"
+                               title="Solo se aceptan correos @duoc.cl, @profesor.duoc.cl o @gmail.com" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-userCorreo" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userTipo" class="form-label fw-bold">Tipo de usuario:</label>
+                        <select class="form-select" id="userTipo" name="userTipo" required aria-required="true">
+                            <option value="" disabled selected>-- Seleccione --</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="vendedor">Vendedor</option>
+                            <option value="cliente">Cliente</option>
+                        </select>
+                        <span class="error-msg text-danger small" id="error-userTipo" aria-live="polite"></span>
+                    </div>
+
+                    <!-- Región/Comuna dinámicos: usa el mismo arreglo REGIONES y el mismo listener de regiones.js -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="regRegion" class="form-label fw-bold">Región:</label>
+                            <select class="form-select" id="regRegion" name="userRegion" required aria-required="true">
+                                <option value="" disabled selected>-- Seleccione la región --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="regComuna" class="form-label fw-bold">Comuna:</label>
+                            <select class="form-select" id="regComuna" name="userComuna" required aria-required="true" disabled>
+                                <option value="" disabled selected>-- Seleccione la comuna --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="userDireccion" class="form-label fw-bold">Dirección:</label>
+                        <input type="text" class="form-control" id="userDireccion" name="userDireccion" required maxlength="300" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-userDireccion" aria-live="polite"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary fw-bold">Guardar usuario</button>
+                    <button type="button" class="btn btn-outline-secondary" id="btnCancelarUsuario">Cancelar</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // PROTECCIÓN DE VISTA: exige sesión iniciada y valida el rol permitido para esta página (solo Administrador).
+        document.addEventListener('DOMContentLoaded', () => {
+            const sesion = protegerVistaAdmin(['administrador']);
+            aplicarMenuPorRol(sesion);
+        });
+    </script>
+    <script src="regiones.js"></script>
+    <script src="funciones.js"></script>
+</body>
+</html>
