@@ -12,13 +12,18 @@
 <body class="bg-light">
     <header>
         <!-- Barra de navegación principal (esta versión sí incluye "Estadisticas") -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary justify-content-center">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary justify-content-center position-relative">
             <img src="assets/img/logo.png" alt="Logo" class="navbar-brand position-absolute start-0 top-50 translate-middle-y me-3" style="height: 80px;">
             <a class="nav-link text-white fw-bold mx-3" href="index.html">Inicio</a>
             <a class="nav-link text-white fw-bold mx-3" href="contacto.html">Contacto</a>
             <a class="nav-link text-white fw-bold mx-3" href="productos.html">Productos</a>
-            <a class="nav-link text-white fw-bold mx-3" href="estadistica.html">Estadisticas</a>
-        </nav>  
+            <a class="nav-link text-white fw-bold mx-3" href="nosotros.html">Nosotros</a>
+            <a class="nav-link text-white fw-bold mx-3" href="blogs.html">Blogs</a>
+            <a class="nav-link text-white fw-bold mx-3" href="carrito.html">🛒 Carrito</a>
+            <a class="nav-link text-white mx-2 small" href="login.html">Iniciar sesión</a>
+            <a class="nav-link text-white mx-2 small" href="registro.html">Registrarse</a>
+            
+        </nav>
     </header>
 
     <main>
@@ -57,50 +62,11 @@
             </aside>
             
             <!-- Grilla de productos del catálogo -->
-            <section class="row g-4 justify-content-center">
-                
-                <!-- Producto 1: Perfume -->
-                <div class="col-md-4">
-                    <article class="card h-100 shadow-sm border-0">
-                        <img src="assets/img/RasasiHawas.webp" height="300" width="300" class="card-img-top" alt="Perfume Hawas" >
-                        <div class="card-body d-flex flex-column text-center">
-                            <h5 class="card-title fw-bold">Perfume Hawas for Men</h5>
-                            <p class="card-text text-muted">Rasasi Hawas Ice Edp 100ml. Fragancia con excelente proyección para destacar en el día a día.
-                            </p>
-                            <h4 class="text-primary fw-bold mt-auto">$45.990</h4>
-                            <!-- Ya no redirige a contacto.html: ahora agrega el producto al carrito -->
-                            <!-- data-name y data-price son leídos por funciones.js para armar el objeto del carrito -->
-                            <button type="button" class="btn btn-outline-primary mt-3 fw-bold add-to-cart-btn" data-name="Perfume Hawas for Men" data-price="45990">Lo quiero</button>
-                        </div>
-                    </article>
-                </div>
-
-                <!-- Producto 2: Mousepad gamer -->
-                <div class="col-md-4">
-                    <article class="card h-100 shadow-sm border-0">
-                        <img src="assets/img/mousepadXXL.webp" height="300" width="300" class="card-img-top" alt="Mousepad Gamer">
-                        <div class="card-body d-flex flex-column text-center">
-                            <h5 class="card-title fw-bold">Mousepad Gamer XL</h5>
-                            <p class="card-text text-muted">Mouse Pad gamer Redragon Flick de goma y tela pad para mouse xl 40cm x 90cm x 4mm negro</p>
-                            <h4 class="text-primary fw-bold mt-auto">$12.500</h4>
-                            <button type="button" class="btn btn-outline-primary mt-3 fw-bold add-to-cart-btn" data-name="Mousepad Gamer XL" data-price="12500">Lo quiero</button>
-                        </div>
-                    </article>
-                </div>
-                
-                <!-- Producto 3: Manga -->
-                <div class="col-md-4">
-                    <article class="card h-100 shadow-sm border-0">
-                        <img src="assets/img/Dorohedoro1.webp" height="300" width="300" class="card-img-top" alt="Manga Dorohedoro">
-                        <div class="card-body d-flex flex-column text-center">
-                            <h5 class="card-title fw-bold">Manga Dorohedoro - Tomo 1</h5>
-                            <p class="card-text text-muted">Empieza a leer esta joya en tus tiempos muertos.</p>
-                            <h4 class="text-primary fw-bold mt-auto">$9.990</h4>
-                            <button type="button" class="btn btn-outline-primary mt-3 fw-bold add-to-cart-btn" data-name="Manga Dorohedoro - Tomo 1" data-price="9990">Lo quiero</button>
-                        </div>
-                    </article>
-                </div>
-
+            <!-- Prioridad 3: ahora se genera dinámicamente desde el arreglo PRODUCTOS_INICIALES -->
+            <!-- (ver renderCatalogoProductos() en funciones.js). El resultado visual es idéntico -->
+            <!-- al catálogo estático anterior; solo cambió de dónde sale la información. -->
+            <section class="row g-4 justify-content-center" id="catalogoProductos">
+                <p class="text-muted text-center">Cargando catálogo...</p>
             </section>
         </div>
     </main>
