@@ -372,6 +372,36 @@ const PRODUCTOS_INICIALES = [
         stockCritico: 2,
         categoria: 'Almacén',
         imagen: 'assets/img/Dorohedoro1.webp'
+    },
+    {
+        codigo: 'PRD-004',
+        nombre: 'GTA VI',
+        descripcion: 'Grand Theft Auto VI is Now Set to Launch November 19, 2026',
+        precio: 99990,
+        stock: 15,
+        stockCritico: 3,
+        categoria: 'Computación',
+        imagen: 'assets/img/GTA-VI.webp'
+    },
+    {
+        codigo: 'PRD-005',
+        nombre: 'PlayStation - PS14',
+        descripcion: 'Consola de nueva generación con carga ultra rápida, gráficos en 4K y control inalámbrico incluido.',
+        precio: 499990,
+        stock: 10,
+        stockCritico: 2,
+        categoria: 'Computación',
+        imagen: 'assets/img/PS14.webp'
+    },
+    {
+        codigo: 'PRD-006',
+        nombre: 'Teclado Gamer',
+        descripcion: 'Teclado Gamer Redragon Kumara Black Red Switch Spanish K552RGB-1R-SP.',
+        precio: 24990,
+        stock: 18,
+        stockCritico: 4,
+        categoria: 'Computación',
+        imagen: 'assets/img/Teclado.webp'
     }
 ];
 
