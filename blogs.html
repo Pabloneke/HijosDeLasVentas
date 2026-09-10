@@ -10,17 +10,32 @@
 <body class="bg-light">
     <header>
         <!-- Barra de navegación principal, enlaza a todas las páginas públicas del sitio -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary justify-content-center position-relative">
-            <img src="assets/img/logo.png" alt="Logo" class="navbar-brand position-absolute start-0 top-50 translate-middle-y me-3" style="height: 80px;">
-            <a class="nav-link text-white fw-bold mx-3" href="index.html">Inicio</a>
-            <a class="nav-link text-white fw-bold mx-3" href="contacto.html">Contacto</a>
-            <a class="nav-link text-white fw-bold mx-3" href="productos.html">Productos</a>
-            <a class="nav-link text-white fw-bold mx-3" href="nosotros.html">Nosotros</a>
-            <a class="nav-link text-white fw-bold mx-3" href="blogs.html">Blogs</a>
-            <a class="nav-link text-white fw-bold mx-3" href="carrito.html">🛒 Carrito</a>
-            <a class="nav-link text-white mx-2 small" href="login.html">Iniciar sesión</a>
-            <a class="nav-link text-white mx-2 small" href="registro.html">Registrarse</a>
-            
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid flex-wrap justify-content-center justify-content-lg-start gap-2">
+                <a class="navbar-brand py-0" href="index.html">
+                    <img src="assets/img/logo.png" alt="Logo" style="height: 55px;">
+                </a>
+                <!-- Botón hamburguesa: visible solo en pantallas chicas (bootstrap.bundle.min.js lo activa) -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navPrincipal" aria-controls="navPrincipal"
+                        aria-expanded="false" aria-label="Abrir menú">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <!-- Contenedor de links: en pantallas grandes se ve entero (y puede pasar a 2 filas si no cabe), -->
+                <!-- en pantallas chicas queda oculto hasta tocar el botón hamburguesa -->
+                <div class="collapse navbar-collapse flex-grow-0" id="navPrincipal">
+                    <div class="d-flex flex-wrap justify-content-center gap-2 py-2">
+                        <a class="nav-link" href="index.html">Inicio</a>
+                        <a class="nav-link" href="productos.html">Productos</a>
+                        <a class="nav-link" href="nosotros.html">Nosotros</a>
+                        <a class="nav-link" href="blogs.html">Blogs</a>
+                        <a class="nav-link" href="contacto.html">Contacto</a>
+                        <a class="nav-link" href="carrito.html">🛒 Carrito</a>
+                        <a class="nav-link" href="login.html">Iniciar sesión</a>
+                        <a class="nav-link" href="registro.html">Registrarse</a>
+                    </div>
+                </div>
+            </div>
         </nav>
     </header>
 
@@ -63,6 +78,8 @@
         <p class="mb-0">| Paulo Catalan | Mauricio Ahumada | Branco Aliaga | Alexander Arancibia | </p>
         <p class="mb-0">Todos los derechos reservados &copy; 2026</p>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
     <script src="funciones.js"></script>
 </body>
