@@ -16,6 +16,19 @@ function esEmailValido(email) {
     return patronEmail.test(email);
 }
 
+// VALIDACIÓN DE DOMINIO DE EMAIL: solo permite los dominios autorizados por el negocio (Anexo 1).
+function esDominioPermitido(email) {
+    const dominiosPermitidos = ['duoc.cl', 'profesor.duoc.cl', 'gmail.com'];
+    const dominio = email.split('@')[1]?.toLowerCase().trim();
+    return dominiosPermitidos.includes(dominio);
+}
+
+// VALIDACIÓN DE NOMBRE: solo letras y espacios (incluye tildes y ñ), largo entre 3 y 100 (Anexo 1).
+function esNombreValido(nombre) {
+    const patronNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    return patronNombre.test(nombre) && nombre.length >= 3 && nombre.length <= 100;
+}
+
 // LECTURA DEL CARRITO: recupera los productos guardados en localStorage.
 function getCart() {
     try {
@@ -219,6 +232,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 camposVacios.push('Nombre completo');
                 inputNombre.classList.add('is-invalid');
                 if (errorNombre) errorNombre.textContent = 'El nombre completo es obligatorio.';
+            } else if (inputNombre.value.trim().length > 100) {
+                // Regla de negocio (Anexo 1): nombre máximo 100 caracteres.
+                tieneErrores = true;
+                inputNombre.classList.add('is-invalid');
+                if (errorNombre) errorNombre.textContent = 'El nombre no puede superar los 100 caracteres.';
+            } else if (!esNombreValido(inputNombre.value.trim())) {
+                // Regla de negocio (Anexo 1): solo letras y espacios.
+                tieneErrores = true;
+                inputNombre.classList.add('is-invalid');
+                if (errorNombre) errorNombre.textContent = 'El nombre solo puede contener letras y espacios.';
             }
 
             // Validar Correo electrónico: primero que no esté vacío, luego que tenga formato válido
@@ -231,6 +254,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 tieneErrores = true;
                 inputEmail.classList.add('is-invalid');
                 if (errorEmail) errorEmail.textContent = 'Ingresa un correo electrónico con formato válido (ej: nombre@dominio.com).';
+            } else if (inputEmail.value.trim().length > 100) {
+                // Regla de negocio (Anexo 1): correo máximo 100 caracteres.
+                tieneErrores = true;
+                inputEmail.classList.add('is-invalid');
+                if (errorEmail) errorEmail.textContent = 'El correo no puede superar los 100 caracteres.';
+            } else if (!esDominioPermitido(inputEmail.value.trim())) {
+                // Regla de negocio (Anexo 1): solo dominios autorizados.
+                tieneErrores = true;
+                inputEmail.classList.add('is-invalid');
+                if (errorEmail) errorEmail.textContent = 'Solo se aceptan correos @duoc.cl, @profesor.duoc.cl o @gmail.com.';
             }
 
             // Validar Método de pago
@@ -247,6 +280,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 camposVacios.push('Tipo de entrega');
                 selectTipoEntrega.classList.add('is-invalid');
                 if (errorEntrega) errorEntrega.textContent = 'Debe seleccionar un tipo de entrega.';
+            }
+
+            // Validar Detalle de la compra (Anexo 1: requerido, máximo 500 caracteres)
+            if (!txtMensaje || txtMensaje.value.trim() === '') {
+                tieneErrores = true;
+                camposVacios.push('Detalle de la compra');
+                txtMensaje.classList.add('is-invalid');
+                if (errorMensaje) errorMensaje.textContent = 'El detalle de la compra es obligatorio.';
+            } else if (txtMensaje.value.trim().length > 500) {
+                tieneErrores = true;
+                txtMensaje.classList.add('is-invalid');
+                if (errorMensaje) errorMensaje.textContent = 'El detalle no puede superar los 500 caracteres.';
             }
 
             // PROCESAMIENTO DEL PEDIDO: muestra errores o genera el resumen de compra.
