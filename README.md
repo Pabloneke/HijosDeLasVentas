@@ -152,23 +152,42 @@ HijosDeLasVentas/
 ├── productos.html
 ├── contacto.html
 ├── estadistica.html
+├── nosotros.html
+├── blogs.html
+├── detalle-blog1.html
+├── detalle-blog2.html
+├── login.html
+├── registro.html
+├── carrito.html
+├── admin-home.html
+├── admin-productos.html
+├── admin-usuarios.html
 ├── funciones.js
+├── auth.js
+├── regiones.js
 │
 └── README.md
 ```
 
 ### Archivos principales
 
-| Archivo            | Descripción                                          |
-| ------------------ | ---------------------------------------------------- |
-| `index.html`       | Página principal de la tienda                        |
-| `productos.html`   | Catálogo de productos                                |
-| `contacto.html`    | Formulario de contacto y pedidos                     |
-| `estadistica.html` | Página de estadísticas                               |
-| `funciones.js`     | Funciones y lógica JavaScript                        |
-| `assets/`          | Recursos gráficos y archivos utilizados por el sitio |
-
----
+| Archivo                        | Descripción                                                     |
+| -------------------------------|-----------------------------------------------------------------|
+| `index.html`                   | Página principal de la tienda                                   |
+| `productos.html`               | Catálogo de productos                                           |
+| `contacto.html`                | Formulario de contacto y pedidos                                |
+| `estadistica.html`             | Página de estadísticas                                          |
+| `funciones.js`                 | Funciones y lógica JavaScript                                   |
+| `assets/`                      | Recursos gráficos y archivos utilizados por el sitio            |
+| nosotros.html                  | Página con información del equipo y la empresa                  |
+| blogs.html /detalle-blog*.html | Sección de noticias y artículos de perfumería                   |
+| login.html / registro.html	   | Autenticación y registro de usuarios clientes                   |
+| carrito.html                   | Vista completa del carrito de compras                           |
+| admin-home.html	               | Panel principal del administrador (zona privada)                |
+| admin-productos.html	         | Mantenedor y gestión de productos                               |
+| admin-usuarios.html	           | Mantenedor y gestión de usuarios                                |
+| auth.js / regiones.js	         | Lógica de autenticación y carga de regiones/comunas             | 
+---------------------------------------------------------------------------------------------------
 
 ## ✅ Validaciones
 
@@ -269,28 +288,21 @@ Actualmente el proyecto se encuentra en una etapa de desarrollo frontend.
 
 * [x] Página principal
 * [x] Catálogo de productos
-* [x] Página de contacto
-* [x] Página de estadísticas
-* [x] Diseño responsive
-* [x] Bootstrap 5.3.3
-* [x] Validaciones HTML5
-* [x] Estilos personalizados
-* [x] Recursos gráficos locales
-* [x] Navegación entre páginas
+* [x] Página de contacto y pedidos
+* [x] Página de estadísticas (DataTables)
+* [x] Páginas de Nosostros y Blogs con sus respectivos detalles
+* [x] Vistas de autenticación (Login y Registro)
+* [x] Vista de Carrito de compras con localStorage
+* [x] Panel de administración completo (Home, Productos y Usuarios)
+* [x] Validaciones de formularios y reglas de negocio con JavaScript
+* [x] Diseño responsive con Bootstrap 5.3.3
 
 ### Próximas mejoras
 
-* [ ] Implementar backend.
-* [ ] Implementar base de datos.
-* [ ] Sistema de usuarios.
-* [ ] Carrito de compras.
-* [ ] Sistema de autenticación.
-* [ ] Gestión de productos.
-* [ ] Gestión de pedidos.
-* [ ] Persistencia de estadísticas.
-* [ ] Validaciones dinámicas mediante JavaScript.
-* [ ] Implementar API REST.
-* [ ] Despliegue en producción.
+* [ ] Conectar un backend real (Node.js / Express o Java Spring Boot).
+* [ ] Implementar una base de datos relacional (Oracle / MySQL).
+* [ ] Consumir una API REST para la gestión de datos.
+* [ ] Despliegue de la aplicación en producción (Cloud Hosting).
 
 ---
 
