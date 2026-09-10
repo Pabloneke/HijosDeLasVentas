@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - Hijos de las Ventas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bg-light">
+
+    <div class="d-flex" style="min-height: 100vh;">
+        <!-- Menú lateral del administrador (diseño libre, visible en todas las vistas admin) -->
+        <aside class="bg-dark text-white p-0" style="width: 240px; flex-shrink: 0;">
+            <div class="p-3 border-bottom border-secondary">
+                <strong>⬛ Hijos de las Ventas</strong>
+                <div class="small text-white-50" id="nombreUsuarioSesion">Panel administrador</div>
+            </div>
+            <nav class="list-group list-group-flush">
+                <a href="admin-home.html" class="list-group-item list-group-item-action bg-dark text-white border-secondary">🏠 Dashboard</a>
+                <a href="admin-productos.html" class="list-group-item list-group-item-action bg-dark active bg-primary border-secondary">📦 Productos</a>
+                <a href="admin-usuarios.html" data-rol="administrador" class="list-group-item list-group-item-action bg-dark text-white border-secondary">👥 Usuarios</a>
+                <a href="index.html" class="list-group-item list-group-item-action bg-dark text-warning border-secondary">↩ Volver a la tienda</a>
+                <a href="#" onclick="cerrarSesion(); return false;" class="list-group-item list-group-item-action bg-dark text-danger border-secondary">🚪 Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <!-- Contenido principal del panel: mantenedor de productos -->
+        <main class="flex-grow-1 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Productos</h2>
+                <!-- Solo el Administrador puede crear productos nuevos (el Vendedor solo visualiza) -->
+                <button type="button" class="btn btn-primary fw-bold" id="btnNuevoProducto" data-rol="administrador">+ Nuevo producto</button>
+            </div>
+
+            <!-- Tabla del mantenedor: se llena dinámicamente desde el arreglo PRODUCTOS_INICIALES (funciones.js) -->
+            <div class="table-responsive bg-white p-3 shadow-sm rounded mb-4">
+                <table class="table table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Categoría</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <!-- funciones.js rellena este <tbody> con getProductos() -->
+                    <tbody id="tablaAdminProductosBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Panel de alta/edición de producto (oculto hasta que se pulse "Nuevo producto" o "Editar") -->
+            <div class="bg-white p-4 shadow-sm rounded d-none" id="panelFormularioProducto">
+                <h4 class="mb-3" id="tituloFormularioProducto">Nuevo producto</h4>
+
+                <!-- ALERTA DE STOCK CRÍTICO (Prioridad 3): se muestra si el stock queda igual o bajo el crítico -->
+                <div class="alert alert-warning d-none" id="alertaStockCritico" role="alert"></div>
+
+                <!-- Reglas de negocio (Anexo 1 - Producto) -->
+                <form id="productoForm" action="#" method="POST" novalidate>
+                    <div class="mb-3">
+                        <label for="prodCodigo" class="form-label fw-bold">Código producto:</label>
+                        <input type="text" class="form-control" id="prodCodigo" name="prodCodigo" required minlength="3" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-prodCodigo" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="prodNombre" class="form-label fw-bold">Nombre:</label>
+                        <input type="text" class="form-control" id="prodNombre" name="prodNombre" required maxlength="100" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-prodNombre" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="prodDescripcion" class="form-label fw-bold">Descripción (opcional):</label>
+                        <textarea class="form-control" id="prodDescripcion" name="prodDescripcion" rows="3" maxlength="500"></textarea>
+                        <span class="error-msg text-danger small" id="error-prodDescripcion" aria-live="polite"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="prodPrecio" class="form-label fw-bold">Precio:</label>
+                            <input type="number" class="form-control" id="prodPrecio" name="prodPrecio" required min="0" step="0.01" aria-required="true">
+                            <span class="error-msg text-danger small" id="error-prodPrecio" aria-live="polite"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="prodStock" class="form-label fw-bold">Stock:</label>
+                            <input type="number" class="form-control" id="prodStock" name="prodStock" required min="0" step="1" aria-required="true">
+                            <span class="error-msg text-danger small" id="error-prodStock" aria-live="polite"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="prodStockCritico" class="form-label fw-bold">Stock crítico (opcional):</label>
+                            <input type="number" class="form-control" id="prodStockCritico" name="prodStockCritico" min="0" step="1">
+                            <span class="error-msg text-danger small" id="error-prodStockCritico" aria-live="polite"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="prodCategoria" class="form-label fw-bold">Categoría:</label>
+                        <select class="form-select" id="prodCategoria" name="prodCategoria" required aria-required="true">
+                            <option value="" disabled selected>-- Seleccione categoría --</option>
+                            <option value="Almacén">Almacén</option>
+                            <option value="Computación">Computación</option>
+                            <option value="Perfumería">Perfumería</option>
+                        </select>
+                        <span class="error-msg text-danger small" id="error-prodCategoria" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="prodImagen" class="form-label fw-bold">Imagen (opcional):</label>
+                        <input type="file" class="form-control" id="prodImagen" name="prodImagen" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary fw-bold">Guardar producto</button>
+                    <button type="button" class="btn btn-outline-secondary" id="btnCancelarProducto">Cancelar</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // PROTECCIÓN DE VISTA: exige sesión iniciada y valida el rol permitido para esta página.
+        document.addEventListener('DOMContentLoaded', () => {
+            const sesion = protegerVistaAdmin(['administrador', 'vendedor']);
+            aplicarMenuPorRol(sesion);
+        });
+    </script>
+    <script src="funciones.js"></script>
+</body>
+</html>

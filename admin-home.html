@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel administrador - Hijos de las Ventas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bg-light">
+
+    <div class="d-flex" style="min-height: 100vh;">
+        <!-- Menú lateral del administrador (diseño libre, visible en todas las vistas admin) -->
+        <aside class="bg-dark text-white p-0" style="width: 240px; flex-shrink: 0;">
+            <div class="p-3 border-bottom border-secondary">
+                <strong>⬛ Hijos de las Ventas</strong>
+                <div class="small text-white-50" id="nombreUsuarioSesion">Panel administrador</div>
+            </div>
+            <nav class="list-group list-group-flush">
+                <a href="admin-home.html" class="list-group-item list-group-item-action bg-dark active bg-primary border-secondary">🏠 Dashboard</a>
+                <a href="admin-productos.html" class="list-group-item list-group-item-action bg-dark text-white border-secondary">📦 Productos</a>
+                <a href="admin-usuarios.html" data-rol="administrador" class="list-group-item list-group-item-action bg-dark text-white border-secondary">👥 Usuarios</a>
+                <a href="index.html" class="list-group-item list-group-item-action bg-dark text-warning border-secondary">↩ Volver a la tienda</a>
+                <a href="#" onclick="cerrarSesion(); return false;" class="list-group-item list-group-item-action bg-dark text-danger border-secondary">🚪 Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <!-- Contenido principal del panel -->
+        <main class="flex-grow-1 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">¡Hola Administrador!</h2>
+                <span>🔔</span>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="metric-card primary p-3 bg-white shadow-sm rounded">
+                        <span class="label d-block text-muted">Productos activos</span>
+                        <div class="value fs-3 fw-bold">3</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="metric-card p-3 bg-white shadow-sm rounded">
+                        <span class="label d-block text-muted">Usuarios registrados</span>
+                        <div class="value fs-3 fw-bold">3</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="metric-card warning p-3 bg-white shadow-sm rounded">
+                        <span class="label d-block text-muted">Pedidos pendientes</span>
+                        <div class="value fs-3 fw-bold">2</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 shadow-sm rounded">
+                <h5>Accesos rápidos</h5>
+                <a href="admin-productos.html" class="btn btn-outline-primary me-2">Ver productos</a>
+                <a href="admin-usuarios.html" data-rol="administrador" class="btn btn-outline-primary">Ver usuarios</a>
+            </div>
+
+        </main>
+    </div>
+    <script src="auth.js"></script>
+    <script>
+        // PROTECCIÓN DE VISTA: exige sesión iniciada y valida el rol permitido para esta página.
+        document.addEventListener('DOMContentLoaded', () => {
+            const sesion = protegerVistaAdmin(['administrador', 'vendedor']);
+            aplicarMenuPorRol(sesion);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de usuario - Hijos de las Ventas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bg-light">
+    <header>
+        <!-- Barra de navegación principal, enlaza a todas las páginas públicas del sitio -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary justify-content-center position-relative">
+            <img src="assets/img/logo.png" alt="Logo" class="navbar-brand position-absolute start-0 top-50 translate-middle-y me-3" style="height: 80px;">
+            <a class="nav-link text-white fw-bold mx-3" href="index.html">Inicio</a>
+            <a class="nav-link text-white fw-bold mx-3" href="contacto.html">Contacto</a>
+            <a class="nav-link text-white fw-bold mx-3" href="productos.html">Productos</a>
+            <a class="nav-link text-white fw-bold mx-3" href="nosotros.html">Nosotros</a>
+            <a class="nav-link text-white fw-bold mx-3" href="blogs.html">Blogs</a>
+            <a class="nav-link text-white fw-bold mx-3" href="carrito.html">🛒 Carrito</a>
+            <a class="nav-link text-white mx-2 small" href="login.html">Iniciar sesión</a>
+            <a class="nav-link text-white mx-2 small" href="registro.html">Registrarse</a>
+            
+        </nav>
+    </header>
+
+    <main class="container my-5">
+        <section class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <h2 class="hero-title text-center mb-4">Registro de usuario</h2>
+
+                <!-- Formulario de registro de usuario/cliente -->
+                <!-- Reglas de negocio (Anexo 1 - Usuario): ver detalle de cada campo abajo -->
+                <form id="registroForm" action="#" method="POST" class="contact-panel" novalidate>
+
+                    <div class="mb-3">
+                        <label for="regRun" class="form-label fw-bold">Run (sin puntos ni guion, ej: 19011022K):</label>
+                        <input type="text" class="form-control" id="regRun" name="regRun"
+                               required minlength="7" maxlength="9" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-regRun" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="regNombre" class="form-label fw-bold">Nombre completo:</label>
+                        <input type="text" class="form-control" id="regNombre" name="regNombre"
+                               required maxlength="50" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-regNombre" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="regApellidos" class="form-label fw-bold">Apellidos:</label>
+                        <input type="text" class="form-control" id="regApellidos" name="regApellidos"
+                               required maxlength="100" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-regApellidos" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="regCorreo" class="form-label fw-bold">Correo electrónico:</label>
+                        <input type="email" class="form-control" id="regCorreo" name="regCorreo"
+                               required maxlength="100"
+                               pattern="^[^\s@]+@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$"
+                               title="Solo se aceptan correos @duoc.cl, @profesor.duoc.cl o @gmail.com"
+                               aria-required="true">
+                        <span class="error-msg text-danger small" id="error-regCorreo" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="regConfirmarCorreo" class="form-label fw-bold">Confirmar correo:</label>
+                        <input type="email" class="form-control" id="regConfirmarCorreo" name="regConfirmarCorreo"
+                               required maxlength="100" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-regConfirmarCorreo" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="regPassword" class="form-label fw-bold">Contraseña:</label>
+                        <input type="password" class="form-control" id="regPassword" name="regPassword"
+                               required minlength="4" maxlength="10" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-regPassword" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="regConfirmarPassword" class="form-label fw-bold">Confirmar contraseña:</label>
+                        <input type="password" class="form-control" id="regConfirmarPassword" name="regConfirmarPassword"
+                               required minlength="4" maxlength="10" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-regConfirmarPassword" aria-live="polite"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="regTelefono" class="form-label fw-bold">Teléfono (opcional):</label>
+                        <input type="tel" class="form-control" id="regTelefono" name="regTelefono" maxlength="15">
+                        <span class="error-msg text-danger small" id="error-regTelefono" aria-live="polite"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="regRegion" class="form-label fw-bold">Región:</label>
+                            <select class="form-select" id="regRegion" name="regRegion" required aria-required="true">
+                                <option value="" disabled selected>-- Seleccione la región --</option>
+                            </select>
+                            <span class="error-msg text-danger small" id="error-regRegion" aria-live="polite"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="regComuna" class="form-label fw-bold">Comuna:</label>
+                            <select class="form-select" id="regComuna" name="regComuna" required aria-required="true" disabled>
+                                <option value="" disabled selected>-- Seleccione la comuna --</option>
+                            </select>
+                            <span class="error-msg text-danger small" id="error-regComuna" aria-live="polite"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="regDireccion" class="form-label fw-bold">Dirección:</label>
+                        <input type="text" class="form-control" id="regDireccion" name="regDireccion"
+                               required maxlength="300" aria-required="true">
+                        <span class="error-msg text-danger small" id="error-regDireccion" aria-live="polite"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Registrar</button>
+                </form>
+            </div>
+        </section>
+    </main>
+    <!-- Pie de página con créditos del equipo de desarrollo -->
+    <footer>
+        <p class="mb-0">Equipo de Desarrollo - 2026</p>
+        <p class="mb-0">| Paulo Catalan | Mauricio Ahumada | Branco Aliaga | Alexander Arancibia | </p>
+        <p class="mb-0">Todos los derechos reservados &copy; 2026</p>
+    </footer>
+
+    <script src="regiones.js"></script>
+    <script src="funciones.js"></script>
+</body>
+</html>
