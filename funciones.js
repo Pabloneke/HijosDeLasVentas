@@ -400,7 +400,7 @@ function renderCatalogoProductos() {
     contenedor.innerHTML = productos.map(p => `
         <div class="col-md-4">
             <article class="card h-100 shadow-sm border-0">
-                <a href="detalle-producto.html">
+                <a href="detalle-producto.html?codigo=${p.codigo}">
                     <img src="${p.imagen}" height="300" width="300" class="card-img-top" alt="${p.nombre}">
                 </a>
                 <div class="card-body d-flex flex-column text-center">
@@ -736,33 +736,60 @@ document.addEventListener('DOMContentLoaded', () => {
             formProducto.addEventListener('submit', (event) => {
                 event.preventDefault();
 
-                const codigo = document.getElementById('prodCodigo').value.trim();
-                const nombre = document.getElementById('prodNombre').value.trim();
-                const descripcion = document.getElementById('prodDescripcion').value.trim();
-                const precio = Number(document.getElementById('prodPrecio').value);
-                const stock = Number(document.getElementById('prodStock').value);
-                const stockCriticoValor = document.getElementById('prodStockCritico').value;
-                const stockCritico = stockCriticoValor === '' ? null : Number(stockCriticoValor);
-                const categoria = document.getElementById('prodCategoria').value;
+                const inputCodigo = document.getElementById('prodCodigo');
+                const inputNombre = document.getElementById('prodNombre');
+                const inputPrecio = document.getElementById('prodPrecio');
+                const inputStock = document.getElementById('prodStock');
+                const selectCategoria = document.getElementById('prodCategoria');
                 const imagen = document.getElementById('prodImagen');
 
-                if (!codigo || codigo.length < 3) { alert('El código debe tener al menos 3 caracteres.'); return; }
-                if (!nombre || nombre.length > 100) { alert('El nombre es obligatorio (máx. 100 caracteres).'); return; }
-                if (isNaN(precio) || precio < 0) { alert('El precio debe ser 0 o mayor.'); return; }
-                if (isNaN(stock) || stock < 0 || !Number.isInteger(stock)) { alert('El stock debe ser un número entero igual o mayor a 0.'); return; }
-                if (!categoria) { alert('Debes seleccionar una categoría.'); return; }
+                const codigo = inputCodigo.value.trim();
+                const nombre = inputNombre.value.trim();
+                const descripcion = document.getElementById('prodDescripcion').value.trim();
+                const precio = Number(inputPrecio.value);
+                const stock = Number(inputStock.value);
+                const stockCriticoValor = document.getElementById('prodStockCritico').value;
+                const stockCritico = stockCriticoValor === '' ? null : Number(stockCriticoValor);
+                const categoria = selectCategoria.value;
+
+                // Limpia errores previos antes de validar de nuevo.
+                [inputCodigo, inputNombre, inputPrecio, inputStock, selectCategoria].forEach(c => c.classList.remove('is-invalid'));
+                ['prodCodigo', 'prodNombre', 'prodPrecio', 'prodStock', 'prodCategoria'].forEach(id => {
+                    const errorEl = document.getElementById('error-' + id);
+                    if (errorEl) errorEl.textContent = '';
+                });
+
+                let tieneErrores = false;
+                function marcarErrorProducto(campo, mensaje) {
+                    tieneErrores = true;
+                    campo.classList.add('is-invalid');
+                    const errorEl = document.getElementById('error-' + campo.id);
+                    if (errorEl) errorEl.textContent = mensaje;
+                }
+
+                if (!codigo || codigo.length < 3) marcarErrorProducto(inputCodigo, 'El código debe tener al menos 3 caracteres.');
+                if (!nombre || nombre.length > 100) marcarErrorProducto(inputNombre, 'El nombre es obligatorio (máx. 100 caracteres).');
+                if (isNaN(precio) || precio < 0) marcarErrorProducto(inputPrecio, 'El precio debe ser 0 o mayor.');
+                if (isNaN(stock) || stock < 0 || !Number.isInteger(stock)) marcarErrorProducto(inputStock, 'El stock debe ser un número entero igual o mayor a 0.');
+                if (!categoria) marcarErrorProducto(selectCategoria, 'Debes seleccionar una categoría.');
 
                 let productos = getProductos();
+
+                if (!tieneErrores && !codigoEnEdicion && productos.some(p => p.codigo === codigo)) {
+                    marcarErrorProducto(inputCodigo, 'Ya existe un producto con ese código.');
+                }
+
+                if (tieneErrores) {
+                    const primerCampoInvalido = formProducto.querySelector('.is-invalid');
+                    if (primerCampoInvalido) primerCampoInvalido.focus();
+                    return;
+                }
 
                 if (codigoEnEdicion) {
                     productos = productos.map(p => p.codigo === codigoEnEdicion
                         ? { ...p, nombre, descripcion, precio, stock, stockCritico, categoria }
                         : p);
                 } else {
-                    if (productos.some(p => p.codigo === codigo)) {
-                        alert('Ya existe un producto con ese código.');
-                        return;
-                    }
                     productos.push({
                         codigo, nombre, descripcion, precio, stock, stockCritico, categoria,
                         imagen: (imagen && imagen.files.length) ? URL.createObjectURL(imagen.files[0]) : 'assets/img/logo.png'
@@ -783,7 +810,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 renderTablaAdminProductos();
-                if (!(document.getElementById('alertaStockCritico') && !document.getElementById('alertaStockCritico').classList.contains('d-none'))) {
+                if (!(alertaStock && !alertaStock.classList.contains('d-none'))) {
                     document.getElementById('panelFormularioProducto').classList.add('d-none');
                 }
             });
@@ -840,8 +867,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('userTipo').value = usuario.tipo;
             document.getElementById('userDireccion').value = usuario.direccion;
 
-            const selectRegion = document.getElementById('userRegion');
-            const selectComuna = document.getElementById('userComuna');
+            const selectRegion = document.getElementById('regRegion');
+            const selectComuna = document.getElementById('regComuna');
             if (selectRegion) {
                 selectRegion.value = usuario.region || '';
                 selectRegion.dispatchEvent(new Event('change'));
@@ -877,37 +904,64 @@ document.addEventListener('DOMContentLoaded', () => {
             formUsuario.addEventListener('submit', (event) => {
                 event.preventDefault();
 
-                const run = document.getElementById('userRun').value.trim().toUpperCase();
-                const nombre = document.getElementById('userNombre').value.trim();
-                const apellidos = document.getElementById('userApellidos').value.trim();
-                const correo = document.getElementById('userCorreo').value.trim();
-                const tipo = document.getElementById('userTipo').value;
-                const direccion = document.getElementById('userDireccion').value.trim();
-                const region = document.getElementById('userRegion') ? document.getElementById('userRegion').value : '';
-                const comuna = document.getElementById('userComuna') ? document.getElementById('userComuna').value : '';
+                const inputRun = document.getElementById('userRun');
+                const inputNombre = document.getElementById('userNombre');
+                const inputApellidos = document.getElementById('userApellidos');
+                const inputCorreo = document.getElementById('userCorreo');
+                const selectTipo = document.getElementById('userTipo');
+                const inputDireccion = document.getElementById('userDireccion');
+                const selectRegionForm = document.getElementById('regRegion');
+                const selectComunaForm = document.getElementById('regComuna');
+
+                const run = inputRun.value.trim().toUpperCase();
+                const nombre = inputNombre.value.trim();
+                const apellidos = inputApellidos.value.trim();
+                const correo = inputCorreo.value.trim();
+                const tipo = selectTipo.value;
+                const direccion = inputDireccion.value.trim();
+                const region = selectRegionForm ? selectRegionForm.value : '';
+                const comuna = selectComunaForm ? selectComunaForm.value : '';
+
+                // Limpia errores previos antes de validar de nuevo.
+                [inputRun, inputNombre, inputApellidos, inputCorreo, selectTipo, inputDireccion].forEach(c => c.classList.remove('is-invalid'));
+                ['userRun', 'userNombre', 'userApellidos', 'userCorreo', 'userTipo', 'userDireccion'].forEach(id => {
+                    const errorEl = document.getElementById('error-' + id);
+                    if (errorEl) errorEl.textContent = '';
+                });
+
+                let tieneErrores = false;
+                function marcarErrorUsuario(campo, mensaje) {
+                    tieneErrores = true;
+                    campo.classList.add('is-invalid');
+                    const errorEl = document.getElementById('error-' + campo.id);
+                    if (errorEl) errorEl.textContent = mensaje;
+                }
 
                 // VALIDACIÓN DE RUN CHILENO (Prioridad 3).
-                if (!esRunValido(run)) {
-                    alert('El RUN ingresado no es válido. Debe ir sin puntos ni guion, ej: 19011022K.');
-                    return;
-                }
-                if (!nombre || nombre.length > 50) { alert('El nombre es obligatorio (máx. 50 caracteres).'); return; }
-                if (!apellidos || apellidos.length > 100) { alert('Los apellidos son obligatorios (máx. 100 caracteres).'); return; }
-                if (!correo || correo.length > 100) { alert('El correo es obligatorio (máx. 100 caracteres).'); return; }
-                if (!tipo) { alert('Debes seleccionar un tipo de usuario.'); return; }
-                if (!direccion || direccion.length > 300) { alert('La dirección es obligatoria (máx. 300 caracteres).'); return; }
+                if (!esRunValido(run)) marcarErrorUsuario(inputRun, 'RUN inválido (sin puntos ni guion, ej: 19011022K).');
+                if (!nombre || nombre.length > 50) marcarErrorUsuario(inputNombre, 'El nombre es obligatorio (máx. 50 caracteres).');
+                if (!apellidos || apellidos.length > 100) marcarErrorUsuario(inputApellidos, 'Los apellidos son obligatorios (máx. 100 caracteres).');
+                if (!correo || correo.length > 100) marcarErrorUsuario(inputCorreo, 'El correo es obligatorio (máx. 100 caracteres).');
+                if (!tipo) marcarErrorUsuario(selectTipo, 'Debes seleccionar un tipo de usuario.');
+                if (!direccion || direccion.length > 300) marcarErrorUsuario(inputDireccion, 'La dirección es obligatoria (máx. 300 caracteres).');
 
                 let usuarios = getUsuariosAdmin();
+
+                if (!tieneErrores && !runEnEdicion && usuarios.some(u => u.run === run)) {
+                    marcarErrorUsuario(inputRun, 'Ya existe un usuario con ese RUN.');
+                }
+
+                if (tieneErrores) {
+                    const primerCampoInvalido = formUsuario.querySelector('.is-invalid');
+                    if (primerCampoInvalido) primerCampoInvalido.focus();
+                    return;
+                }
 
                 if (runEnEdicion) {
                     usuarios = usuarios.map(u => u.run === runEnEdicion
                         ? { ...u, nombre, apellidos, correo, tipo, direccion, region, comuna }
                         : u);
                 } else {
-                    if (usuarios.some(u => u.run === run)) {
-                        alert('Ya existe un usuario con ese RUN.');
-                        return;
-                    }
                     usuarios.push({ run, nombre, apellidos, correo, tipo, direccion, region, comuna });
                 }
 
@@ -918,5 +972,204 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         renderTablaAdminUsuarios();
+    }
+});
+
+// ============================================================================
+// CORRECCIÓN — BOTONES QUE QUEDABAN SIN FUNCIÓN
+// ============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- detalle-producto.html: arma la vista completa según el producto elegido (?codigo=PRD-001) ---
+    function renderDetalleProducto() {
+        const contenedorRelacionados = document.getElementById('detalleProductosRelacionados');
+        if (!contenedorRelacionados) return; // esta página no es detalle-producto.html
+
+        const productos = getProductos();
+        const codigoUrl = new URLSearchParams(window.location.search).get('codigo');
+        const producto = productos.find(p => p.codigo === codigoUrl) || productos[0];
+
+        if (!producto) return;
+
+        document.getElementById('detalleBreadcrumbNombre').textContent = producto.nombre;
+        document.getElementById('detalleNombre').textContent = producto.nombre;
+        document.getElementById('detallePrecio').textContent = formatCurrency(producto.precio);
+        document.getElementById('detalleDescripcion').textContent = producto.descripcion || '';
+
+        const imagenEl = document.getElementById('detalleImagen');
+        imagenEl.src = producto.imagen;
+        imagenEl.alt = producto.nombre;
+
+        document.title = `${producto.nombre} - Hijos de las Ventas`;
+
+        const btnAgregar = document.getElementById('btnAgregarDetalleProducto');
+        if (btnAgregar) {
+            btnAgregar.dataset.name = producto.nombre;
+            btnAgregar.dataset.price = producto.precio;
+        }
+
+        // Productos relacionados: el resto del catálogo, excluyendo el que se está viendo.
+        const relacionados = productos.filter(p => p.codigo !== producto.codigo);
+        contenedorRelacionados.innerHTML = relacionados.map(p => `
+            <div class="col-md-4">
+                <article class="card h-100 shadow-sm border-0">
+                    <a href="detalle-producto.html?codigo=${p.codigo}">
+                        <img src="${p.imagen}" class="card-img-top" alt="${p.nombre}">
+                    </a>
+                    <div class="card-body text-center">
+                        <h6 class="card-title fw-bold">${p.nombre}</h6>
+                        <p class="text-primary fw-bold mb-2">${formatCurrency(p.precio)}</p>
+                        <button type="button" class="btn btn-outline-primary btn-sm fw-bold add-to-cart-btn"
+                                data-name="${p.nombre}" data-price="${p.precio}">Lo quiero</button>
+                    </div>
+                </article>
+            </div>
+        `).join('');
+
+        // Re-enlaza los botones "Lo quiero" de las cards relacionadas recién creadas.
+        contenedorRelacionados.querySelectorAll('.add-to-cart-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                addToCart(button.dataset.name, button.dataset.price);
+                const originalText = button.textContent;
+                button.textContent = 'Agregado';
+                button.classList.add('btn-success');
+                button.classList.remove('btn-outline-primary');
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-outline-primary');
+                }, 1000);
+            });
+        });
+    }
+    renderDetalleProducto();
+
+    // --- detalle-producto.html: "Añadir al carrito" ahora respeta la cantidad elegida ---
+    const btnAgregarDetalleProducto = document.getElementById('btnAgregarDetalleProducto');
+    if (btnAgregarDetalleProducto) {
+        btnAgregarDetalleProducto.addEventListener('click', () => {
+            const selectCantidad = document.getElementById('cantidadProducto');
+            const cantidad = selectCantidad ? Number(selectCantidad.value) : 1;
+
+            const cart = getCart();
+            const nombre = btnAgregarDetalleProducto.dataset.name;
+            const precio = Number(btnAgregarDetalleProducto.dataset.price);
+            const existente = cart.find(item => item.name === nombre);
+
+            if (existente) {
+                existente.quantity += cantidad;
+            } else {
+                cart.push({ name: nombre, price: precio, quantity: cantidad });
+            }
+
+            saveCart(cart);
+            renderCart();
+            renderContactCart();
+
+            const textoOriginal = btnAgregarDetalleProducto.textContent;
+            btnAgregarDetalleProducto.textContent = `Agregado (${cantidad})`;
+            btnAgregarDetalleProducto.classList.add('btn-success');
+            setTimeout(() => {
+                btnAgregarDetalleProducto.textContent = textoOriginal;
+                btnAgregarDetalleProducto.classList.remove('btn-success');
+            }, 1200);
+        });
+    }
+
+    // --- registro.html: el botón "Registrar" ahora valida, guarda el usuario y deja la sesión iniciada ---
+    const formularioRegistro = document.getElementById('registroForm');
+    if (formularioRegistro) {
+        formularioRegistro.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const campos = {
+                run: document.getElementById('regRun'),
+                nombre: document.getElementById('regNombre'),
+                apellidos: document.getElementById('regApellidos'),
+                correo: document.getElementById('regCorreo'),
+                confirmarCorreo: document.getElementById('regConfirmarCorreo'),
+                password: document.getElementById('regPassword'),
+                confirmarPassword: document.getElementById('regConfirmarPassword'),
+                region: document.getElementById('regRegion'),
+                comuna: document.getElementById('regComuna'),
+                direccion: document.getElementById('regDireccion')
+            };
+
+            let tieneErrores = false;
+
+            Object.values(campos).forEach(campo => campo && campo.classList.remove('is-invalid'));
+            document.querySelectorAll('#registroForm .error-msg').forEach(span => span.textContent = '');
+
+            function marcarError(campo, mensaje) {
+                tieneErrores = true;
+                if (!campo) return;
+                campo.classList.add('is-invalid');
+                const errorEl = document.getElementById('error-' + campo.id);
+                if (errorEl) errorEl.textContent = mensaje;
+            }
+
+            const dominioPermitidoRegex = /^[^\s@]+@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$/i;
+
+            if (!campos.run.value.trim()) {
+                marcarError(campos.run, 'El Run es obligatorio.');
+            } else if (!esRunValido(campos.run.value.trim())) {
+                marcarError(campos.run, 'Run inválido (sin puntos ni guion, ej: 19011022K).');
+            }
+
+            if (!campos.nombre.value.trim()) marcarError(campos.nombre, 'El nombre es obligatorio.');
+            if (!campos.apellidos.value.trim()) marcarError(campos.apellidos, 'Los apellidos son obligatorios.');
+
+            if (!campos.correo.value.trim()) {
+                marcarError(campos.correo, 'El correo es obligatorio.');
+            } else if (!dominioPermitidoRegex.test(campos.correo.value.trim())) {
+                marcarError(campos.correo, 'Solo se aceptan correos @duoc.cl, @profesor.duoc.cl o @gmail.com.');
+            } else if (campos.correo.value.trim().toLowerCase() !== campos.confirmarCorreo.value.trim().toLowerCase()) {
+                marcarError(campos.confirmarCorreo, 'Los correos ingresados no coinciden.');
+            }
+
+            if (campos.password.value.length < 4 || campos.password.value.length > 10) {
+                marcarError(campos.password, 'La contraseña debe tener entre 4 y 10 caracteres.');
+            } else if (campos.password.value !== campos.confirmarPassword.value) {
+                marcarError(campos.confirmarPassword, 'Las contraseñas no coinciden.');
+            }
+
+            if (!campos.region.value) marcarError(campos.region, 'Debes seleccionar una región.');
+            if (!campos.comuna.value) marcarError(campos.comuna, 'Debes seleccionar una comuna.');
+            if (!campos.direccion.value.trim()) marcarError(campos.direccion, 'La dirección es obligatoria.');
+
+            if (tieneErrores) {
+                const primerCampoInvalido = formularioRegistro.querySelector('.is-invalid');
+                if (primerCampoInvalido) primerCampoInvalido.focus();
+                return;
+            }
+
+            // Guarda al nuevo cliente para que también aparezca en el mantenedor de usuarios del admin.
+            const nuevoUsuario = {
+                run: campos.run.value.trim().toUpperCase(),
+                nombre: campos.nombre.value.trim(),
+                apellidos: campos.apellidos.value.trim(),
+                correo: campos.correo.value.trim(),
+                tipo: 'cliente',
+                direccion: campos.direccion.value.trim(),
+                region: campos.region.value,
+                comuna: campos.comuna.value
+            };
+
+            const usuarios = getUsuariosAdmin();
+            if (usuarios.some(u => u.run === nuevoUsuario.run)) {
+                alert('Ya existe un usuario registrado con ese Run.');
+                return;
+            }
+            usuarios.push(nuevoUsuario);
+            saveUsuariosAdmin(usuarios);
+
+            // Deja al usuario recién registrado con la sesión iniciada (rol Cliente) y lo lleva a la tienda.
+            if (typeof iniciarSesion === 'function') {
+                iniciarSesion(nuevoUsuario.correo, campos.password.value);
+            }
+
+            alert('¡Registro exitoso! Ya puedes comprar en la tienda.');
+            window.location.href = 'index.html';
+        });
     }
 });
