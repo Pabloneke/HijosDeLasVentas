@@ -187,3 +187,36 @@ export const createOrder = (datos) => {
     guardarLista(ORDENES_KEY, [...ordenes, nueva]);
     return nueva;
 };
+
+// Compra: valida el stock de todos los ítems contra los productos guardados y, solo si
+// alcanza para todos, descuenta el stock y registra la orden. Si algún ítem no tiene
+// stock suficiente lanza Error y no modifica nada (todo o nada).
+// items: [{ id, name, price, quantity }]; cliente: { userId, nombre, correo }
+export const procesarCompra = (items, cliente) => {
+    const productos = getProducts();
+
+    const problemas = items.reduce((lista, item) => {
+        const producto = productos.find((p) => p.id === Number(item.id));
+        const cantidad = Number(item.quantity);
+        if (!producto) {
+            lista.push(`${item.name}: el producto ya no está disponible`);
+        } else if (producto.stock <= 0) {
+            lista.push(`${producto.name}: agotado`);
+        } else if (cantidad > producto.stock) {
+            lista.push(`${producto.name}: solo quedan ${producto.stock} unidad${producto.stock === 1 ? '' : 'es'}`);
+        }
+        return lista;
+    }, []);
+
+    if (problemas.length > 0) {
+        throw new Error(`Stock insuficiente. ${problemas.join('; ')}`);
+    }
+
+    items.forEach((item) => {
+        const producto = productos.find((p) => p.id === Number(item.id));
+        updateProduct(producto.id, { stock: producto.stock - Number(item.quantity) });
+    });
+
+    const total = items.reduce((suma, item) => suma + Number(item.price) * Number(item.quantity), 0);
+    return createOrder({ cliente, items, total });
+};

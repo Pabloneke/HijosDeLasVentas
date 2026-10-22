@@ -1,7 +1,7 @@
 import {
     initDB, getProducts, getProductById, createProduct, updateProduct, deleteProduct, isStockCritico, getOrders, createOrder,
     getUsers, getUserById, findUserByEmail, createUser, updateUser, deleteUser,
-    getSession, login, logout,
+    getSession, login, logout, procesarCompra,
 } from './db'
 
 // jsdom ya trae un localStorage simulado, y setup.js lo limpia después de cada prueba.
@@ -122,6 +122,43 @@ describe('db — órdenes', () => {
         expect(segunda.id).toBe(2)
         expect(Number.isNaN(Date.parse(primera.fecha))).toBe(false)
         expect(getOrders()).toHaveLength(2)
+    })
+})
+
+describe('db — procesarCompra (control de stock)', () => {
+    beforeEach(() => initDB())
+    const cliente = { userId: 3, nombre: 'Carla', correo: 'carla@gmail.com' }
+
+    // Teclado (id 3) tiene stock 4; MousePad (id 2) tiene stock 25
+    it('descuenta el stock y registra la orden cuando alcanza para todos los ítems', () => {
+        const orden = procesarCompra([
+            { id: 3, name: 'Teclado Mecánico RGB', price: 45000, quantity: 4 },
+            { id: 2, name: 'MousePad XXL Gamer', price: 15000, quantity: 2 },
+        ], cliente)
+
+        expect(orden).toMatchObject({ id: 1, total: 45000 * 4 + 15000 * 2, cliente })
+        expect(getProductById(3).stock).toBe(0)
+        expect(getProductById(2).stock).toBe(23)
+        expect(getOrders()).toHaveLength(1)
+    })
+
+    it('rechaza una cantidad mayor al stock y no modifica nada (todo o nada)', () => {
+        expect(() => procesarCompra([
+            { id: 2, name: 'MousePad XXL Gamer', price: 15000, quantity: 2 },
+            { id: 3, name: 'Teclado Mecánico RGB', price: 45000, quantity: 999 },
+        ], cliente)).toThrow(/Teclado Mecánico RGB: solo quedan 4 unidades/)
+
+        expect(getProductById(2).stock).toBe(25)
+        expect(getProductById(3).stock).toBe(4)
+        expect(getOrders()).toEqual([])
+    })
+
+    it('rechaza productos agotados o que ya no existen', () => {
+        updateProduct(4, { stock: 0 })
+
+        expect(() => procesarCompra([{ id: 4, name: 'Juego PS4', price: 20000, quantity: 1 }], cliente)).toThrow(/agotado/)
+        expect(() => procesarCompra([{ id: 999, name: 'Fantasma', price: 1, quantity: 1 }], cliente)).toThrow(/ya no está disponible/)
+        expect(getOrders()).toEqual([])
     })
 })
 
