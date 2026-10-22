@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/molecules/ProductCard';
 import { getProducts } from '../services/db';
+import { useCart } from '../context/CartContext';
 
 const Productos = () => {
     // Estado para guardar los productos que vienen de la "base de datos"
     const [productos, setProductos] = useState([]);
+    const { addItem } = useCart();
 
     // useEffect se ejecuta una vez cuando la página carga
     useEffect(() => {
@@ -12,10 +14,7 @@ const Productos = () => {
         setProductos(data);
     }, []);
 
-    // Función temporal para el botón (después el Ale la conecta al carrito real)
-    const handleAddToCart = (product) => {
-        alert(`¡Agregaste ${product.name} al carrito a ${product.price} pesos!`);
-    };
+    const handleAddToCart = (product, sourceElement) => addItem(product, sourceElement);
 
     return (
         <main className="container my-5">

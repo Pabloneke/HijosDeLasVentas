@@ -1,0 +1,179 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import FormField from '../components/atoms/FormField';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { validarCheckout } from '../utils/validaciones';
+import { REGIONES } from '../utils/regiones';
+
+const initialForm = {
+    nombre: '',
+    correo: '',
+    entrega: 'despacho',
+    region: '',
+    comuna: '',
+    direccion: '',
+};
+
+const formatPrice = (value) => new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency: 'CLP',
+    maximumFractionDigits: 0,
+}).format(value);
+
+const Checkout = () => {
+    const { user } = useAuth();
+    const { items, total } = useCart();
+    const navigate = useNavigate();
+    const [form, setForm] = useState(() => ({
+        ...initialForm,
+        nombre: user?.nombre || '',
+        correo: user?.correo || '',
+    }));
+    const [errores, setErrores] = useState({});
+    const [confirmado, setConfirmado] = useState(false);
+    const [numeroPedido, setNumeroPedido] = useState('');
+
+    const handleChange = (event) => {
+        const { id, value } = event.target;
+        setForm((current) => ({
+            ...current,
+            [id]: value,
+            ...(id === 'region' ? { comuna: '' } : {}),
+        }));
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const nuevosErrores = validarCheckout(form);
+        setErrores(nuevosErrores);
+        if (Object.keys(nuevosErrores).length > 0) return;
+
+        setNumeroPedido(`HV-${Date.now().toString().slice(-8)}`);
+        setConfirmado(true);
+    };
+
+    if (items.length === 0 && !confirmado) {
+        return (
+            <main className="container my-5">
+                <section className="text-center py-5">
+                    <h2 className="mb-3">No puedes continuar todavía</h2>
+                    <p className="lead text-muted">Agrega al menos un producto al carrito para iniciar el checkout.</p>
+                    <div className="d-flex justify-content-center gap-2 flex-wrap">
+                        <Link to="/carrito" className="btn btn-outline-primary">Ver carrito</Link>
+                        <Link to="/productos" className="btn btn-primary">Ver productos</Link>
+                    </div>
+                </section>
+            </main>
+        );
+    }
+
+    if (confirmado) {
+        return (
+            <main className="container my-5">
+                <section className="card border-0 shadow-sm p-4 p-md-5 text-center checkout-confirmation">
+                    <div className="display-5 text-success mb-3" aria-hidden="true">✓</div>
+                    <h2 className="mb-3">Solicitud de compra registrada</h2>
+                    <p className="lead">
+                        Tu pedido de demostración <strong>{numeroPedido}</strong> quedó preparado correctamente.
+                    </p>
+                    <p className="text-muted mb-4">
+                        No se realizó ningún cobro ni se envió información a un servidor.
+                    </p>
+                    <div className="d-flex justify-content-center gap-2 flex-wrap">
+                        <Link to="/carrito" className="btn btn-outline-primary">Volver al carrito</Link>
+                        <Link to="/productos" className="btn btn-primary">Seguir comprando</Link>
+                    </div>
+                </section>
+            </main>
+        );
+    }
+
+    const comunas = REGIONES[form.region] || [];
+
+    return (
+        <main className="container my-5">
+            <h2 className="mb-4">Finalizar compra</h2>
+            <div className="row g-4">
+                <section className="col-lg-7">
+                    <div className="card border-0 shadow-sm p-4">
+                        <h3 className="h5 mb-4">Datos de contacto y entrega</h3>
+                        <form onSubmit={handleSubmit} noValidate>
+                            <FormField
+                                id="nombre"
+                                label="Nombre completo"
+                                value={form.nombre}
+                                onChange={handleChange}
+                                error={errores.nombre}
+                                autoComplete="name"
+                            />
+                            <FormField
+                                id="correo"
+                                label="Correo electrónico"
+                                type="email"
+                                value={form.correo}
+                                onChange={handleChange}
+                                error={errores.correo}
+                                autoComplete="email"
+                            />
+                            <FormField id="entrega" label="Modalidad de entrega" as="select" value={form.entrega} onChange={handleChange}>
+                                <option value="despacho">Despacho a domicilio</option>
+                                <option value="retiro">Retiro coordinado</option>
+                            </FormField>
+
+                            {form.entrega === 'despacho' && (
+                                <>
+                                    <FormField id="region" label="Región" as="select" value={form.region} onChange={handleChange} error={errores.region}>
+                                        <option value="">-- Seleccione la región --</option>
+                                        {Object.keys(REGIONES).map((region) => (
+                                            <option key={region} value={region}>{region}</option>
+                                        ))}
+                                    </FormField>
+                                    <FormField id="comuna" label="Comuna" as="select" disabled={comunas.length === 0} value={form.comuna} onChange={handleChange} error={errores.comuna}>
+                                        <option value="">-- Seleccione la comuna --</option>
+                                        {comunas.map((comuna) => <option key={comuna} value={comuna}>{comuna}</option>)}
+                                    </FormField>
+                                    <FormField id="direccion" label="Dirección de despacho" value={form.direccion} onChange={handleChange} error={errores.direccion} autoComplete="street-address" />
+                                </>
+                            )}
+
+                            <p className="small text-muted">
+                                Este es un checkout de demostración: no solicita ni procesa datos de pago.
+                            </p>
+                            <button type="submit" className="btn btn-success w-100 fw-bold">Revisar y confirmar pedido</button>
+                        </form>
+                    </div>
+                </section>
+
+                <aside className="col-lg-5">
+                    <div className="card border-0 shadow-sm p-4">
+                        <h3 className="h5 mb-3">Resumen del pedido</h3>
+                        <div className="checkout-summary-list">
+                            {items.map((item) => (
+                                <div key={item.id} className="d-flex gap-3 align-items-center border-bottom py-3">
+                                    <img src={item.image} alt={item.name} className="checkout-item-image rounded" />
+                                    <div className="flex-grow-1">
+                                        <h4 className="h6 mb-1">{item.name}</h4>
+                                        <div className="small text-muted">
+                                            {item.quantity} x {formatPrice(item.price)}
+                                        </div>
+                                    </div>
+                                    <strong>{formatPrice(item.price * item.quantity)}</strong>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="d-flex justify-content-between border-top pt-3 mt-2">
+                            <span className="fw-bold">Total</span>
+                            <strong>{formatPrice(total)}</strong>
+                        </div>
+                        <button type="button" className="btn btn-link px-0 mt-3" onClick={() => navigate('/carrito')}>
+                            Editar carrito
+                        </button>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    );
+};
+
+export default Checkout;

@@ -76,13 +76,16 @@ export const validarRegistro = (datos) =>
         direccion: datos.direccion.trim() && datos.direccion.length <= 300 ? '' : 'Ingresa tu dirección (máximo 300 caracteres)',
     });
 
-// Checkout: la dirección y región/comuna solo se exigen si la entrega es a domicilio
-export const validarCheckout = (datos) =>
-    soloErrores({
+// Checkout de demostración: la dirección y región/comuna solo se exigen si la entrega es a domicilio.
+// La tarjeta se valida únicamente para mantener compatibilidad con formularios antiguos que la envíen;
+// el checkout actual no solicita ni procesa datos de pago.
+export const validarCheckout = (datos) => soloErrores({
         nombre: esNombreValido(datos.nombre) ? '' : 'El nombre solo admite letras y espacios (3 a 100 caracteres)',
         correo: errorCorreo(datos.correo),
         region: datos.entrega !== 'despacho' || datos.region ? '' : 'Selecciona una región',
         comuna: datos.entrega !== 'despacho' || datos.comuna ? '' : 'Selecciona una comuna',
         direccion: datos.entrega !== 'despacho' || datos.direccion.trim() ? '' : 'Ingresa la dirección de despacho',
-        tarjeta: /^\d{16}$/.test(datos.tarjeta.replace(/\s/g, '')) ? '' : 'Ingresa los 16 dígitos de tu tarjeta',
+        ...(Object.prototype.hasOwnProperty.call(datos, 'tarjeta')
+            ? { tarjeta: /^\d{16}$/.test(datos.tarjeta.replace(/\s/g, '')) ? '' : 'Ingresa los 16 dígitos de tu tarjeta' }
+            : {}),
     });

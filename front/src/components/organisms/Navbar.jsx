@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 
 const Navbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user, logout } = useAuth();
+    const { itemCount, registerCartTarget } = useCart();
 
     const handleLogout = () => {
         logout();
@@ -58,8 +60,8 @@ const Navbar = () => {
 
                     {/* Botones de accion derecha (Carrito y Login) */}
                     <div className="d-flex position-absolute end-0 top-50 translate-middle-y me-3">
-                        <Link to="/carrito" className="btn btn-success fw-bold me-2">
-                            🛒 Carrito <span className="badge bg-light text-dark ms-1">$0</span>
+                        <Link ref={registerCartTarget} to="/carrito" className="btn btn-success fw-bold me-2">
+                            🛒 Carrito <span className="badge bg-light text-dark ms-1" aria-label={`${itemCount} productos`}>{itemCount}</span>
                         </Link>
                         {user ? (
                             <>

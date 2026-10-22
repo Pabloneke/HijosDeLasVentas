@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const ProductCard = ({ id, name, price, category, image, onAddToCart }) => {
+    const imageRef = useRef(null);
+    const confirmationTimeout = useRef(null);
+    const [added, setAdded] = useState(false);
     // Función para formatear el precio a pesos chilenos
     const formatPrice = (value) => {
         return new Intl.NumberFormat('es-CL', {
@@ -10,10 +13,24 @@ const ProductCard = ({ id, name, price, category, image, onAddToCart }) => {
         }).format(value);
     };
 
+    useEffect(() => () => {
+        if (confirmationTimeout.current) clearTimeout(confirmationTimeout.current);
+    }, []);
+
+    const handleAdd = () => {
+        const product = { id, name, price, image };
+        if (onAddToCart.length > 1) onAddToCart(product, imageRef.current);
+        else onAddToCart(product);
+        setAdded(true);
+        if (confirmationTimeout.current) clearTimeout(confirmationTimeout.current);
+        confirmationTimeout.current = setTimeout(() => setAdded(false), 1200);
+    };
+
     return (
         <article className="card h-100 shadow-sm border-0">
             {/* La imagen viene por props dinámica */}
-            <img 
+            <img
+            ref={imageRef}
                 src={image} 
                 height="300" 
                 width="300" 
@@ -30,9 +47,9 @@ const ProductCard = ({ id, name, price, category, image, onAddToCart }) => {
                 <button 
                     type="button" 
                     className="btn btn-outline-primary mt-3 fw-bold"
-                    onClick={() => onAddToCart({ id, name, price, image })}
+                    onClick={handleAdd}
                 >
-                    Lo quiero
+                    {added ? '¡Agregado!' : 'Lo quiero'}
                 </button>
             </div>
         </article>
