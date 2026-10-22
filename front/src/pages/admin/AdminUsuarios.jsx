@@ -119,8 +119,11 @@ const AdminUsuarios = () => {
 
     return (
         <>
-            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-                <h2 className="mb-0">Usuarios</h2>
+            <div className="admin-page-heading d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <div>
+                    <span className="admin-eyebrow">Accesos y permisos</span>
+                    <h2 className="mb-0">Usuarios</h2>
+                </div>
                 {!editando && (
                     <button type="button" className="btn btn-primary fw-bold" onClick={abrirNuevo}>+ Nuevo usuario</button>
                 )}
@@ -128,7 +131,7 @@ const AdminUsuarios = () => {
 
             {aviso && <div className="alert alert-warning" role="alert">{aviso}</div>}
 
-            <section className="bg-white p-4 shadow-sm rounded mb-4">
+            <section className="admin-panel p-3 p-lg-4 mb-4">
                 {usuarios.length > 0 ? (
                     <div className="table-responsive">
                         <table className="table table-striped table-hover align-middle mb-0" aria-label="Usuarios">
@@ -167,7 +170,7 @@ const AdminUsuarios = () => {
             </section>
 
             {editando && (
-                <section className="bg-white p-4 shadow-sm rounded">
+                <section className="admin-panel p-3 p-lg-4">
                     <h3 className="h5 mb-3">{editando.id === null ? 'Nuevo usuario' : 'Editar usuario'}</h3>
                     <form onSubmit={handleSubmit} noValidate>
                         <div className="row">

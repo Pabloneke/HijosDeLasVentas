@@ -21,26 +21,26 @@ const AdminLayout = () => {
         `list-group-item list-group-item-action border-secondary ${isActive ? 'active bg-primary text-white' : 'bg-dark text-white'}`;
 
     return (
-        <div className="d-flex flex-column flex-md-row">
-            <aside className="admin-sidebar bg-dark text-white flex-shrink-0">
-                <div className="p-3 border-bottom border-secondary">
+        <div className="admin-layout d-flex flex-column flex-md-row">
+            <aside className="admin-sidebar text-white flex-shrink-0">
+                <div className="admin-brand p-3">
                     <strong>Hijos de las Ventas</strong>
                     <div className="small text-white-50">{user?.nombre} ({user?.tipo})</div>
                 </div>
-                <nav className="list-group list-group-flush" aria-label="Menú de administración">
+                <nav className="admin-nav list-group list-group-flush p-2" aria-label="Menú de administración">
                     <NavLink to="/admin" end className={claseItem}>Dashboard</NavLink>
                     <NavLink to="/admin/productos" className={claseItem}>Productos</NavLink>
                     {esAdministrador && (
                         <NavLink to="/admin/usuarios" className={claseItem}>Usuarios</NavLink>
                     )}
-                    <NavLink to="/" className="list-group-item list-group-item-action bg-dark text-warning border-secondary">Volver a la tienda</NavLink>
-                    <button type="button" className="list-group-item list-group-item-action bg-dark text-danger border-secondary" onClick={handleLogout}>
+                    <NavLink to="/" className="list-group-item list-group-item-action admin-nav-link admin-nav-store">Volver a la tienda</NavLink>
+                    <button type="button" className="list-group-item list-group-item-action admin-nav-link admin-nav-logout" onClick={handleLogout}>
                         Cerrar sesión
                     </button>
                 </nav>
             </aside>
 
-            <main className="flex-grow-1 p-4">
+            <main className="admin-main flex-grow-1 p-3 p-lg-4">
                 <Outlet />
             </main>
         </div>

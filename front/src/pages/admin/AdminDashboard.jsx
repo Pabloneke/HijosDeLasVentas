@@ -33,7 +33,7 @@ const resumirComprasPorUsuario = (ordenes) => {
 
 const MetricCard = ({ label, value, destacada }) => (
     <div className="col-6 col-lg-3">
-        <div className={`p-3 bg-white shadow-sm rounded h-100 border-start border-4 ${destacada ? 'border-warning' : 'border-primary'}`}>
+        <div className={`admin-metric-card p-3 h-100 ${destacada ? 'admin-metric-warning' : ''}`}>
             <span className="d-block text-muted">{label}</span>
             <div className="fs-3 fw-bold">{value}</div>
         </div>
@@ -51,7 +51,13 @@ const AdminDashboard = () => {
 
     return (
         <>
-            <h2 className="mb-4">¡Hola, {user?.nombre}!</h2>
+            <div className="admin-page-heading">
+                <div>
+                    <span className="admin-eyebrow">Panel de administración</span>
+                    <h2 className="mb-1">¡Hola, {user?.nombre}!</h2>
+                    <p className="text-muted mb-0">Aquí tienes un resumen de la actividad de tu tienda.</p>
+                </div>
+            </div>
 
             <section className="row g-3 mb-4" aria-label="Resumen">
                 <MetricCard label="Productos activos" value={productos.length} />
@@ -60,7 +66,7 @@ const AdminDashboard = () => {
                 <MetricCard label="Compras realizadas" value={ordenes.length} />
             </section>
 
-            <section className="bg-white p-4 shadow-sm rounded mb-4">
+            <section className="admin-panel p-3 p-lg-4 mb-4">
                 <h3 className="h5 mb-3">Productos con stock crítico</h3>
                 {stockCritico.length > 0 ? (
                     <div className="table-responsive">
@@ -90,7 +96,7 @@ const AdminDashboard = () => {
                 )}
             </section>
 
-            <section className="bg-white p-4 shadow-sm rounded mb-4">
+            <section className="admin-panel p-3 p-lg-4 mb-4">
                 <h3 className="h5 mb-3">Historial de compras por usuario</h3>
                 {comprasPorUsuario.length > 0 ? (
                     <div className="table-responsive">
@@ -123,7 +129,7 @@ const AdminDashboard = () => {
                 )}
             </section>
 
-            <section className="bg-white p-4 shadow-sm rounded">
+            <section className="admin-panel admin-quick-actions p-3 p-lg-4">
                 <h3 className="h5 mb-3">Accesos rápidos</h3>
                 <Link to="/admin/productos" className="btn btn-outline-primary me-2">Ver productos</Link>
                 {user?.tipo === 'administrador' && (

@@ -364,10 +364,126 @@ body {
 /* Menú lateral del panel de administración: ancho completo en móvil, 240px desde md */
 .admin-sidebar {
   width: 100%;
+  background: linear-gradient(180deg, #111827 0%, #1f2937 100%);
+  box-shadow: 0.5rem 0 1.5rem rgb(15 23 42 / 8%);
 }
 
 @media (min-width: 768px) {
   .admin-sidebar {
     width: 240px;
+    min-height: calc(100vh - 96px);
   }
+}
+
+.admin-layout {
+    background: #f4f7fb;
+}
+
+.admin-brand {
+    border-bottom: 1px solid rgb(255 255 255 / 12%);
+}
+
+.admin-brand strong {
+    display: block;
+    color: #fff;
+    font-size: 1.05rem;
+}
+
+.admin-nav {
+    gap: 0.35rem;
+}
+
+.admin-nav .list-group-item {
+    border: 0;
+    border-radius: 0.65rem;
+    font-weight: 600;
+}
+
+.admin-nav-link {
+    background: transparent;
+    color: rgb(255 255 255 / 78%);
+}
+
+.admin-nav-link:hover,
+.admin-nav-link:focus {
+    background: rgb(255 255 255 / 10%);
+    color: #fff;
+}
+
+.admin-nav-store {
+    margin-top: 1rem;
+    color: #ffc107;
+}
+
+.admin-nav-logout {
+    color: #ff8f8f;
+}
+
+.admin-main {
+    min-width: 0;
+}
+
+.admin-page-heading {
+    margin-bottom: 1.5rem;
+}
+
+.admin-page-heading h2 {
+    color: #1f2937;
+    font-weight: 800;
+}
+
+.admin-eyebrow {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: #0d6efd;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.admin-metric-card,
+.admin-panel {
+    border: 1px solid rgb(13 110 253 / 8%);
+    border-radius: 0.9rem;
+    background: #fff;
+    box-shadow: 0 0.4rem 1.2rem rgb(15 23 42 / 5%);
+}
+
+.admin-metric-card {
+    border-top: 3px solid #0d6efd;
+}
+
+.admin-metric-card.admin-metric-warning {
+    border-top-color: #ffc107;
+}
+
+.admin-metric-card .fs-3 {
+    color: #1f2937;
+}
+
+.admin-panel h3 {
+    color: #1f2937;
+    font-weight: 700;
+}
+
+.admin-panel .table {
+    --bs-table-striped-bg: #f7f9fc;
+}
+
+.admin-panel .table thead th {
+    white-space: nowrap;
+    background: #1f2937;
+    border-bottom: 0;
+    color: #fff;
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+}
+
+.admin-panel .table tbody tr:hover {
+    background: #eef5ff;
+}
+
+.admin-quick-actions {
+    background: linear-gradient(135deg, #fff, #f8fbff);
 }

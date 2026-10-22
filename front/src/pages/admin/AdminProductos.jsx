@@ -89,8 +89,11 @@ const AdminProductos = () => {
 
     return (
         <>
-            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-                <h2 className="mb-0">Productos</h2>
+            <div className="admin-page-heading d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <div>
+                    <span className="admin-eyebrow">Catálogo y existencias</span>
+                    <h2 className="mb-0">Productos</h2>
+                </div>
                 {esAdministrador && !editando && (
                     <button type="button" className="btn btn-primary fw-bold" onClick={abrirNuevo}>+ Nuevo producto</button>
                 )}
@@ -98,7 +101,7 @@ const AdminProductos = () => {
 
             {alertaStock && <div className="alert alert-warning" role="alert">{alertaStock}</div>}
 
-            <section className="bg-white p-4 shadow-sm rounded mb-4">
+            <section className="admin-panel p-3 p-lg-4 mb-4">
                 {productos.length > 0 ? (
                     <div className="table-responsive">
                         <table className="table table-striped table-hover align-middle mb-0" aria-label="Productos">
@@ -141,7 +144,7 @@ const AdminProductos = () => {
             </section>
 
             {esAdministrador && editando && (
-                <section className="bg-white p-4 shadow-sm rounded">
+                <section className="admin-panel p-3 p-lg-4">
                     <h3 className="h5 mb-3">{editando.id === null ? 'Nuevo producto' : 'Editar producto'}</h3>
                     {/* noValidate: las validaciones las hace React, con mensajes propios */}
                     <form onSubmit={handleSubmit} noValidate>
