@@ -51,6 +51,10 @@ describe('Checkout', () => {
         await user.selectOptions(screen.getByLabelText('Región'), 'Región Metropolitana de Santiago')
         await user.selectOptions(screen.getByLabelText('Comuna'), 'Santiago')
         await user.type(screen.getByLabelText('Dirección de despacho'), 'Calle 1')
+        await user.type(screen.getByLabelText('Nombre del titular'), 'Ana Pérez')
+        await user.type(screen.getByLabelText('Número de tarjeta'), '4111 1111 1111 1111')
+        await user.type(screen.getByLabelText('Vencimiento (MM/AA)'), '12/30')
+        await user.type(screen.getByLabelText('CVV'), '123')
         await user.click(screen.getByRole('button', { name: 'Revisar y confirmar pedido' }))
 
         expect(screen.getByText('Solicitud de compra registrada')).toBeInTheDocument()

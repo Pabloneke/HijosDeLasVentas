@@ -35,11 +35,15 @@ const Login = () => {
     };
 
     return (
-        <main className="container my-5">
-            <h2 className="text-center mb-4 fw-bold">Iniciar sesión</h2>
+        <main className="container auth-page my-5">
             <div className="row justify-content-center">
                 <div className="col-md-8 col-lg-5">
-                    <div className="card shadow-sm p-4 border-0">
+                    <div className="auth-card">
+                        <div className="auth-brand text-center">
+                            <img src="/img/logo.png" alt="Logo Hijos de las Ventas" />
+                            <h1>Hijos de las Ventas</h1>
+                            <h2>Inicio de sesión</h2>
+                        </div>
                         {/* noValidate: las validaciones las hace React, con mensajes propios */}
                         <form onSubmit={handleSubmit} noValidate>
                             {errorGeneral && <div className="alert alert-danger" role="alert">{errorGeneral}</div>}

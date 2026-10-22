@@ -61,11 +61,15 @@ const Registro = () => {
     const comunas = REGIONES[form.region] || [];
 
     return (
-        <main className="container my-5">
-            <h2 className="text-center mb-4 fw-bold">Crear cuenta</h2>
+        <main className="container auth-page my-5">
             <div className="row justify-content-center">
                 <div className="col-md-10 col-lg-7">
-                    <div className="card shadow-sm p-4 border-0">
+                    <div className="auth-card">
+                        <div className="auth-brand text-center">
+                            <img src="/img/logo.png" alt="Logo Hijos de las Ventas" />
+                            <h1>Hijos de las Ventas</h1>
+                            <h2>Registro de usuario</h2>
+                        </div>
                         <form onSubmit={handleSubmit} noValidate>
                             <div className="row">
                                 <div className="col-md-6">

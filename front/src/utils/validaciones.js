@@ -107,16 +107,30 @@ export const validarUsuarioAdmin = (datos, { editando = false } = {}) =>
         direccion: datos.direccion.trim() && datos.direccion.length <= 300 ? '' : 'La dirección es obligatoria (máximo 300 caracteres)',
     });
 
+const esVencimientoValido = (vencimiento) => {
+    const coincidencia = /^(\d{2})\/(\d{2})$/.exec(vencimiento);
+    if (!coincidencia) return false;
+
+    const mes = Number(coincidencia[1]);
+    const anio = 2000 + Number(coincidencia[2]);
+    if (mes < 1 || mes > 12) return false;
+
+    const ahora = new Date();
+    const anioActual = ahora.getFullYear();
+    const mesActual = ahora.getMonth() + 1;
+    return anio > anioActual || (anio === anioActual && mes >= mesActual);
+};
+
 // Checkout de demostración: la dirección y región/comuna solo se exigen si la entrega es a domicilio.
-// La tarjeta se valida únicamente para mantener compatibilidad con formularios antiguos que la envíen;
-// el checkout actual no solicita ni procesa datos de pago.
+// Los datos de pago solo se validan en el navegador y nunca se guardan ni se envían a un servidor.
 export const validarCheckout = (datos) => soloErrores({
         nombre: esNombreValido(datos.nombre) ? '' : 'El nombre solo admite letras y espacios (3 a 100 caracteres)',
         correo: errorCorreo(datos.correo),
         region: datos.entrega !== 'despacho' || datos.region ? '' : 'Selecciona una región',
         comuna: datos.entrega !== 'despacho' || datos.comuna ? '' : 'Selecciona una comuna',
         direccion: datos.entrega !== 'despacho' || datos.direccion.trim() ? '' : 'Ingresa la dirección de despacho',
-        ...(Object.prototype.hasOwnProperty.call(datos, 'tarjeta')
-            ? { tarjeta: /^\d{16}$/.test(datos.tarjeta.replace(/\s/g, '')) ? '' : 'Ingresa los 16 dígitos de tu tarjeta' }
-            : {}),
+        titular: esNombreValido(datos.titular) ? '' : 'Ingresa el nombre del titular de la tarjeta',
+        tarjeta: datos.tarjeta.trim() ? '' : 'Ingresa el número de tarjeta',
+        vencimiento: esVencimientoValido(datos.vencimiento) ? '' : 'Ingresa un vencimiento válido (MM/AA)',
+        cvv: /^\d{3,4}$/.test(datos.cvv) ? '' : 'Ingresa un CVV válido de 3 o 4 dígitos',
     });

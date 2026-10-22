@@ -13,6 +13,10 @@ const initialForm = {
     region: '',
     comuna: '',
     direccion: '',
+    titular: '',
+    tarjeta: '',
+    vencimiento: '',
+    cvv: '',
 };
 
 const formatPrice = (value) => new Intl.NumberFormat('es-CL', {
@@ -78,7 +82,7 @@ const Checkout = () => {
                         Tu pedido <strong>{numeroPedido}</strong> quedó preparado correctamente.
                     </p>
                     <p className="text-muted mb-4">
-                        Se envio una copia a {form.correo}. No se realizó ningún cobro ni se envió información a un servidor.
+                        Se envio una copia a {form.correo}.
                     </p>
                     <div className="d-flex justify-content-center gap-2 flex-wrap">
                         <Link to="/carrito" className="btn btn-outline-primary">Volver al carrito</Link>
@@ -137,8 +141,63 @@ const Checkout = () => {
                                 </>
                             )}
 
+                            <fieldset className="checkout-payment mt-4">
+                                <legend className="h5 mb-3">Datos de pago</legend>
+                                <p className="small text-muted">
+                                    Completa estos datos para revisar el pago de demostración. No se realizará ningún cobro.
+                                </p>
+                                <FormField
+                                    id="titular"
+                                    label="Nombre del titular"
+                                    value={form.titular}
+                                    onChange={handleChange}
+                                    error={errores.titular}
+                                    autoComplete="cc-name"
+                                />
+                                <FormField
+                                    id="tarjeta"
+                                    label="Número de tarjeta"
+                                    value={form.tarjeta}
+                                    onChange={handleChange}
+                                    error={errores.tarjeta}
+                                    autoComplete="cc-number"
+                                    inputMode="numeric"
+                                    maxLength={19}
+                                    placeholder="4111 1111 1111 1111"
+                                />
+                                <div className="row">
+                                    <div className="col-sm-6">
+                                        <FormField
+                                            id="vencimiento"
+                                            label="Vencimiento (MM/AA)"
+                                            value={form.vencimiento}
+                                            onChange={handleChange}
+                                            error={errores.vencimiento}
+                                            autoComplete="cc-exp"
+                                            inputMode="numeric"
+                                            maxLength={5}
+                                            placeholder="12/30"
+                                        />
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <FormField
+                                            id="cvv"
+                                            label="CVV"
+                                            type="password"
+                                            value={form.cvv}
+                                            onChange={handleChange}
+                                            error={errores.cvv}
+                                            autoComplete="cc-csc"
+                                            inputMode="numeric"
+                                            maxLength={4}
+                                            placeholder="123"
+                                        />
+                                    </div>
+                                </div>
+                            </fieldset>
+
                             <p className="small text-muted">
-                                Este es un checkout de demostración: no solicita ni procesa datos de pago.
+                                Checkout de demostración: tus datos de pago se validan solo en este navegador y no se almacenan ni se envían.
                             </p>
                             <button type="submit" className="btn btn-success w-100 fw-bold">Revisar y confirmar pedido</button>
                         </form>

@@ -109,28 +109,60 @@ describe('validaciones', () => {
     })
 
     // Prueba 90 (checkout): retiro en tienda no exige dirección
-    it('validarCheckout con retiro en tienda solo exige nombre, correo y tarjeta', () => {
-        const base = { nombre: 'Ana Pérez', correo: 'ana@duoc.cl', entrega: 'retiro', region: '', comuna: '', direccion: '', tarjeta: '4111111111111111' }
+    it('validarCheckout con retiro en tienda exige datos de pago válidos', () => {
+        const base = {
+            nombre: 'Ana Pérez',
+            correo: 'ana@duoc.cl',
+            entrega: 'retiro',
+            region: '',
+            comuna: '',
+            direccion: '',
+            titular: 'Ana Pérez',
+            tarjeta: '4111111111111111',
+            vencimiento: '12/30',
+            cvv: '123',
+        }
 
         expect(validarCheckout(base)).toEqual({})
-        expect(Object.keys(validarCheckout({ ...base, nombre: '', correo: 'x', tarjeta: '123' })).sort()).toEqual(['correo', 'nombre', 'tarjeta'])
+        expect(Object.keys(validarCheckout({ ...base, nombre: '', correo: 'x', tarjeta: '', cvv: '' })).sort()).toEqual(['correo', 'cvv', 'nombre', 'tarjeta'])
     })
 
     // Prueba 91 (checkout): despacho exige región, comuna y dirección
     it('validarCheckout con despacho exige región, comuna y dirección', () => {
-        const base = { nombre: 'Ana Pérez', correo: 'ana@duoc.cl', entrega: 'despacho', region: '', comuna: '', direccion: ' ', tarjeta: '4111111111111111' }
+        const base = {
+            nombre: 'Ana Pérez',
+            correo: 'ana@duoc.cl',
+            entrega: 'despacho',
+            region: '',
+            comuna: '',
+            direccion: ' ',
+            titular: 'Ana Pérez',
+            tarjeta: '4111111111111111',
+            vencimiento: '12/30',
+            cvv: '123',
+        }
 
         expect(Object.keys(validarCheckout(base)).sort()).toEqual(['comuna', 'direccion', 'region'])
         expect(validarCheckout({ ...base, region: 'R', comuna: 'C', direccion: 'Calle 1' })).toEqual({})
     })
 
-    // Prueba 92 (checkout): la tarjeta acepta espacios pero debe tener 16 dígitos numéricos
-    it('validarCheckout acepta la tarjeta con espacios y rechaza letras o largos distintos de 16', () => {
-        const base = { nombre: 'Ana Pérez', correo: 'ana@duoc.cl', entrega: 'retiro', region: '', comuna: '', direccion: '' }
+    // Prueba 92 (checkout): el número se acepta sin validar formato o longitud
+    it('validarCheckout no bloquea el número de tarjeta por su formato', () => {
+        const base = {
+            nombre: 'Ana Pérez',
+            correo: 'ana@duoc.cl',
+            entrega: 'retiro',
+            region: '',
+            comuna: '',
+            direccion: '',
+            titular: 'Ana Pérez',
+            vencimiento: '12/30',
+            cvv: '123',
+        }
 
-        expect(validarCheckout({ ...base, tarjeta: '4111 1111 1111 1111' })).toEqual({})
-        expect(validarCheckout({ ...base, tarjeta: '4111 1111 1111 111A' }).tarjeta).toBeDefined()
-        expect(validarCheckout({ ...base, tarjeta: '41111111111111111' }).tarjeta).toBeDefined()
+        expect(validarCheckout({ ...base, tarjeta: 'cualquier valor' })).toEqual({})
+        expect(validarCheckout({ ...base, tarjeta: '123' })).toEqual({})
+        expect(validarCheckout({ ...base, tarjeta: '' }).tarjeta).toBeDefined()
     })
 })
 
