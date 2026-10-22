@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Contacto from './Contacto'
+import { CartProvider } from '../context/CartContext'
 
 describe('Contacto', () => {
     // Prueba 10 (estado): al escribir, el estado del formulario cambia y el input refleja el texto
     it('actualiza el valor de los campos cuando el usuario escribe', async () => {
-        render(<Contacto />)
+        render(<CartProvider><Contacto /></CartProvider>)
         const nombre = screen.getByLabelText('Nombre completo')
         const email = screen.getByLabelText('Correo electrónico')
         const mensaje = screen.getByLabelText('Mensaje')

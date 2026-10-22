@@ -1,40 +1,44 @@
 import React from 'react';
 
+const articulos = [
+    {
+        category: 'Perfumería',
+        title: 'Caso curioso #1: cómo hacer que tu perfume dure más',
+        description: 'Combinar bien tu perfume puede ayudar a prolongar su presencia en la piel. Conoce algunos trucos sencillos que usan los expertos.',
+        image: '/img/RasasiHawas.webp',
+    },
+    {
+        category: 'Computación',
+        title: 'Caso curioso #2: más que un mousepad gamer',
+        description: 'Un mousepad gamer XL también puede mejorar la precisión y comodidad del mouse durante una jornada de trabajo.',
+        image: '/img/MousePadXXL.webp',
+    },
+];
+
 const Blogs = () => {
     return (
         <main className="container my-5">
-            <div className="text-center mb-5">
-                <h2 className="fw-bold">Nuestro Blog</h2>
-                <p className="text-muted lead">Consejos, novedades y guías sobre tecnología, gaming y perfumería.</p>
-            </div>
+            <section className="page-intro text-center mb-5">
+                <span className="home-hero-badge">Ideas para aprovechar mejor tus compras</span>
+                <h1 className="display-5 fw-bold">Noticias importantes</h1>
+                <p className="text-muted lead mb-0">Consejos, novedades y guías sobre tecnología, gaming y perfumería.</p>
+            </section>
             <div className="row g-4">
-                <div className="col-md-4">
-                    <div className="card h-100 shadow-sm border-0">
-                        <div className="card-body">
-                            <span className="badge bg-secondary mb-2">Tecnología</span>
-                            <h5 className="card-title fw-bold">Cómo elegir el periférico ideal para tu setup</h5>
-                            <p className="card-text text-muted">Descubre qué debes buscar en un teclado mecánico o un mousepad para mejorar tu rendimiento diario.</p>
-                        </div>
+                {articulos.map((articulo) => (
+                    <div className="col-12" key={articulo.title}>
+                        <article className="blog-card d-flex flex-column flex-md-row align-items-center gap-4">
+                            <img src={articulo.image} alt="" className="blog-card-image rounded" />
+                            <div>
+                                <span className="badge bg-secondary mb-2">{articulo.category}</span>
+                                <h2 className="h4 fw-bold">{articulo.title}</h2>
+                                <p className="text-muted mb-0">{articulo.description}</p>
+                            </div>
+                        </article>
                     </div>
-                </div>
-                <div className="col-md-4">
-                    <div className="card h-100 shadow-sm border-0">
-                        <div className="card-body">
-                            <span className="badge bg-secondary mb-2">Perfumería</span>
-                            <h5 className="card-title fw-bold">Guía de fragancias: Notas y durabilidad</h5>
-                            <p className="card-text text-muted">Aprende a diferenciar las notas de salida, corazón y fondo para elegir el perfume perfecto para ti.</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-4">
-                    <div className="card h-100 shadow-sm border-0">
-                        <div className="card-body">
-                            <span className="badge bg-secondary mb-2">Gaming</span>
-                            <h5 className="card-title fw-bold">Lo que esperamos de los próximos lanzamientos</h5>
-                            <p className="card-text text-muted">Un repaso por los títulos más esperados del año y cómo preparativa tu hardware para correrlos al máximo.</p>
-                        </div>
-                    </div>
-                </div>
+                ))}
+            </div>
+            <div className="blog-note text-center mt-4">
+                <p className="mb-0">Seguiremos compartiendo ideas y novedades para acompañar tus próximas compras.</p>
             </div>
         </main>
     );
