@@ -1,379 +1,172 @@
 # 🛒 Hijos de las Ventas
 
-<p align="center">
-  <strong>Hijos de las Ventas</strong>
-</p>
-
-<p align="center">
-  Sitio web para una tienda orientada a la presentación de productos, gestión de pedidos y contacto con clientes.
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5">
-  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3">
-  <img src="https://img.shields.io/badge/Bootstrap-5.3.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap">
-  <img src="https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript">
-</p>
+> **Sitio web e-commerce orientado a la presentación de productos, gestión del carrito de compras y administración de plataforma.**
 
 ---
 
 ## 📌 Descripción
 
-**Hijos de las Ventas** es un proyecto de sitio web para una tienda, desarrollado utilizando tecnologías web estándar.
+**Hijos de las Ventas** es un proyecto de comercio electrónico refactorizado y desarrollado como una **Single Page Application (SPA)** moderna. 
+El objetivo del proyecto es proporcionar una interfaz rápida, escalable y adaptable que permita a los usuarios:
+- 🏠 Navegar por la tienda de forma fluida y sin recargas.
+- 🛍️ Visualizar y filtrar el catálogo de productos.
+- 🛒 Gestionar su carrito de compras en tiempo real.
+- 🔐 Autenticarse en el sistema (Login/Registro).
+- ⚙️ Administrar la plataforma mediante un panel privado (Dashboard, Productos, Usuarios).
 
-El objetivo del proyecto es proporcionar una interfaz moderna, clara y adaptable que permita a los usuarios:
-
-* 🏠 Conocer la tienda.
-* 🛍️ Visualizar los productos disponibles.
-* 📦 Realizar solicitudes o pedidos.
-* 📊 Consultar información estadística.
-* 📩 Contactar con la tienda.
-* 📱 Navegar correctamente desde dispositivos móviles.
-
-El proyecto utiliza **Bootstrap 5.3.3** para facilitar la construcción de una interfaz responsive y componentes reutilizables, complementándolo con CSS y JavaScript personalizados.
+El proyecto utiliza **React** y **Bootstrap 5.3.3** para facilitar la construcción de una interfaz responsive mediante la metodología **Atomic Design**, asegurando componentes altamente reutilizables.
 
 ---
 
-## ✨ Características
+## ✨ Características Principales
 
-### 🏠 Página de inicio
-
-La página principal presenta la identidad de **Hijos de las Ventas**, proporcionando una introducción a la tienda y acceso a las principales secciones del sitio.
-
-### 🛍️ Catálogo de productos
-
-La sección de productos permite visualizar los artículos disponibles mediante tarjetas organizadas en una cuadrícula responsive.
-
-Cada producto puede presentar información como:
-
-* Imagen.
-* Nombre.
-* Descripción.
-* Precio.
-* Información adicional.
-
-Las imágenes utilizadas en el catálogo se almacenan localmente dentro del proyecto.
-
-### 📩 Contacto y pedidos
-
-La página de contacto incorpora un formulario destinado a recibir solicitudes y pedidos de los clientes.
-
-El formulario utiliza las validaciones nativas proporcionadas por HTML5.
-
-### 📊 Estadísticas
-
-El proyecto incorpora una sección dedicada a la visualización de estadísticas de la tienda.
-
-### 📱 Diseño responsive
-
-La interfaz utiliza el sistema de grid de **Bootstrap**, permitiendo que los elementos se adapten a diferentes tamaños de pantalla:
-
-* 💻 Computadores.
-* 📱 Teléfonos móviles.
-* 📲 Tablets.
+* **Catálogo Dinámico:** Tarjetas de productos generadas dinámicamente desde una base de datos simulada (`db.js`), con vistas de detalle individual.
+* **Carrito de Compras (Context API):** Gestión global del estado del carrito, permitiendo agregar, eliminar y calcular el total en tiempo real sin *prop drilling*.
+* **Rutas Protegidas:** Sistema de autenticación simulado con roles (`administrador`, `vendedor`, `cliente`) utilizando `React Router DOM` para restringir el acceso al panel de control (`/admin`).
+* **Arquitectura Escalable:** Estructura de carpetas basada en *Atomic Design* (Átomos, Moléculas, Organismos, Páginas).
+* **Diseño Responsive:** Adaptabilidad garantizada para 💻 Computadores, 📱 Tablets y 📲 Teléfonos móviles.
 
 ---
 
-## 🎨 Diseño
+## 🎨 Diseño e Identidad Visual
 
-La identidad visual del proyecto utiliza una combinación de colores orientada a transmitir confianza, energía y dinamismo.
+La identidad visual del proyecto utiliza una combinación de colores orientada a transmitir confianza, energía y dinamismo:
 
-### Paleta de colores
-
-| Variable         | Color     | Uso                                          |
-| ---------------- | --------- | -------------------------------------------- |
-| `--primary`      | `#0d6efd` | Color principal                              |
-| `--primary-dark` | `#0a58ca` | Estados hover y elementos destacados         |
-| `--warning`      | `#ffc107` | Elementos de atención y llamados a la acción |
-| `--warning-dark` | `#e0a800` | Estados hover del amarillo                   |
-| `--text-dark`    | `#1f2937` | Textos principales                           |
+| Variable | Color | Uso |
+| :--- | :--- | :--- |
+| `--primary` | `#0d6efd` | Color principal |
+| `--primary-dark` | `#0a58ca` | Estados hover y elementos destacados |
+| `--warning` | `#ffc107` | Elementos de atención y llamados a la acción (CTA) |
+| `--warning-dark` | `#e0a800` | Estados hover del amarillo |
+| `--text-dark` | `#1f2937` | Textos principales |
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+## 🛠️ Stack Tecnológico
 
-### HTML5
-
-Utilizado para construir la estructura semántica de las páginas.
-
-Se emplean elementos como:
-
-* `<header>`
-* `<nav>`
-* `<main>`
-* `<section>`
-* `<article>`
-* `<footer>`
-
-Esto permite mantener una estructura organizada y mejorar la accesibilidad y SEO básico del sitio.
-
-### CSS3
-
-Utilizado para los estilos personalizados del proyecto.
-
-Entre sus funciones se encuentran:
-
-* Personalización de componentes.
-* Definición de la identidad visual.
-* Ajustes de layout.
-* Animaciones.
-* Personalización del footer.
-* Cinta promocional animada mediante `@keyframes`.
-
-### Bootstrap 5.3.3
-
-Framework utilizado para facilitar:
-
-* Diseño responsive.
-* Sistema de columnas.
-* Cards.
-* Formularios.
-* Botones.
-* Navegación.
-* Componentes visuales.
-
-Bootstrap se incorpora mediante CDN.
-
-### JavaScript
-
-Utilizado para implementar la lógica dinámica del sitio y preparar funcionalidades interactivas.
+| Tecnología | Uso en el Proyecto |
+| :--- | :--- |
+| **React 18** | Librería principal para la construcción de interfaces de usuario. |
+| **Vite** | Entorno de desarrollo ultrarrápido y empaquetador (Bundler). |
+| **React Router DOM** | Enrutamiento del lado del cliente (SPA) y protección de rutas. |
+| **Context API** | Manejo de estados globales (Autenticación y Carrito). |
+| **Bootstrap 5.3** | Framework CSS para grillas, modales, tarjetas y diseño responsive. |
+| **Vitest** | Framework de pruebas unitarias para componentes y lógica de negocio. |
 
 ---
 
-## 📂 Estructura del proyecto
+## 📂 Estructura del Proyecto (Atomic Design)
+
+Toda la lógica de la aplicación se encuentra encapsulada dentro de la carpeta `front/`:
 
 ```text
 HijosDeLasVentas/
 │
-├── assets/
-│   └── ...
-│
-├── index.html
-├── productos.html
-├── contacto.html
-├── estadistica.html
-├── nosotros.html
-├── blogs.html
-├── detalle-blog1.html
-├── detalle-blog2.html
-├── login.html
-├── registro.html
-├── carrito.html
-├── admin-home.html
-├── admin-productos.html
-├── admin-usuarios.html
-├── funciones.js
-├── auth.js
-├── regiones.js
-│
-└── README.md
-```
-
-### Archivos principales
-
-| Archivo                        | Descripción                                                     |
-| -------------------------------|-----------------------------------------------------------------|
-| `index.html`                   | Página principal de la tienda                                   |
-| `productos.html`               | Catálogo de productos                                           |
-| `contacto.html`                | Formulario de contacto y pedidos                                |
-| `estadistica.html`             | Página de estadísticas                                          |
-| `funciones.js`                 | Funciones y lógica JavaScript                                   |
-| `assets/`                      | Recursos gráficos y archivos utilizados por el sitio            |
-| nosotros.html                  | Página con información del equipo y la empresa                  |
-| blogs.html /detalle-blog*.html | Sección de noticias y artículos de perfumería                   |
-| login.html / registro.html	   | Autenticación y registro de usuarios clientes                   |
-| carrito.html                   | Vista completa del carrito de compras                           |
-| admin-home.html	               | Panel principal del administrador (zona privada)                |
-| admin-productos.html	         | Mantenedor y gestión de productos                               |
-| admin-usuarios.html	           | Mantenedor y gestión de usuarios                                |
-| auth.js / regiones.js	         | Lógica de autenticación y carga de regiones/comunas             | 
----------------------------------------------------------------------------------------------------
-
-## ✅ Validaciones
-
-El formulario de contacto utiliza validaciones nativas de HTML5 para mejorar la calidad de los datos ingresados.
-
-### 📧 Correo electrónico
-
-Se utiliza:
-
-```html
-<input type="email">
-```
-
-Esto permite al navegador validar que el usuario introduzca un formato de correo electrónico válido.
-
-### 👤 Nombre
-
-El campo de nombre utiliza una expresión regular para restringir la entrada a letras y espacios:
-
-```regex
-[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+
-```
-
-De esta forma se evita el ingreso de números o caracteres no permitidos.
-
-### ♿ Accesibilidad
-
-El proyecto incorpora atributos como:
-
-```html
-aria-required
-aria-live
-```
-
-Además, se contemplan contenedores para mostrar mensajes de error dinámicos mediante JavaScript.
-
----
-
-## 🚀 Instalación
-
-Este proyecto es una aplicación web estática, por lo que **no requiere instalar Node.js, Java, Python ni una base de datos** para ejecutarlo en su estado actual.
-
-### 1. Clonar el repositorio
-
-```bash
-git clone https://github.com/Pabloneke/HijosDeLasVentas.git
-```
-
-### 2. Entrar al proyecto
-
-```bash
-cd HijosDeLasVentas
-```
-
-### 3. Ejecutar
-
-La aplicación puede abrirse directamente desde:
-
-```text
-index.html
-```
-
-También se recomienda utilizar una extensión como **Live Server** en Visual Studio Code para disponer de un servidor local durante el desarrollo.
-
----
-
-## 💻 Ejecución con Visual Studio Code
-
-1. Abrir el proyecto en Visual Studio Code.
-2. Instalar la extensión **Live Server**.
-3. Abrir `index.html`.
-4. Presionar **"Go Live"**.
-5. El sitio se abrirá automáticamente en el navegador.
-
----
-
-## 🔗 Navegación
-
-El sitio cuenta actualmente con las siguientes secciones:
-
-```text
-Inicio
- │
- ├── Productos
- │
- ├── Contacto
- │
- └── Estadísticas
+└── front/
+    ├── public/              # Recursos públicos e imágenes del catálogo
+    ├── src/
+    │   ├── assets/          # Recursos gráficos internos
+    │   ├── components/      # Componentes UI reutilizables
+    │   │   ├── atoms/       # Elementos indivisibles (FormField, etc.)
+    │   │   ├── molecules/   # Agrupación de átomos (ProductCard, etc.)
+    │   │   └── organisms/   # Secciones complejas (Navbar, Footer, AdminLayout, RutaProtegida)
+    │   │
+    │   ├── context/         # Estados globales (AuthContext, CartContext)
+    │   ├── pages/           # Vistas enrutables (Home, Productos, DetalleProducto, Carrito, Checkout, admin/*)
+    │   ├── services/        # Simulación de Base de Datos en localStorage (db.js)
+    │   ├── test/            # Configuración de pruebas unitarias
+    │   └── utils/           # Funciones de validación, ofertas, precios y regiones
+    │
+    ├── index.html           # Punto de entrada de la SPA
+    ├── package.json         # Dependencias y scripts del proyecto
+    └── vite.config.js       # Configuración del entorno de Vite y Vitest
 ```
 
 ---
 
-## 📈 Estado del proyecto
+## 🚀 Instalación y Ejecución Local
 
-Actualmente el proyecto se encuentra en una etapa de desarrollo frontend.
+Para levantar este proyecto en tu entorno local, asegúrate de tener instalado **Node.js**.
 
-### Implementado
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/Pabloneke/HijosDeLasVentas.git
+   ```
 
-* [x] Página principal
-* [x] Catálogo de productos
-* [x] Página de contacto y pedidos
-* [x] Página de estadísticas (DataTables)
-* [x] Páginas de Nosostros y Blogs con sus respectivos detalles
-* [x] Vistas de autenticación (Login y Registro)
-* [x] Vista de Carrito de compras con localStorage
-* [x] Panel de administración completo (Home, Productos y Usuarios)
-* [x] Validaciones de formularios y reglas de negocio con JavaScript
-* [x] Diseño responsive con Bootstrap 5.3.3
+2. **Entrar al directorio del frontend:**
+   ```bash
+   cd HijosDeLasVentas/front
+   ```
 
-### Próximas mejoras
+3. **Instalar las dependencias:**
+   ```bash
+   npm install
+   ```
 
-* [ ] Conectar un backend real (Node.js / Express o Java Spring Boot).
-* [ ] Implementar una base de datos relacional (Oracle / MySQL).
-* [ ] Consumir una API REST para la gestión de datos.
-* [ ] Despliegue de la aplicación en producción (Cloud Hosting).
+4. **Levantar el servidor de desarrollo:**
+   ```bash
+   npm run dev
+   ```
+   *El sitio estará disponible en `http://localhost:5173`.*
+
+5. **Ejecutar pruebas unitarias (opcional):**
+   ```bash
+   npm run test
+   ```
 
 ---
 
-## 🔮 Futuras funcionalidades
+## 🔮 Arquitectura Futura (Roadmap)
 
-El proyecto puede evolucionar desde un sitio web estático hacia una plataforma completa de comercio electrónico.
-
-Una posible arquitectura futura sería:
+El proyecto evoluciona desde una SPA con datos simulados hacia una plataforma completa de comercio electrónico conectada a servicios backend:
 
 ```text
                     ┌─────────────────┐
-                    │    Frontend     │
-                    │ HTML / CSS / JS │
+                    │  Frontend (SPA) │
+                    │  React + Vite   │
                     └────────┬────────┘
                              │
                              ▼
                     ┌─────────────────┐
                     │    REST API     │
-                    │     Backend     │
+                    │   Spring Boot   │
                     └────────┬────────┘
                              │
               ┌──────────────┼──────────────┐
               │              │              │
               ▼              ▼              ▼
          ┌─────────┐   ┌──────────┐   ┌──────────┐
-         │ Usuarios│   │ Productos│   │  Ventas  │
+         │ Auth/JWT│   │ Productos│   │  Ventas  │
          └─────────┘   └──────────┘   └──────────┘
                              │
                              ▼
                        ┌──────────┐
-                       │ Database │
+                       │  Oracle  │
                        └──────────┘
 ```
 
 ---
 
-## 🎯 Objetivo académico
+## 📈 Estado del Proyecto
 
-Este proyecto busca aplicar conocimientos relacionados con:
-
-* Desarrollo web.
-* HTML5 y CSS3.
-* Diseño responsive.
-* Frameworks frontend.
-* JavaScript.
-* Validación de formularios.
-* Accesibilidad web.
-* Organización de proyectos.
-* Control de versiones con Git y GitHub.
+### ✅ Implementado
+* Arquitectura SPA con React, Vite y React Router DOM.
+* Vistas públicas completas: `Home`, `Productos`, `DetalleProducto`, `Ofertas`, `Nosotros`, `Blogs` y `Contacto`.
+* Flujo de carrito de compras y `Checkout` con persistencia y `CartContext`.
+* Sistema de `Login`, `Registro` y control de acceso por roles mediante `AuthContext` y `RutaProtegida`.
+* Panel de administración completo (`AdminDashboard`, `AdminProductos`, `AdminUsuarios`).
+* Validaciones de formularios, cálculo de precios y pruebas unitarias con Vitest.
 
 ---
 
 ## 👨‍💻 Autores
 
-Proyecto desarrollado por el equipo de **Hijos de las Ventas**.
+Proyecto desarrollado por el equipo de Hijos de las Ventas:
+* **Paulo Catalán**
+* **Alexander Arancibia**
+* **Mauricio Ahumada**
+* **Branco Aliaga**
 
-Repositorio:
+Repositorio oficial: [GitHub - HijosDeLasVentas](https://github.com/Pabloneke/HijosDeLasVentas)
 
-**GitHub:**
-https://github.com/Pabloneke/HijosDeLasVentas
-
----
-
-## 📄 Licencia
-
-Este proyecto fue desarrollado con fines académicos y educativos.
-
----
-
-<p align="center">
-  🛒 <strong>Hijos de las Ventas</strong> — Vendemos más que productos.
-</p>
-
-
+📄 *Este proyecto fue desarrollado con fines académicos y educativos.*
