@@ -58,4 +58,19 @@ describe('ProductCard', () => {
             image: producto.image,
         })
     })
+
+    // Stock: un producto sin unidades no se puede agregar
+    it('deshabilita el botón y muestra "Agotado" cuando no hay stock', () => {
+        render(<ProductCard {...producto} stock={0} onAddToCart={() => {}} />)
+
+        expect(screen.getByRole('button', { name: 'Agotado' })).toBeDisabled()
+    })
+
+    it('avisa cuando el carrito rechaza la unidad por falta de stock', async () => {
+        render(<ProductCard {...producto} stock={2} onAddToCart={() => false} />)
+
+        await userEvent.click(screen.getByRole('button', { name: 'Lo quiero' }))
+
+        expect(screen.getByRole('button', { name: 'Sin más stock' })).toBeInTheDocument()
+    })
 })

@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const ProductCard = ({ id, name, price, originalPrice, discountPercent, category, image, buttonLabel = 'Lo quiero', onAddToCart }) => {
+const ProductCard = ({ id, name, price, originalPrice, discountPercent, category, image, stock, buttonLabel = 'Lo quiero', onAddToCart }) => {
     const imageRef = useRef(null);
     const confirmationTimeout = useRef(null);
     const [added, setAdded] = useState(false);
+    const [sinStock, setSinStock] = useState(false);
+    const agotado = stock != null && stock <= 0;
     // Función para formatear el precio a pesos chilenos
     const formatPrice = (value) => {
         return new Intl.NumberFormat('es-CL', {
@@ -18,12 +20,19 @@ const ProductCard = ({ id, name, price, originalPrice, discountPercent, category
     }, []);
 
     const handleAdd = () => {
-        const product = { id, name, price, image };
-        if (onAddToCart.length > 1) onAddToCart(product, imageRef.current);
-        else onAddToCart(product);
-        setAdded(true);
+        const product = { id, name, price, image, stock };
+        const agregado = onAddToCart.length > 1
+            ? onAddToCart(product, imageRef.current)
+            : onAddToCart(product);
+        // addItem devuelve false cuando el carrito ya tiene todo el stock disponible
+        const alcanzoElTope = agregado === false;
+        setAdded(!alcanzoElTope);
+        setSinStock(alcanzoElTope);
         if (confirmationTimeout.current) clearTimeout(confirmationTimeout.current);
-        confirmationTimeout.current = setTimeout(() => setAdded(false), 1200);
+        confirmationTimeout.current = setTimeout(() => {
+            setAdded(false);
+            setSinStock(false);
+        }, 1200);
     };
 
     return (
@@ -56,8 +65,9 @@ const ProductCard = ({ id, name, price, originalPrice, discountPercent, category
                     type="button" 
                     className="btn btn-outline-primary mt-3 fw-bold"
                     onClick={handleAdd}
+                    disabled={agotado}
                 >
-                    {added ? '¡Agregado!' : buttonLabel}
+                    {agotado ? 'Agotado' : sinStock ? 'Sin más stock' : added ? '¡Agregado!' : buttonLabel}
                 </button>
             </div>
         </article>
