@@ -78,7 +78,7 @@ const Checkout = () => {
                         Tu pedido <strong>{numeroPedido}</strong> quedó preparado correctamente.
                     </p>
                     <p className="text-muted mb-4">
-                        Se envio una copia a {form.correo}. No se realizó ningún cobro ni se envió información a un servidor.
+                        Se envio una copia a {form.correo}.
                     </p>
                     <div className="d-flex justify-content-center gap-2 flex-wrap">
                         <Link to="/carrito" className="btn btn-outline-primary">Volver al carrito</Link>
