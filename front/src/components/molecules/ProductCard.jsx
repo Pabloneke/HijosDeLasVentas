@@ -1,0 +1,42 @@
+import React from 'react';
+
+const ProductCard = ({ id, name, price, category, image, onAddToCart }) => {
+    // Función para formatear el precio a pesos chilenos
+    const formatPrice = (value) => {
+        return new Intl.NumberFormat('es-CL', {
+            style: 'currency',
+            currency: 'CLP',
+            maximumFractionDigits: 0
+        }).format(value);
+    };
+
+    return (
+        <article className="card h-100 shadow-sm border-0">
+            {/* La imagen viene por props dinámica */}
+            <img 
+                src={image} 
+                height="300" 
+                width="300" 
+                className="card-img-top" 
+                alt={name} 
+                style={{ objectFit: 'cover' }} 
+            />
+            <div className="card-body d-flex flex-column text-center">
+                <span className="badge bg-secondary mb-2 align-self-center">{category}</span>
+                <h5 className="card-title fw-bold">{name}</h5>
+                <h4 className="text-primary fw-bold mt-auto">{formatPrice(price)}</h4>
+                
+                {/* Botón que ejecuta la función del carrito pasada por prop */}
+                <button 
+                    type="button" 
+                    className="btn btn-outline-primary mt-3 fw-bold"
+                    onClick={() => onAddToCart({ id, name, price, image })}
+                >
+                    Lo quiero
+                </button>
+            </div>
+        </article>
+    );
+};
+
+export default ProductCard;
