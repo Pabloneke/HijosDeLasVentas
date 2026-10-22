@@ -1,5 +1,5 @@
 import {
-    initDB, getProducts, isStockCritico, getOrders, createOrder,
+    initDB, getProducts, getProductById, createProduct, updateProduct, deleteProduct, isStockCritico, getOrders, createOrder,
     getUsers, getUserById, findUserByEmail, createUser, updateUser, deleteUser,
     getSession, login, logout,
 } from './db'
@@ -122,5 +122,41 @@ describe('db — órdenes', () => {
         expect(segunda.id).toBe(2)
         expect(Number.isNaN(Date.parse(primera.fecha))).toBe(false)
         expect(getOrders()).toHaveLength(2)
+    })
+})
+
+describe('db — CRUD de productos', () => {
+    beforeEach(() => initDB())
+
+    // Leer: un producto por id, o null si no existe
+    it('getProductById devuelve el producto pedido o null si no existe', () => {
+        expect(getProductById(4).name).toBe('Juego PS4')
+        expect(getProductById('4').name).toBe('Juego PS4') // el id puede llegar como texto
+        expect(getProductById(999)).toBeNull()
+    })
+
+    // Crear: siguiente id, valores por defecto y persistencia
+    it('createProduct asigna el siguiente id, completa valores por defecto y persiste', () => {
+        const nuevo = createProduct({ name: 'Audífonos', price: 30000, category: 'Gaming' })
+
+        expect(nuevo).toMatchObject({ id: 7, stock: 0, stockCritico: 0, image: '/img/logo.png' })
+        expect(getProducts()).toHaveLength(7)
+    })
+
+    // Actualizar: solo cambian los campos recibidos y el id no se puede pisar
+    it('updateProduct modifica solo los campos recibidos y devuelve null si no existe', () => {
+        const actualizado = updateProduct(4, { stock: 1, id: 999 })
+
+        expect(actualizado).toMatchObject({ id: 4, name: 'Juego PS4', stock: 1 })
+        expect(getProductById(4).stock).toBe(1)
+        expect(updateProduct(999, { stock: 1 })).toBeNull()
+    })
+
+    // Eliminar
+    it('deleteProduct elimina el producto y devuelve false si no existe', () => {
+        expect(deleteProduct(4)).toBe(true)
+        expect(getProductById(4)).toBeNull()
+        expect(getProducts()).toHaveLength(5)
+        expect(deleteProduct(4)).toBe(false)
     })
 })

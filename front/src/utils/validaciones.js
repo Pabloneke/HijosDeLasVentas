@@ -76,6 +76,37 @@ export const validarRegistro = (datos) =>
         direccion: datos.direccion.trim() && datos.direccion.length <= 300 ? '' : 'Ingresa tu dirección (máximo 300 caracteres)',
     });
 
+// Mantenedor de productos (admin). Los campos numéricos llegan como texto desde los inputs.
+// El stock crítico es opcional: vacío equivale a 0.
+export const validarProducto = (datos) => {
+    const precio = String(datos.price).trim();
+    const stock = String(datos.stock).trim();
+    const critico = String(datos.stockCritico ?? '').trim();
+    const entero = (texto) => /^\d+$/.test(texto);
+
+    return soloErrores({
+        name: datos.name.trim() && datos.name.trim().length <= 100 ? '' : 'El nombre es obligatorio (máximo 100 caracteres)',
+        price: precio !== '' && Number(precio) >= 0 ? '' : 'El precio debe ser 0 o mayor',
+        stock: entero(stock) ? '' : 'El stock debe ser un número entero igual o mayor a 0',
+        stockCritico: critico === '' || entero(critico) ? '' : 'El stock crítico debe ser un número entero igual o mayor a 0',
+        category: datos.category ? '' : 'Debes seleccionar una categoría',
+    });
+};
+
+// Mantenedor de usuarios (admin). Al editar, la contraseña es opcional: vacía = no se cambia.
+export const validarUsuarioAdmin = (datos, { editando = false } = {}) =>
+    soloErrores({
+        run: esRunValido(datos.run) ? '' : 'RUN inválido: sin puntos ni guion y con dígito verificador (7 a 9 caracteres)',
+        nombre: esNombreValido(datos.nombre) ? '' : 'El nombre solo admite letras y espacios (3 a 100 caracteres)',
+        apellidos: esNombreValido(datos.apellidos) ? '' : 'Los apellidos solo admiten letras y espacios (3 a 100 caracteres)',
+        correo: errorCorreo(datos.correo),
+        password: editando && !datos.password ? '' : errorPassword(datos.password),
+        tipo: datos.tipo ? '' : 'Debes seleccionar un tipo de usuario',
+        region: datos.region ? '' : 'Selecciona una región',
+        comuna: datos.comuna ? '' : 'Selecciona una comuna',
+        direccion: datos.direccion.trim() && datos.direccion.length <= 300 ? '' : 'La dirección es obligatoria (máximo 300 caracteres)',
+    });
+
 // Checkout de demostración: la dirección y región/comuna solo se exigen si la entrega es a domicilio.
 // La tarjeta se valida únicamente para mantener compatibilidad con formularios antiguos que la envíen;
 // el checkout actual no solicita ni procesa datos de pago.
