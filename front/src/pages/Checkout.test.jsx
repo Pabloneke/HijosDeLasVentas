@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { AuthProvider } from '../context/AuthContext'
@@ -80,5 +80,24 @@ describe('Checkout', () => {
         expect(getProductById(1).stock).toBe(12)
         expect(getOrders()).toEqual([])
         expect(JSON.parse(localStorage.getItem('carrito'))).toHaveLength(1)
+    })
+
+    it('permite ver e imprimir la boleta aunque el carrito ya esté vacío', async () => {
+        const print = vi.spyOn(window, 'print').mockImplementation(() => {})
+        renderCheckout()
+        await completarYConfirmar()
+        const user = userEvent.setup()
+
+        expect(screen.queryByRole('article', { name: /Boleta/ })).not.toBeInTheDocument()
+        await user.click(screen.getByRole('button', { name: 'Ver boleta' }))
+
+        const boleta = screen.getByRole('article', { name: 'Boleta HV-000001' })
+        expect(within(boleta).getByText('Perfume Rasasi Hawas')).toBeInTheDocument()
+        expect(within(boleta).getByText('Ana Pérez')).toBeInTheDocument()
+        expect(within(boleta).getByText(/Despacho a Calle 1, Santiago/)).toBeInTheDocument()
+
+        await user.click(screen.getByRole('button', { name: 'Imprimir / Guardar PDF' }))
+        expect(print).toHaveBeenCalledTimes(1)
+        print.mockRestore()
     })
 })

@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import FormField from '../components/atoms/FormField';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import Boleta from '../components/organisms/Boleta';
 import { procesarCompra } from '../services/db';
+import { numeroBoleta } from '../utils/boleta';
 import { validarCheckout } from '../utils/validaciones';
 import { REGIONES } from '../utils/regiones';
 
@@ -37,7 +39,8 @@ const Checkout = () => {
     }));
     const [errores, setErrores] = useState({});
     const [confirmado, setConfirmado] = useState(false);
-    const [numeroPedido, setNumeroPedido] = useState('');
+    const [ordenConfirmada, setOrdenConfirmada] = useState(null);
+    const [verBoleta, setVerBoleta] = useState(false);
     const [errorCompra, setErrorCompra] = useState('');
 
     const handleChange = (event) => {
@@ -57,12 +60,15 @@ const Checkout = () => {
 
         // Revalida el stock contra el mantenedor, lo descuenta y registra la orden
         try {
+            const entrega = form.entrega === 'retiro'
+                ? { modalidad: 'retiro' }
+                : { modalidad: 'despacho', region: form.region, comuna: form.comuna, direccion: form.direccion };
             const orden = procesarCompra(items, {
                 userId: user?.id ?? null,
                 nombre: form.nombre,
                 correo: form.correo,
-            });
-            setNumeroPedido(`HV-${String(orden.id).padStart(6, '0')}`);
+            }, entrega);
+            setOrdenConfirmada(orden);
             setErrorCompra('');
             setConfirmado(true);
             clearCart();
@@ -86,22 +92,35 @@ const Checkout = () => {
         );
     }
 
-    if (confirmado) {
+    if (confirmado && ordenConfirmada) {
         return (
             <main className="container my-5">
                 <section className="card border-0 shadow-sm p-4 p-md-5 text-center checkout-confirmation">
                     <div className="display-5 text-success mb-3" aria-hidden="true">✓</div>
                     <h2 className="mb-3">Solicitud de compra registrada</h2>
                     <p className="lead">
-                        Tu pedido <strong>{numeroPedido}</strong> quedó preparado correctamente.
+                        Tu pedido <strong>{numeroBoleta(ordenConfirmada)}</strong> quedó preparado correctamente.
                     </p>
                     <p className="text-muted mb-4">
                         Se envio una copia a {form.correo}. No se realizó ningún cobro (compra de demostración).
                     </p>
-                    <div className="d-flex justify-content-center gap-2 flex-wrap">
+                    <div className="d-flex justify-content-center gap-2 flex-wrap no-print">
+                        <button type="button" className="btn btn-success fw-bold" onClick={() => setVerBoleta((v) => !v)} aria-expanded={verBoleta}>
+                            {verBoleta ? 'Ocultar boleta' : 'Ver boleta'}
+                        </button>
+                        {verBoleta && (
+                            <button type="button" className="btn btn-outline-success fw-bold" onClick={() => window.print()}>
+                                Imprimir / Guardar PDF
+                            </button>
+                        )}
                         <Link to="/carrito" className="btn btn-outline-primary">Volver al carrito</Link>
                         <Link to="/productos" className="btn btn-primary">Seguir comprando</Link>
                     </div>
+                    {verBoleta && (
+                        <div className="boleta-wrapper mt-4">
+                            <Boleta orden={ordenConfirmada} />
+                        </div>
+                    )}
                 </section>
             </main>
         );
