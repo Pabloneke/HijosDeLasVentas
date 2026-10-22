@@ -2,23 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ProductCard from '../components/molecules/ProductCard';
 import { useCart } from '../context/CartContext';
 import { getProducts } from '../services/db';
-
-// Descuentos promocionales de demostración asociados a productos reales del catálogo.
-// El precio persistido en la base de productos no se modifica.
-const DESCUENTOS = {
-    1: 20,
-    3: 15,
-    5: 25,
-    6: 10,
-};
-
-const crearOfertas = (productos) => productos
-    .filter((producto) => DESCUENTOS[producto.id])
-    .map((producto) => {
-        const discountPercent = DESCUENTOS[producto.id];
-        const price = Math.round(producto.price * (1 - discountPercent / 100));
-        return { ...producto, originalPrice: producto.price, price, discountPercent };
-    });
+import { crearOfertas } from '../utils/ofertas';
 
 const Ofertas = () => {
     const [ofertas, setOfertas] = useState([]);
@@ -67,5 +51,4 @@ const Ofertas = () => {
     );
 };
 
-export { crearOfertas };
 export default Ofertas;

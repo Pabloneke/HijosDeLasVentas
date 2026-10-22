@@ -55,7 +55,7 @@ describe('Productos', () => {
             {
                 id: productosFalsos[0].id,
                 name: productosFalsos[0].name,
-                price: productosFalsos[0].price,
+                price: 52000,
                 image: productosFalsos[0].image,
                 quantity: 1,
             },

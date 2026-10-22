@@ -2,7 +2,8 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { CartProvider } from '../context/CartContext'
-import Ofertas, { crearOfertas } from './Ofertas'
+import Ofertas from './Ofertas'
+import { crearOfertas } from '../utils/ofertas'
 import { getProducts } from '../services/db'
 
 vi.mock('../services/db', () => ({

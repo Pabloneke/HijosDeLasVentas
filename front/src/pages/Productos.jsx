@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/molecules/ProductCard';
 import { getProducts } from '../services/db';
 import { useCart } from '../context/CartContext';
+import { aplicarOferta } from '../utils/ofertas';
 
 const Productos = () => {
     // Estado para guardar los productos que vienen de la "base de datos"
@@ -25,19 +26,18 @@ const Productos = () => {
             {/* Grilla de productos dinámica */}
             <section className="row g-4 justify-content-center">
                 {productos.length > 0 ? (
-                    productos.map((prod) => (
+                    productos.map((prod) => {
+                        const producto = aplicarOferta(prod);
+                        return (
                         <div className="col-md-4" key={prod.id}>
                             {/* Llamamos a tu Molécula pasándole los props */}
                             <ProductCard 
-                                id={prod.id}
-                                name={prod.name}
-                                price={prod.price}
-                                category={prod.category}
-                                image={prod.image}
+                                {...producto}
                                 onAddToCart={handleAddToCart}
                             />
                         </div>
-                    ))
+                        );
+                    })
                 ) : (
                     <p className="text-center text-muted">No hay productos disponibles.</p>
                 )}
