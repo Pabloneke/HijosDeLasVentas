@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import Navbar from './Navbar'
 import { AuthProvider } from '../../context/AuthContext'
+import { CartProvider } from '../../context/CartContext'
 import { initDB, login, getSession } from '../../services/db'
 
 // Navbar usa Link y useLocation, que solo funcionan dentro de un Router.
@@ -12,7 +13,7 @@ const renderNavbar = (ruta = '/') =>
     render(
         <MemoryRouter initialEntries={[ruta]}>
             <AuthProvider>
-                <Navbar />
+                <CartProvider><Navbar /></CartProvider>
             </AuthProvider>
         </MemoryRouter>
     )

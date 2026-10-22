@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { CartProvider } from './context/CartContext'
 
 import Navbar from './components/organisms/Navbar'
 import Footer from './components/organisms/Footer'
@@ -13,18 +14,22 @@ import Nosotros from './pages/Nosotros'
 import Blogs from './pages/Blogs'
 import Login from './pages/Login'
 import Registro from './pages/Registro'
+import Carrito from './pages/Carrito'
+import Checkout from './pages/Checkout'
+import Ofertas from './pages/Ofertas'
 
 function App() {
   return (
     <AuthProvider>
-      <Navbar />
+      <CartProvider>
+        <Navbar />
 
-      <Routes>
+        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/productos" element={<Productos />} />
         
 
-        <Route path="/ofertas" element={<h1>Ofertas</h1>} />
+        <Route path="/ofertas" element={<Ofertas />} />
         <Route path="/contacto" element={<Contacto />} />
         
         <Route path="/nosotros" element={<Nosotros />} />
@@ -32,8 +37,8 @@ function App() {
         
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
-        <Route path="/carrito" element={<h1>Carrito de Compras</h1>} />
-        <Route path="/checkout" element={<h1>Checkout y Pago</h1>} />
+        <Route path="/carrito" element={<Carrito />} />
+        <Route path="/checkout" element={<Checkout />} />
 
         {/* Zona privada: solo administrador y vendedor. Al construir cada vista basta con cambiar su element */}
         <Route element={<RutaProtegida roles={['administrador', 'vendedor']} />}>
@@ -46,9 +51,10 @@ function App() {
             </Route>
           </Route>
         </Route>
-      </Routes>
+        </Routes>
 
-      <Footer />
+        <Footer />
+      </CartProvider>
     </AuthProvider>
   )
 }
