@@ -16,6 +16,10 @@ const readCart = () => {
     }
 };
 
+// Máximo de unidades que se pueden llevar: el stock del producto (sin stock informado, sin tope;
+// el checkout vuelve a validar contra la base de productos).
+const limitOf = (item) => (item.stock == null ? Infinity : Math.max(0, Number(item.stock)));
+
 const prefersReducedMotion = () =>
     typeof window !== 'undefined'
     && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -38,13 +42,17 @@ export const CartProvider = ({ children }) => {
         cartTargetRef.current = element;
     };
 
+    // Devuelve true si se agregó una unidad, false si no hay stock suficiente.
     const addItem = (product, sourceElement) => {
+        const existing = items.find((item) => String(item.id) === String(product.id));
+        const stock = limitOf(product);
+        if ((existing ? existing.quantity : 0) + 1 > stock) return false;
+
         setItems((currentItems) => {
-            const existing = currentItems.find((item) => String(item.id) === String(product.id));
-            if (existing) {
+            if (currentItems.some((item) => String(item.id) === String(product.id))) {
                 return currentItems.map((item) => (
                     String(item.id) === String(product.id)
-                        ? { ...item, quantity: item.quantity + 1 }
+                        ? { ...item, stock: product.stock ?? item.stock, quantity: Math.min(item.quantity + 1, stock) }
                         : item
                 ));
             }
@@ -52,7 +60,7 @@ export const CartProvider = ({ children }) => {
         });
 
         const target = cartTargetRef.current;
-        if (!sourceElement || !target || prefersReducedMotion()) return;
+        if (!sourceElement || !target || prefersReducedMotion()) return true;
 
         const sourceRect = sourceElement.getBoundingClientRect();
         const targetRect = target.getBoundingClientRect();
@@ -73,19 +81,40 @@ export const CartProvider = ({ children }) => {
             },
         });
         animationTimeoutRef.current = setTimeout(() => setAnimation(null), 650);
+        return true;
     };
 
     const removeItem = (id) => {
         setItems((currentItems) => currentItems.filter((item) => String(item.id) !== String(id)));
     };
 
+    // La cantidad nunca supera el stock del ítem.
     const updateQuantity = (id, quantity) => {
-        const nextQuantity = Math.max(0, Number(quantity) || 0);
-        setItems((currentItems) => nextQuantity === 0
+        const requested = Math.max(0, Math.floor(Number(quantity)) || 0);
+        setItems((currentItems) => requested === 0
             ? currentItems.filter((item) => String(item.id) !== String(id))
             : currentItems.map((item) => (
-                String(item.id) === String(id) ? { ...item, quantity: nextQuantity } : item
+                String(item.id) === String(id)
+                    ? { ...item, quantity: Math.min(requested, limitOf(item)) }
+                    : item
             )));
+    };
+
+    // Ajusta el carrito al stock vigente: recorta cantidades y quita productos agotados o eliminados.
+    // stockById: { [id]: stock }
+    const syncStock = (stockById) => {
+        setItems((currentItems) => {
+            const next = currentItems
+                .map((item) => {
+                    const stock = stockById[item.id];
+                    if (stock == null) return null;
+                    return { ...item, stock, quantity: Math.min(item.quantity, stock) };
+                })
+                .filter((item) => item && item.quantity > 0);
+            const changed = next.length !== currentItems.length
+                || next.some((item, i) => item.quantity !== currentItems[i].quantity || item.stock !== currentItems[i].stock);
+            return changed ? next : currentItems;
+        });
     };
 
     const clearCart = () => setItems([]);
@@ -98,6 +127,7 @@ export const CartProvider = ({ children }) => {
         removeItem,
         updateQuantity,
         clearCart,
+        syncStock,
         registerCartTarget,
     }), [items]);
 
