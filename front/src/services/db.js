@@ -63,6 +63,42 @@ export const getProducts = () => {
     return data ? JSON.parse(data) : [];
 };
 
+// Categorías disponibles para clasificar un producto (las usa el mantenedor de productos)
+export const CATEGORIAS = ['Computación', 'Gaming', 'Librería', 'Perfumería'];
+
+// Leer: un producto por id (null si no existe)
+export const getProductById = (id) =>
+    getProducts().find((p) => p.id === Number(id)) ?? null;
+
+// Crear: asigna id automático y devuelve el producto creado
+export const createProduct = (datos) => {
+    const productos = getProducts();
+    const nuevo = { image: '/img/logo.png', stock: 0, stockCritico: 0, ...datos, id: siguienteId(productos) };
+    guardarLista(PRODUCTOS_KEY, [...productos, nuevo]);
+    return nuevo;
+};
+
+// Actualizar: mezcla los cambios con el producto existente (null si no existe)
+export const updateProduct = (id, cambios) => {
+    const productos = getProducts();
+    const indice = productos.findIndex((p) => p.id === Number(id));
+    if (indice === -1) return null;
+
+    const actualizado = { ...productos[indice], ...cambios, id: productos[indice].id };
+    productos[indice] = actualizado;
+    guardarLista(PRODUCTOS_KEY, productos);
+    return actualizado;
+};
+
+// Eliminar: devuelve true si borró algo, false si el id no existía
+export const deleteProduct = (id) => {
+    const productos = getProducts();
+    const restantes = productos.filter((p) => p.id !== Number(id));
+    if (restantes.length === productos.length) return false;
+    guardarLista(PRODUCTOS_KEY, restantes);
+    return true;
+};
+
 // RF5: un producto tiene stock crítico cuando su stock es menor o igual al umbral definido
 export const isStockCritico = (producto) => producto.stock <= producto.stockCritico;
 
