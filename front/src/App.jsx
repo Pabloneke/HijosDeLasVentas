@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
+import { initDB } from './services/db'
 
 import Navbar from './components/organisms/Navbar'
 import Footer from './components/organisms/Footer'
@@ -11,6 +13,7 @@ import AdminProductos from './pages/admin/AdminProductos'
 import AdminUsuarios from './pages/admin/AdminUsuarios'
 import Home from './pages/Home'
 import Productos from './pages/Productos'
+import DetalleProducto from './pages/DetalleProducto'
 import Contacto from './pages/Contacto'
 import Nosotros from './pages/Nosotros'
 import Blogs from './pages/Blogs'
@@ -21,6 +24,11 @@ import Checkout from './pages/Checkout'
 import Ofertas from './pages/Ofertas'
 
 function App() {
+  // Inicializamos la BD simulada al cargar la app
+  useEffect(() => {
+    initDB();
+  }, []);
+
   return (
     <AuthProvider>
       <CartProvider>
@@ -31,8 +39,8 @@ function App() {
             <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/productos" element={<Productos />} />
+            <Route path="/producto/:id" element={<DetalleProducto />} />
         
-
             <Route path="/ofertas" element={<Ofertas />} />
             <Route path="/contacto" element={<Contacto />} />
         
@@ -44,12 +52,11 @@ function App() {
             <Route path="/carrito" element={<Carrito />} />
             <Route path="/checkout" element={<Checkout />} />
 
-        {/* Zona privada: solo administrador y vendedor. Al construir cada vista basta con cambiar su element */}
+        {/* Zona privada: solo administrador y vendedor */}
             <Route element={<RutaProtegida roles={['administrador', 'vendedor']} />}>
               <Route element={<AdminLayout />}>
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/productos" element={<AdminProductos />} />
-                {/* La gestión de usuarios es solo del administrador */}
                 <Route element={<RutaProtegida roles={['administrador']} />}>
                   <Route path="/admin/usuarios" element={<AdminUsuarios />} />
                 </Route>
