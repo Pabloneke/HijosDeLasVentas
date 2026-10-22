@@ -192,7 +192,8 @@ export const createOrder = (datos) => {
 // alcanza para todos, descuenta el stock y registra la orden. Si algún ítem no tiene
 // stock suficiente lanza Error y no modifica nada (todo o nada).
 // items: [{ id, name, price, quantity }]; cliente: { userId, nombre, correo }
-export const procesarCompra = (items, cliente) => {
+// entrega (opcional): { modalidad, region, comuna, direccion }, queda guardada en la orden
+export const procesarCompra = (items, cliente, entrega) => {
     const productos = getProducts();
 
     const problemas = items.reduce((lista, item) => {
@@ -218,5 +219,5 @@ export const procesarCompra = (items, cliente) => {
     });
 
     const total = items.reduce((suma, item) => suma + Number(item.price) * Number(item.quantity), 0);
-    return createOrder({ cliente, items, total });
+    return createOrder({ cliente, items, total, ...(entrega ? { entrega } : {}) });
 };

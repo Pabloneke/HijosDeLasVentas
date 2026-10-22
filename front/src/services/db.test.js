@@ -142,6 +142,14 @@ describe('db — procesarCompra (control de stock)', () => {
         expect(getOrders()).toHaveLength(1)
     })
 
+    it('guarda la entrega en la orden cuando se informa', () => {
+        const entrega = { modalidad: 'despacho', region: 'Región Metropolitana de Santiago', comuna: 'Santiago', direccion: 'Calle 1' }
+        const orden = procesarCompra([{ id: 2, name: 'MousePad XXL Gamer', price: 15000, quantity: 1 }], cliente, entrega)
+
+        expect(orden.entrega).toEqual(entrega)
+        expect(getOrders()[0].entrega).toEqual(entrega)
+    })
+
     it('rechaza una cantidad mayor al stock y no modifica nada (todo o nada)', () => {
         expect(() => procesarCompra([
             { id: 2, name: 'MousePad XXL Gamer', price: 15000, quantity: 2 },
