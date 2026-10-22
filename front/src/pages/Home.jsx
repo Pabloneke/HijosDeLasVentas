@@ -7,9 +7,10 @@ const Home = () => {
 
     return (
         <main>
-            <div className="bg-warning text-dark overflow-hidden py-2 font-monospace fw-bold">
-                <div className="d-flex" style={{ whiteSpace: 'nowrap', animation: 'marquee 20s linear infinite' }}>
-                    <span>{fraseMultiplicada}</span>
+            <div className="promo-ticker bg-warning text-dark overflow-hidden py-2 font-monospace fw-bold" aria-label="Promoción de Hijos de las Ventas">
+                <div className="promo-ticker-track">
+                    <span className="promo-ticker-text">{fraseMultiplicada}</span>
+                    <span className="promo-ticker-text" aria-hidden="true">{fraseMultiplicada}</span>
                 </div>
             </div>
 

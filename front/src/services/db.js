@@ -22,3 +22,28 @@ export const getProducts = () => {
     const data = localStorage.getItem('productos');
     return data ? JSON.parse(data) : [];
 };
+
+const offerRules = {
+    1: 15,
+    3: 20,
+    5: 10,
+};
+
+export const getOffers = () => {
+    const products = getProducts();
+
+    return products
+        .filter((product) => offerRules[product.id])
+        .map((product) => {
+            const discountPercentage = offerRules[product.id];
+            const originalPrice = Number(product.price);
+            const price = Math.round(originalPrice * (1 - discountPercentage / 100));
+
+            return {
+                ...product,
+                originalPrice,
+                price,
+                discountPercentage,
+            };
+        });
+};

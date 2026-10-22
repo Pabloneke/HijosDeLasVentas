@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useCart } from '../../context/CartContext';
 
 const Navbar = () => {
     const location = useLocation();
+    const { totalItems, cartTargetRef } = useCart();
 
     // Funcion para saber si el link esta activo 
     const isActive = (path) => location.pathname === path ? 'active' : '';
@@ -47,8 +49,20 @@ const Navbar = () => {
 
                     {/* Botones de accion derecha (Carrito y Login) */}
                     <div className="d-flex position-absolute end-0 top-50 translate-middle-y me-3">
-                        <Link to="/carrito" className="btn btn-success fw-bold me-2">
-                            🛒 Carrito <span className="badge bg-light text-dark ms-1">$0</span>
+                        <Link
+                            to="/carrito"
+                            className="btn btn-success fw-bold me-2 navbar-cart-link"
+                            aria-label={`Abrir carrito, ${totalItems} ${totalItems === 1 ? 'producto' : 'productos'}`}
+                        >
+                            <span ref={cartTargetRef} className="navbar-cart-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" role="img" focusable="false">
+                                    <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6" />
+                                    <circle cx="10" cy="20" r="1.2" />
+                                    <circle cx="18" cy="20" r="1.2" />
+                                </svg>
+                            </span>
+                            <span>Carrito</span>
+                            <span className="navbar-cart-badge" aria-live="polite">{totalItems}</span>
                         </Link>
                         <Link to="/login" className="btn btn-outline-light fw-bold me-2">Iniciar Sesion</Link>
                         <Link to="/registro" className="btn btn-primary fw-bold border-light">Crear Cuenta</Link>
