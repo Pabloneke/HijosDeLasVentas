@@ -60,8 +60,8 @@ const Navbar = () => {
 
                     {/* Botones de accion derecha (Carrito y Login) */}
                     <div className="d-flex position-absolute end-0 top-50 translate-middle-y me-3">
-                        <Link ref={registerCartTarget} to="/carrito" className="btn btn-success fw-bold me-2">
-                            🛒 Carrito <span className="badge bg-light text-dark ms-1" aria-label={`${itemCount} productos`}>{itemCount}</span>
+                        <Link ref={registerCartTarget} to="/carrito" className="btn cart-nav-button fw-bold me-2">
+                            <span aria-hidden="true">🛒</span> Carrito <span className="badge cart-nav-count ms-1" aria-label={`${itemCount} productos`}>{itemCount}</span>
                         </Link>
                         {user ? (
                             <>

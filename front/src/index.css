@@ -249,6 +249,26 @@
     font-size: 0.9rem;
 }
 
+.cart-nav-button {
+    border: 1px solid #ffc107;
+    background: #ffc107;
+    color: #1f2937;
+    transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.cart-nav-button:hover,
+.cart-nav-button:focus {
+    border-color: #e0a800;
+    background: #e0a800;
+    color: #1f2937;
+    transform: translateY(-1px);
+}
+
+.cart-nav-count {
+    background: #fff;
+    color: #1f2937;
+}
+
 .cart-fly-image {
     position: fixed;
     z-index: 2000;
