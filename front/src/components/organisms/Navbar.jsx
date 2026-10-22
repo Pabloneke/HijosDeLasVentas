@@ -1,87 +1,85 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { useCart } from '../../context/CartContext';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const { user, logout } = useAuth();
-    const { itemCount, registerCartTarget } = useCart();
+  // Estado para controlar si el menú hamburguesa está abierto o cerrado
+  const [isOpen, setIsOpen] = useState(false);
 
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-    };
+  // Función para alternar el menú
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
-    // Solo administrador y vendedor ven el acceso al panel de administracion
-    const puedeAdministrar = user && (user.tipo === 'administrador' || user.tipo === 'vendedor');
+  // Función para cerrar el menú al hacer clic en un enlace (útil en celulares)
+  const closeMenu = () => {
+    setIsOpen(false);
+  };
 
-    // Funcion para saber si el link esta activo 
-    const isActive = (path) => location.pathname === path ? 'active' : '';
+  return (
+    <>
+      {/* Cambiamos navbar-expand-lg por navbar-expand-xl para que colapse antes y no se solape */}
+      <nav className="navbar navbar-expand-xl navbar-dark bg-primary px-3">
+        <div className="container-fluid">
+          <Link className="navbar-brand d-flex align-items-center" to="/" onClick={closeMenu}>
+            <img src="/img/logo.png" alt="Hijos de las Ventas" height="50" />
+          </Link>
+          
+          {/* Botón hamburguesa controlado por React */}
+          <button 
+            className="navbar-toggler" 
+            type="button" 
+            onClick={toggleMenu}
+            aria-controls="navbarNav" 
+            aria-expanded={isOpen} 
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
 
-    return (
-        <header>
-            {/* Barra de navegacion principal (Bootstrap 5.3) */}
-            <nav className="navbar navbar-expand-lg navbar-dark bg-primary justify-content-center position-relative">
-                <div className="container">
-                    <Link to="/" className="navbar-brand position-absolute start-0 top-50 translate-middle-y me-3">
-                        <img src="/img/logo.png" alt="Logo Hijos de las Ventas" style={{ height: '80px' }} />
-                    </Link>
+          {/* El div colapsable. Si isOpen es true, le agregamos la clase "show" de Bootstrap */}
+          <div className={`collapse navbar-collapse ${isOpen ? 'show' : ''}`} id="navbarNav">
+            <ul className="navbar-nav me-auto mb-2 mb-xl-0 d-flex gap-2 fw-semibold">
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/" onClick={closeMenu}>Inicio</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/productos" onClick={closeMenu}>Productos</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/ofertas" onClick={closeMenu}>Ofertas</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/nosotros" onClick={closeMenu}>Nosotros</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/blogs" onClick={closeMenu}>Blogs</Link>
+              </li>
+            </ul>
+            
+            <div className="d-flex flex-column flex-xl-row gap-2 mt-3 mt-xl-0 align-items-xl-center">
+              <Link to="/carrito" className="btn btn-warning fw-bold d-flex align-items-center justify-content-center" onClick={closeMenu}>
+                <span className="me-2">🛒 Carrito</span>
+                <span className="badge bg-light text-dark">0</span>
+              </Link>
+              <Link to="/login" className="btn btn-outline-light fw-semibold" onClick={closeMenu}>
+                Iniciar Sesion
+              </Link>
+              <Link to="/registro" className="btn btn-outline-light fw-semibold" onClick={closeMenu}>
+                Crear Cuenta
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
 
-                    {/* Boton hamburguesa */}
-                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
-
-                    {/* Enlaces de navegacion */}
-                    <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
-                        <ul className="navbar-nav">
-                            <li className="nav-item mx-3">
-                                <Link className={`nav-link text-white fw-bold ${isActive('/')}`} to="/">Inicio</Link>
-                            </li>
-                            <li className="nav-item mx-3">
-                                <Link className={`nav-link text-white fw-bold ${isActive('/productos')}`} to="/productos">Productos</Link>
-                            </li>
-                            <li className="nav-item mx-3">
-                                <Link className={`nav-link text-white fw-bold ${isActive('/ofertas')}`} to="/ofertas">Ofertas</Link>
-                            </li>
-                            <li className="nav-item mx-3">
-                                <Link className={`nav-link text-white fw-bold ${isActive('/nosotros')}`} to="/nosotros">Nosotros</Link>
-                            </li>
-                            <li className="nav-item mx-3">
-                                <Link className={`nav-link text-white fw-bold ${isActive('/blogs')}`} to="/blogs">Blog</Link>
-                            </li>
-                            <li className="nav-item mx-3">
-                                <Link className={`nav-link text-white fw-bold ${isActive('/contacto')}`} to="/contacto">Contacto</Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Botones de accion derecha (Carrito y Login) */}
-                    <div className="d-flex position-absolute end-0 top-50 translate-middle-y me-3">
-                        <Link ref={registerCartTarget} to="/carrito" className="btn cart-nav-button fw-bold me-2">
-                            <span aria-hidden="true">🛒</span> Carrito <span className="badge cart-nav-count ms-1" aria-label={`${itemCount} productos`}>{itemCount}</span>
-                        </Link>
-                        {user ? (
-                            <>
-                                <span className="text-white fw-semibold align-self-center me-2">Hola, {user.nombre}</span>
-                                {puedeAdministrar && (
-                                    <Link to="/admin" className="btn btn-warning fw-bold me-2">Panel Admin</Link>
-                                )}
-                                <button type="button" className="btn btn-outline-light fw-bold" onClick={handleLogout}>Cerrar Sesion</button>
-                            </>
-                        ) : (
-                            <>
-                                <Link to="/login" className="btn btn-outline-light fw-bold me-2">Iniciar Sesion</Link>
-                                <Link to="/registro" className="btn btn-primary fw-bold border-light">Crear Cuenta</Link>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </nav>
-        </header>
-    );
+      {/* Cinta amarilla de ofertas (se mantiene igual) */}
+      <div className="bg-warning py-1 overflow-hidden">
+        <div className="d-flex text-dark fw-bold" style={{ whiteSpace: 'nowrap', animation: 'marquee 15s linear infinite' }}>
+          HIJOS DE LAS VENTAS 💸 - 🔥 HIJOS DE LAS VENTAS 💸 - 🔥 HIJOS DE LAS VENTAS 💸 - 🔥 HIJOS DE LAS VENTAS 💸 - 🔥
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Navbar;
