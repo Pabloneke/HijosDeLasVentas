@@ -7,6 +7,8 @@ import Footer from './components/organisms/Footer'
 import RutaProtegida from './components/organisms/RutaProtegida'
 import AdminLayout from './components/organisms/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminProductos from './pages/admin/AdminProductos'
+import AdminUsuarios from './pages/admin/AdminUsuarios'
 import Home from './pages/Home'
 import Productos from './pages/Productos'
 import Contacto from './pages/Contacto'
@@ -44,10 +46,10 @@ function App() {
         <Route element={<RutaProtegida roles={['administrador', 'vendedor']} />}>
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/productos" element={<h1>Mantenedor Productos</h1>} />
+            <Route path="/admin/productos" element={<AdminProductos />} />
             {/* La gestión de usuarios es solo del administrador */}
             <Route element={<RutaProtegida roles={['administrador']} />}>
-              <Route path="/admin/usuarios" element={<h1>Mantenedor Usuarios</h1>} />
+              <Route path="/admin/usuarios" element={<AdminUsuarios />} />
             </Route>
           </Route>
         </Route>
