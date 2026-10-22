@@ -24,38 +24,42 @@ function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <Navbar />
+        <div className="app-shell">
+          <Navbar />
 
-        <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/productos" element={<Productos />} />
+          <div className="app-content">
+            <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/productos" element={<Productos />} />
         
 
-        <Route path="/ofertas" element={<Ofertas />} />
-        <Route path="/contacto" element={<Contacto />} />
+            <Route path="/ofertas" element={<Ofertas />} />
+            <Route path="/contacto" element={<Contacto />} />
         
-        <Route path="/nosotros" element={<Nosotros />} />
-        <Route path="/blogs" element={<Blogs />} />
+            <Route path="/nosotros" element={<Nosotros />} />
+            <Route path="/blogs" element={<Blogs />} />
         
-        <Route path="/login" element={<Login />} />
-        <Route path="/registro" element={<Registro />} />
-        <Route path="/carrito" element={<Carrito />} />
-        <Route path="/checkout" element={<Checkout />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Registro />} />
+            <Route path="/carrito" element={<Carrito />} />
+            <Route path="/checkout" element={<Checkout />} />
 
         {/* Zona privada: solo administrador y vendedor. Al construir cada vista basta con cambiar su element */}
-        <Route element={<RutaProtegida roles={['administrador', 'vendedor']} />}>
-          <Route element={<AdminLayout />}>
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/productos" element={<AdminProductos />} />
-            {/* La gestión de usuarios es solo del administrador */}
-            <Route element={<RutaProtegida roles={['administrador']} />}>
-              <Route path="/admin/usuarios" element={<AdminUsuarios />} />
+            <Route element={<RutaProtegida roles={['administrador', 'vendedor']} />}>
+              <Route element={<AdminLayout />}>
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/productos" element={<AdminProductos />} />
+                {/* La gestión de usuarios es solo del administrador */}
+                <Route element={<RutaProtegida roles={['administrador']} />}>
+                  <Route path="/admin/usuarios" element={<AdminUsuarios />} />
+                </Route>
+              </Route>
             </Route>
-          </Route>
-        </Route>
-        </Routes>
+            </Routes>
+          </div>
 
-        <Footer />
+          <Footer />
+        </div>
       </CartProvider>
     </AuthProvider>
   )
