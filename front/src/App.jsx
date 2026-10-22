@@ -6,6 +6,9 @@ import Navbar from './components/organisms/Navbar'
 import Footer from './components/organisms/Footer'
 import Home from './pages/Home'
 import Productos from './pages/Productos'
+import Contacto from './pages/Contacto'
+import Nosotros from './pages/Nosotros'
+import Blogs from './pages/Blogs'
 
 function App() {
   useEffect(() => {
@@ -20,11 +23,12 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/productos" element={<Productos />} />
         
-        <Route path="/categorias" element={<h1>Categorías</h1>} />
+
         <Route path="/ofertas" element={<h1>Ofertas</h1>} />
-        <Route path="/contacto" element={<h1>Contacto</h1>} />
-        <Route path="/nosotros" element={<h1>Nosotros</h1>} />
-        <Route path="/blogs" element={<h1>Blogs</h1>} />
+        <Route path="/contacto" element={<Contacto />} />
+        
+        <Route path="/nosotros" element={<Nosotros />} />
+        <Route path="/blogs" element={<Blogs />} />
         
         <Route path="/login" element={<h1>Iniciar Sesión</h1>} />
         <Route path="/registro" element={<h1>Crear Cuenta</h1>} />

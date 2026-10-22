@@ -28,7 +28,7 @@ const Navbar = () => {
                                 <Link className={`nav-link text-white fw-bold ${isActive('/')}`} to="/">Inicio</Link>
                             </li>
                             <li className="nav-item mx-3">
-                                <Link className={`nav-link text-white fw-bold ${isActive('/categorias')}`} to="/categorias">Categorías</Link>
+                                <Link className={`nav-link text-white fw-bold ${isActive('/productos')}`} to="/productos">Productos</Link>
                             </li>
                             <li className="nav-item mx-3">
                                 <Link className={`nav-link text-white fw-bold ${isActive('/ofertas')}`} to="/ofertas">Ofertas</Link>
