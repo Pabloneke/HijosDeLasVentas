@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { AuthProvider } from '../context/AuthContext'
 import { CartProvider } from '../context/CartContext'
+import { getOrders, getProductById, initDB } from '../services/db'
 import Checkout from './Checkout'
 
 const producto = {
@@ -14,6 +15,7 @@ const producto = {
 }
 
 const renderCheckout = (items = [producto]) => {
+    initDB() // siembra los productos con su stock (el Perfume tiene 12 unidades)
     localStorage.setItem('carrito', JSON.stringify(items))
     return render(
         <MemoryRouter initialEntries={['/checkout']}>
@@ -22,6 +24,20 @@ const renderCheckout = (items = [producto]) => {
             </AuthProvider>
         </MemoryRouter>
     )
+}
+
+const completarYConfirmar = async () => {
+    const user = userEvent.setup()
+    await user.type(screen.getByLabelText('Nombre completo'), 'Ana Pérez')
+    await user.type(screen.getByLabelText('Correo electrónico'), 'ana@duoc.cl')
+    await user.selectOptions(screen.getByLabelText('Región'), 'Región Metropolitana de Santiago')
+    await user.selectOptions(screen.getByLabelText('Comuna'), 'Santiago')
+    await user.type(screen.getByLabelText('Dirección de despacho'), 'Calle 1')
+    await user.type(screen.getByLabelText('Nombre del titular'), 'Ana Pérez')
+    await user.type(screen.getByLabelText('Número de tarjeta'), '4111 1111 1111 1111')
+    await user.type(screen.getByLabelText('Vencimiento (MM/AA)'), '12/30')
+    await user.type(screen.getByLabelText('CVV'), '123')
+    await user.click(screen.getByRole('button', { name: 'Revisar y confirmar pedido' }))
 }
 
 describe('Checkout', () => {
@@ -42,23 +58,27 @@ describe('Checkout', () => {
         expect(screen.getByText('Selecciona una región')).toBeInTheDocument()
     })
 
-    it('muestra el resumen y confirma una compra de demostración sin vaciar el carrito', async () => {
+    it('confirma la compra, descuenta el stock, registra la orden y vacía el carrito', async () => {
         renderCheckout()
-        const user = userEvent.setup()
 
-        await user.type(screen.getByLabelText('Nombre completo'), 'Ana Pérez')
-        await user.type(screen.getByLabelText('Correo electrónico'), 'ana@duoc.cl')
-        await user.selectOptions(screen.getByLabelText('Región'), 'Región Metropolitana de Santiago')
-        await user.selectOptions(screen.getByLabelText('Comuna'), 'Santiago')
-        await user.type(screen.getByLabelText('Dirección de despacho'), 'Calle 1')
-        await user.type(screen.getByLabelText('Nombre del titular'), 'Ana Pérez')
-        await user.type(screen.getByLabelText('Número de tarjeta'), '4111 1111 1111 1111')
-        await user.type(screen.getByLabelText('Vencimiento (MM/AA)'), '12/30')
-        await user.type(screen.getByLabelText('CVV'), '123')
-        await user.click(screen.getByRole('button', { name: 'Revisar y confirmar pedido' }))
+        await completarYConfirmar()
 
         expect(screen.getByText('Solicitud de compra registrada')).toBeInTheDocument()
         expect(screen.getByText(/No se realizó ningún cobro/)).toBeInTheDocument()
-        expect(JSON.parse(localStorage.getItem('carrito'))).toEqual([producto])
+        expect(getProductById(1).stock).toBe(12 - producto.quantity)
+        expect(getOrders()).toHaveLength(1)
+        expect(JSON.parse(localStorage.getItem('carrito'))).toEqual([])
+    })
+
+    it('no confirma la compra si la cantidad supera el stock disponible', async () => {
+        renderCheckout([{ ...producto, quantity: 999 }])
+
+        await completarYConfirmar()
+
+        expect(screen.getByRole('alert')).toHaveTextContent(/Perfume Rasasi Hawas: solo quedan 12 unidades/)
+        expect(screen.queryByText('Solicitud de compra registrada')).not.toBeInTheDocument()
+        expect(getProductById(1).stock).toBe(12)
+        expect(getOrders()).toEqual([])
+        expect(JSON.parse(localStorage.getItem('carrito'))).toHaveLength(1)
     })
 })

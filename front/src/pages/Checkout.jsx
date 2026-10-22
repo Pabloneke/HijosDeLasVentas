@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import FormField from '../components/atoms/FormField';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { procesarCompra } from '../services/db';
 import { validarCheckout } from '../utils/validaciones';
 import { REGIONES } from '../utils/regiones';
 
@@ -27,7 +28,7 @@ const formatPrice = (value) => new Intl.NumberFormat('es-CL', {
 
 const Checkout = () => {
     const { user } = useAuth();
-    const { items, total } = useCart();
+    const { items, total, clearCart } = useCart();
     const navigate = useNavigate();
     const [form, setForm] = useState(() => ({
         ...initialForm,
@@ -37,6 +38,7 @@ const Checkout = () => {
     const [errores, setErrores] = useState({});
     const [confirmado, setConfirmado] = useState(false);
     const [numeroPedido, setNumeroPedido] = useState('');
+    const [errorCompra, setErrorCompra] = useState('');
 
     const handleChange = (event) => {
         const { id, value } = event.target;
@@ -53,8 +55,20 @@ const Checkout = () => {
         setErrores(nuevosErrores);
         if (Object.keys(nuevosErrores).length > 0) return;
 
-        setNumeroPedido(`HV-${Date.now().toString().slice(-8)}`);
-        setConfirmado(true);
+        // Revalida el stock contra el mantenedor, lo descuenta y registra la orden
+        try {
+            const orden = procesarCompra(items, {
+                userId: user?.id ?? null,
+                nombre: form.nombre,
+                correo: form.correo,
+            });
+            setNumeroPedido(`HV-${String(orden.id).padStart(6, '0')}`);
+            setErrorCompra('');
+            setConfirmado(true);
+            clearCart();
+        } catch (error) {
+            setErrorCompra(error.message);
+        }
     };
 
     if (items.length === 0 && !confirmado) {
@@ -82,7 +96,7 @@ const Checkout = () => {
                         Tu pedido <strong>{numeroPedido}</strong> quedó preparado correctamente.
                     </p>
                     <p className="text-muted mb-4">
-                        Se envio una copia a {form.correo}.
+                        Se envio una copia a {form.correo}. No se realizó ningún cobro (compra de demostración).
                     </p>
                     <div className="d-flex justify-content-center gap-2 flex-wrap">
                         <Link to="/carrito" className="btn btn-outline-primary">Volver al carrito</Link>
@@ -102,6 +116,11 @@ const Checkout = () => {
                 <section className="col-lg-7">
                     <div className="card border-0 shadow-sm p-4">
                         <h3 className="h5 mb-4">Datos de contacto y entrega</h3>
+                        {errorCompra && (
+                            <div className="alert alert-danger" role="alert">
+                                {errorCompra}. <Link to="/carrito" className="alert-link">Ajusta tu carrito</Link> e inténtalo de nuevo.
+                            </div>
+                        )}
                         <form onSubmit={handleSubmit} noValidate>
                             <FormField
                                 id="nombre"
