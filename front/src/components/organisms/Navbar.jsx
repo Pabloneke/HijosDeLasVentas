@@ -1,8 +1,19 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { user, logout } = useAuth();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
+
+    // Solo administrador y vendedor ven el acceso al panel de administracion
+    const puedeAdministrar = user && (user.tipo === 'administrador' || user.tipo === 'vendedor');
 
     // Funcion para saber si el link esta activo 
     const isActive = (path) => location.pathname === path ? 'active' : '';
@@ -50,8 +61,20 @@ const Navbar = () => {
                         <Link to="/carrito" className="btn btn-success fw-bold me-2">
                             🛒 Carrito <span className="badge bg-light text-dark ms-1">$0</span>
                         </Link>
-                        <Link to="/login" className="btn btn-outline-light fw-bold me-2">Iniciar Sesion</Link>
-                        <Link to="/registro" className="btn btn-primary fw-bold border-light">Crear Cuenta</Link>
+                        {user ? (
+                            <>
+                                <span className="text-white fw-semibold align-self-center me-2">Hola, {user.nombre}</span>
+                                {puedeAdministrar && (
+                                    <Link to="/admin" className="btn btn-warning fw-bold me-2">Panel Admin</Link>
+                                )}
+                                <button type="button" className="btn btn-outline-light fw-bold" onClick={handleLogout}>Cerrar Sesion</button>
+                            </>
+                        ) : (
+                            <>
+                                <Link to="/login" className="btn btn-outline-light fw-bold me-2">Iniciar Sesion</Link>
+                                <Link to="/registro" className="btn btn-primary fw-bold border-light">Crear Cuenta</Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </nav>
