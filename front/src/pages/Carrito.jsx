@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { getProducts } from '../services/db';
@@ -8,6 +8,38 @@ const formatPrice = (value) => new Intl.NumberFormat('es-CL', {
     currency: 'CLP',
     maximumFractionDigits: 0,
 }).format(value);
+
+// Input de cantidad. Mientras el usuario edita guarda el texto en `borrador`, así puede borrar
+// el número y escribir otro sin que el producto se elimine del carrito: el carrito solo se
+// actualiza con enteros >= 1, y al salir del campo vacío se vuelve a la última cantidad válida.
+// Quitar un producto se hace únicamente con el botón "Eliminar".
+const CantidadInput = ({ item, onChange }) => {
+    const [borrador, setBorrador] = useState(null);
+
+    const handleChange = (event) => {
+        const texto = event.target.value;
+        const cantidad = Number(texto);
+        if (texto !== '' && Number.isInteger(cantidad) && cantidad >= 1) {
+            onChange(item.id, cantidad);
+            setBorrador(null); // se muestra la cantidad real aplicada (ya topada al stock)
+        } else {
+            setBorrador(texto);
+        }
+    };
+
+    return (
+        <input
+            id={`quantity-${item.id}`}
+            className="form-control"
+            type="number"
+            min="1"
+            max={item.stock ?? undefined}
+            value={borrador ?? item.quantity}
+            onChange={handleChange}
+            onBlur={() => setBorrador(null)}
+        />
+    );
+};
 
 const Carrito = () => {
     const { items, total, updateQuantity, removeItem, clearCart, syncStock } = useCart();
@@ -50,15 +82,7 @@ const Carrito = () => {
                                         </div>
                                         <div className="col-7 col-md-3">
                                             <label className="form-label visually-hidden" htmlFor={`quantity-${item.id}`}>Cantidad</label>
-                                            <input
-                                                id={`quantity-${item.id}`}
-                                                className="form-control"
-                                                type="number"
-                                                min="1"
-                                                max={item.stock ?? undefined}
-                                                value={item.quantity}
-                                                onChange={(event) => updateQuantity(item.id, event.target.value)}
-                                            />
+                                            <CantidadInput item={item} onChange={updateQuantity} />
                                             {item.stock != null && (
                                                 <div className={`small ${item.quantity >= item.stock ? 'text-danger' : 'text-muted'}`}>
                                                     {item.quantity >= item.stock
