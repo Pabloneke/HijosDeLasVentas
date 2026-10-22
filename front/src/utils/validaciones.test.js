@@ -1,6 +1,6 @@
 import {
     esEmailValido, esDominioPermitido, esNombreValido, esPasswordValida, esRunValido,
-    validarLogin, validarRegistro, validarCheckout,
+    validarLogin, validarRegistro, validarCheckout, validarProducto, validarUsuarioAdmin,
 } from './validaciones'
 
 // Datos de registro válidos que cada prueba modifica en un solo campo
@@ -131,5 +131,48 @@ describe('validaciones', () => {
         expect(validarCheckout({ ...base, tarjeta: '4111 1111 1111 1111' })).toEqual({})
         expect(validarCheckout({ ...base, tarjeta: '4111 1111 1111 111A' }).tarjeta).toBeDefined()
         expect(validarCheckout({ ...base, tarjeta: '41111111111111111' }).tarjeta).toBeDefined()
+    })
+})
+
+describe('validarProducto', () => {
+    const productoValido = { name: 'Audífonos', price: '30000', stock: '20', stockCritico: '5', category: 'Gaming' }
+
+    it('no devuelve errores con datos válidos, y el stock crítico es opcional', () => {
+        expect(validarProducto(productoValido)).toEqual({})
+        expect(validarProducto({ ...productoValido, stockCritico: '' })).toEqual({})
+        expect(validarProducto({ ...productoValido, price: '0' })).toEqual({})
+    })
+
+    it('rechaza nombre vacío o muy largo, precio negativo o vacío, y stock no entero', () => {
+        expect(validarProducto({ ...productoValido, name: '   ' })).toHaveProperty('name')
+        expect(validarProducto({ ...productoValido, name: 'x'.repeat(101) })).toHaveProperty('name')
+        expect(validarProducto({ ...productoValido, price: '-1' })).toHaveProperty('price')
+        expect(validarProducto({ ...productoValido, price: '' })).toHaveProperty('price')
+        expect(validarProducto({ ...productoValido, stock: '2.5' })).toHaveProperty('stock')
+        expect(validarProducto({ ...productoValido, stock: '-3' })).toHaveProperty('stock')
+        expect(validarProducto({ ...productoValido, stockCritico: 'abc' })).toHaveProperty('stockCritico')
+        expect(validarProducto({ ...productoValido, category: '' })).toHaveProperty('category')
+    })
+})
+
+describe('validarUsuarioAdmin', () => {
+    const usuarioValido = {
+        run: '123456785', nombre: 'María José', apellidos: 'Pérez Soto', correo: 'maria@duoc.cl',
+        password: 'clave1', tipo: 'vendedor', region: 'Región del Biobío', comuna: 'Concepción', direccion: 'Calle 1',
+    }
+
+    it('no devuelve errores con datos válidos', () => {
+        expect(validarUsuarioAdmin(usuarioValido)).toEqual({})
+    })
+
+    it('exige el tipo de usuario y no pide confirmar la contraseña', () => {
+        expect(validarUsuarioAdmin({ ...usuarioValido, tipo: '' })).toHaveProperty('tipo')
+        expect(validarUsuarioAdmin(usuarioValido)).not.toHaveProperty('confirmar')
+    })
+
+    it('al editar acepta la contraseña vacía, pero al crear no', () => {
+        expect(validarUsuarioAdmin({ ...usuarioValido, password: '' }, { editando: true })).toEqual({})
+        expect(validarUsuarioAdmin({ ...usuarioValido, password: '' })).toHaveProperty('password')
+        expect(validarUsuarioAdmin({ ...usuarioValido, password: 'ab' }, { editando: true })).toHaveProperty('password')
     })
 })
