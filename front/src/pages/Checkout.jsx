@@ -75,10 +75,10 @@ const Checkout = () => {
                     <div className="display-5 text-success mb-3" aria-hidden="true">✓</div>
                     <h2 className="mb-3">Solicitud de compra registrada</h2>
                     <p className="lead">
-                        Tu pedido de demostración <strong>{numeroPedido}</strong> quedó preparado correctamente.
+                        Tu pedido <strong>{numeroPedido}</strong> quedó preparado correctamente.
                     </p>
                     <p className="text-muted mb-4">
-                        No se realizó ningún cobro ni se envió información a un servidor.
+                        Se envio una copia a {form.correo}. No se realizó ningún cobro ni se envió información a un servidor.
                     </p>
                     <div className="d-flex justify-content-center gap-2 flex-wrap">
                         <Link to="/carrito" className="btn btn-outline-primary">Volver al carrito</Link>

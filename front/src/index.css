@@ -46,8 +46,34 @@
     margin: 0 auto;
 }
 
+.offers-hero {
+    background: linear-gradient(135deg, #0d6efd 0%, #4f8dfd 100%);
+    color: #fff;
+    box-shadow: 0 0.75rem 2rem rgb(13 110 253 / 18%);
+}
+
+.offers-hero p {
+    max-width: 680px;
+}
+
+.offers-hero + .d-flex {
+    border-bottom: 1px solid rgb(0 0 0 / 8%);
+    padding-bottom: 1rem;
+}
+
+.card.h-100 {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.card.h-100:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.75rem 1.5rem rgb(0 0 0 / 12%) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .cart-fly-image {
+    .cart-fly-image,
+    .card.h-100 {
         animation-duration: 1ms;
+        transition: none;
     }
 }

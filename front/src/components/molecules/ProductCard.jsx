@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const ProductCard = ({ id, name, price, category, image, onAddToCart }) => {
+const ProductCard = ({ id, name, price, originalPrice, discountPercent, category, image, buttonLabel = 'Lo quiero', onAddToCart }) => {
     const imageRef = useRef(null);
     const confirmationTimeout = useRef(null);
     const [added, setAdded] = useState(false);
@@ -41,7 +41,15 @@ const ProductCard = ({ id, name, price, category, image, onAddToCart }) => {
             <div className="card-body d-flex flex-column text-center">
                 <span className="badge bg-secondary mb-2 align-self-center">{category}</span>
                 <h5 className="card-title fw-bold">{name}</h5>
-                <h4 className="text-primary fw-bold mt-auto">{formatPrice(price)}</h4>
+                {originalPrice ? (
+                    <div className="mt-auto">
+                        <span className="badge bg-danger mb-2">-{discountPercent}%</span>
+                        <div className="text-muted text-decoration-line-through">{formatPrice(originalPrice)}</div>
+                        <h4 className="text-danger fw-bold mb-0">{formatPrice(price)}</h4>
+                    </div>
+                ) : (
+                    <h4 className="text-primary fw-bold mt-auto">{formatPrice(price)}</h4>
+                )}
                 
                 {/* Botón que ejecuta la función del carrito pasada por prop */}
                 <button 
@@ -49,7 +57,7 @@ const ProductCard = ({ id, name, price, category, image, onAddToCart }) => {
                     className="btn btn-outline-primary mt-3 fw-bold"
                     onClick={handleAdd}
                 >
-                    {added ? '¡Agregado!' : 'Lo quiero'}
+                    {added ? '¡Agregado!' : buttonLabel}
                 </button>
             </div>
         </article>

@@ -14,6 +14,7 @@ import Login from './pages/Login'
 import Registro from './pages/Registro'
 import Carrito from './pages/Carrito'
 import Checkout from './pages/Checkout'
+import Ofertas from './pages/Ofertas'
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
         <Route path="/productos" element={<Productos />} />
         
 
-        <Route path="/ofertas" element={<h1>Ofertas</h1>} />
+        <Route path="/ofertas" element={<Ofertas />} />
         <Route path="/contacto" element={<Contacto />} />
         
         <Route path="/nosotros" element={<Nosotros />} />
