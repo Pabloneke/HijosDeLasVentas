@@ -24,8 +24,8 @@ const Home = () => {
                         </p>
 
                         <div className="home-hero-actions">
-                            <Link to="/contacto" className="btn btn-warning btn-lg fw-bold">Hacer un pedido ahora</Link>
-                            <Link to="/productos" className="btn btn-outline-primary btn-lg fw-bold">Ver productos</Link>
+                            <Link to="/productos" className="btn btn-warning btn-lg fw-bold">Hacer un pedido ahora</Link>
+                            <Link to="/ofertas" className="btn btn-outline-primary btn-lg fw-bold">Ver ofertas</Link>
                         </div>
 
                         <div className="home-hero-stats" aria-label="Indicadores del emprendimiento">
