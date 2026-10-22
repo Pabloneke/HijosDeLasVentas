@@ -77,3 +77,14 @@
         transition: none;
     }
 }
+
+/* Menú lateral del panel de administración: ancho completo en móvil, 240px desde md */
+.admin-sidebar {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .admin-sidebar {
+    width: 240px;
+  }
+}

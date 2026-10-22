@@ -1,5 +1,5 @@
 import {
-    initDB, getProducts,
+    initDB, getProducts, isStockCritico, getOrders, createOrder,
     getUsers, getUserById, findUserByEmail, createUser, updateUser, deleteUser,
     getSession, login, logout,
 } from './db'
@@ -87,5 +87,40 @@ describe('db — sesión', () => {
 
         localStorage.setItem('sesion', '{dañado')
         expect(getSession()).toBeNull()
+    })
+})
+
+describe('db — stock crítico', () => {
+    beforeEach(() => initDB())
+
+    // RF5: el umbral es inclusivo (stock igual al crítico ya cuenta como crítico)
+    it('isStockCritico es verdadero cuando el stock es menor o igual al umbral', () => {
+        expect(isStockCritico({ stock: 2, stockCritico: 3 })).toBe(true)
+        expect(isStockCritico({ stock: 3, stockCritico: 3 })).toBe(true)
+        expect(isStockCritico({ stock: 4, stockCritico: 3 })).toBe(false)
+    })
+
+    // Los datos base dejan exactamente dos productos en crítico para poder probar el panel
+    it('los productos base incluyen algunos en stock crítico y otros no', () => {
+        const criticos = getProducts().filter(isStockCritico).map((p) => p.name)
+        expect(criticos).toEqual(['Teclado Mecánico RGB', 'Manga Dorohedoro Vol. 1'])
+    })
+})
+
+describe('db — órdenes', () => {
+    // Leer: sin compras la lista está vacía
+    it('getOrders devuelve [] cuando no hay órdenes', () => {
+        expect(getOrders()).toEqual([])
+    })
+
+    // Crear: asigna id consecutivo y fecha, y la deja guardada
+    it('createOrder asigna id consecutivo y fecha, y la deja guardada', () => {
+        const primera = createOrder({ cliente: { userId: 3 }, total: 1000 })
+        const segunda = createOrder({ cliente: { userId: null }, total: 2000 })
+
+        expect(primera.id).toBe(1)
+        expect(segunda.id).toBe(2)
+        expect(Number.isNaN(Date.parse(primera.fecha))).toBe(false)
+        expect(getOrders()).toHaveLength(2)
     })
 })
