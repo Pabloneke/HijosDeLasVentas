@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { getProducts } from '../services/db';
 
 const formatPrice = (value) => new Intl.NumberFormat('es-CL', {
     style: 'currency',
@@ -9,7 +10,13 @@ const formatPrice = (value) => new Intl.NumberFormat('es-CL', {
 }).format(value);
 
 const Carrito = () => {
-    const { items, total, updateQuantity, removeItem, clearCart } = useCart();
+    const { items, total, updateQuantity, removeItem, clearCart, syncStock } = useCart();
+
+    // Al entrar al carrito se alinea con el stock actual del mantenedor
+    // (el admin pudo bajarlo, o el producto pudo agotarse o eliminarse).
+    useEffect(() => {
+        syncStock(Object.fromEntries(getProducts().map((p) => [p.id, p.stock])));
+    }, []);
 
     return (
         <main className="container my-5">
@@ -48,9 +55,17 @@ const Carrito = () => {
                                                 className="form-control"
                                                 type="number"
                                                 min="1"
+                                                max={item.stock ?? undefined}
                                                 value={item.quantity}
                                                 onChange={(event) => updateQuantity(item.id, event.target.value)}
                                             />
+                                            {item.stock != null && (
+                                                <div className={`small ${item.quantity >= item.stock ? 'text-danger' : 'text-muted'}`}>
+                                                    {item.quantity >= item.stock
+                                                        ? `Máximo disponible: ${item.stock}`
+                                                        : `${item.stock} disponibles`}
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="col-5 col-md-3 text-end">
                                             <strong>{formatPrice(item.price * item.quantity)}</strong>
