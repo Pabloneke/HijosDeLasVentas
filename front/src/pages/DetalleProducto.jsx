@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getProducts } from '../services/db';
+import { useCart } from '../context/CartContext';
 
 const DetalleProducto = () => {
     const { id } = useParams();
+    const { addItem } = useCart();
     const [producto, setProducto] = useState(null);
+    const [mensaje, setMensaje] = useState('');
 
     useEffect(() => {
         const productos = getProducts();
@@ -18,6 +21,19 @@ const DetalleProducto = () => {
             <Link to="/productos" className="btn btn-primary mt-3">Volver al catálogo</Link>
         </div>
     );
+
+    const agotado = producto.stock <= 0;
+
+    const handleAdd = () => {
+        const agregado = addItem({
+            id: producto.id,
+            name: producto.name,
+            price: producto.price,
+            image: producto.image,
+            stock: producto.stock,
+        });
+        setMensaje(agregado ? 'Producto agregado al carrito' : 'Ya tienes en el carrito todo el stock disponible');
+    };
 
     return (
         <main className="container my-5">
@@ -33,7 +49,10 @@ const DetalleProducto = () => {
                         Garantía oficial y calidad asegurada por Hijos de las Ventas. Stock disponible para despacho inmediato a todo Chile.
                     </p>
                     <div className="d-grid gap-2 mt-4">
-                        <button className="btn btn-success btn-lg fw-bold">🛒 Añadir al Carrito</button>
+                        <button type="button" className="btn btn-success btn-lg fw-bold" onClick={handleAdd} disabled={agotado}>
+                            {agotado ? 'Agotado' : '🛒 Añadir al Carrito'}
+                        </button>
+                        {mensaje && <p className="small text-muted mb-0" role="status">{mensaje}</p>}
                         <Link to="/productos" className="btn btn-outline-secondary">Volver al catálogo</Link>
                     </div>
                 </div>
