@@ -5,15 +5,17 @@
 const PRODUCTOS_KEY = 'productos';
 const USUARIOS_KEY = 'usuarios';
 const SESION_KEY = 'sesion';
+const ORDENES_KEY = 'ordenes';
 
 // Usamos tus imágenes reales de la carpeta public/img
+// stockCritico: si stock <= stockCritico se muestra la alerta de stock crítico (RF5).
 const productosBase = [
-    { id: 1, name: "Perfume Rasasi Hawas", price: 65000, category: "Perfumería", image: "/img/RasasiHawas.webp" },
-    { id: 2, name: "MousePad XXL Gamer", price: 15000, category: "Computación", image: "/img/MousePadXXL.webp" },
-    { id: 3, name: "Teclado Mecánico RGB", price: 45000, category: "Computación", image: "/img/Teclado.webp" },
-    { id: 4, name: "Juego PS4", price: 20000, category: "Gaming", image: "/img/PS14.webp" },
-    { id: 5, name: "GTA VI (Pre-venta)", price: 70000, category: "Gaming", image: "/img/GTA-VI.webp" },
-    { id: 6, name: "Manga Dorohedoro Vol. 1", price: 12000, category: "Librería", image: "/img/Dorohedoro1.webp" }
+    { id: 1, name: "Perfume Rasasi Hawas", price: 65000, category: "Perfumería", image: "/img/RasasiHawas.webp", stock: 12, stockCritico: 3 },
+    { id: 2, name: "MousePad XXL Gamer", price: 15000, category: "Computación", image: "/img/MousePadXXL.webp", stock: 25, stockCritico: 5 },
+    { id: 3, name: "Teclado Mecánico RGB", price: 45000, category: "Computación", image: "/img/Teclado.webp", stock: 4, stockCritico: 5 },
+    { id: 4, name: "Juego PS4", price: 20000, category: "Gaming", image: "/img/PS14.webp", stock: 8, stockCritico: 3 },
+    { id: 5, name: "GTA VI (Pre-venta)", price: 70000, category: "Gaming", image: "/img/GTA-VI.webp", stock: 50, stockCritico: 10 },
+    { id: 6, name: "Manga Dorohedoro Vol. 1", price: 12000, category: "Librería", image: "/img/Dorohedoro1.webp", stock: 2, stockCritico: 2 }
 ];
 
 // Usuarios de prueba (simulación sin backend: las contraseñas se guardan en texto plano
@@ -60,6 +62,9 @@ export const getProducts = () => {
     const data = localStorage.getItem(PRODUCTOS_KEY);
     return data ? JSON.parse(data) : [];
 };
+
+// RF5: un producto tiene stock crítico cuando su stock es menor o igual al umbral definido
+export const isStockCritico = (producto) => producto.stock <= producto.stockCritico;
 
 // ---------- Usuarios ----------
 
@@ -132,3 +137,17 @@ export const login = (correo, password) => {
 };
 
 export const logout = () => localStorage.removeItem(SESION_KEY);
+
+// ---------- Órdenes de compra ----------
+// Una orden guarda lo que se compró: { id, fecha, cliente: { userId, nombre, correo }, items, total }
+// cliente.userId es null si compró sin sesión iniciada.
+
+export const getOrders = () => leerLista(ORDENES_KEY);
+
+// Crear: asigna id consecutivo y fecha actual; devuelve la orden creada
+export const createOrder = (datos) => {
+    const ordenes = getOrders();
+    const nueva = { ...datos, id: siguienteId(ordenes), fecha: new Date().toISOString() };
+    guardarLista(ORDENES_KEY, [...ordenes, nueva]);
+    return nueva;
+};
