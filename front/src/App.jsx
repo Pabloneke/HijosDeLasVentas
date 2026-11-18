@@ -11,6 +11,7 @@ import AdminLayout from './components/organisms/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminProductos from './pages/admin/AdminProductos'
 import AdminUsuarios from './pages/admin/AdminUsuarios'
+import AdminOrdenes from './pages/admin/AdminOrdenes'
 import Home from './pages/Home'
 import Productos from './pages/Productos'
 import DetalleProducto from './pages/DetalleProducto'
@@ -57,6 +58,7 @@ function App() {
               <Route element={<AdminLayout />}>
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/productos" element={<AdminProductos />} />
+                <Route path="/admin/ordenes" element={<AdminOrdenes />} />
                 <Route element={<RutaProtegida roles={['administrador']} />}>
                   <Route path="/admin/usuarios" element={<AdminUsuarios />} />
                 </Route>
