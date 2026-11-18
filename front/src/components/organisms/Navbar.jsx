@@ -31,6 +31,8 @@ const Navbar = () => {
   // Solo administrador y vendedor ven el acceso al panel de administración
   const puedeAdministrar = user && (user.tipo === 'administrador' || user.tipo === 'vendedor');
 
+  if (user?.tipo === 'vendedor') return null;
+
   const isActive = (path) => (location.pathname === path ? 'active' : '');
 
   return (

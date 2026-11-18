@@ -28,12 +28,13 @@ const AdminLayout = () => {
                     <div className="small text-white-50">{user?.nombre} ({user?.tipo})</div>
                 </div>
                 <nav className="admin-nav list-group list-group-flush p-2" aria-label="Menú de administración">
-                    <NavLink to="/admin" end className={claseItem}>Dashboard</NavLink>
+                    {esAdministrador && <NavLink to="/admin" end className={claseItem}>Dashboard</NavLink>}
                     <NavLink to="/admin/productos" className={claseItem}>Productos</NavLink>
+                    <NavLink to="/admin/ordenes" className={claseItem}>Órdenes</NavLink>
                     {esAdministrador && (
                         <NavLink to="/admin/usuarios" className={claseItem}>Usuarios</NavLink>
                     )}
-                    <NavLink to="/" className="list-group-item list-group-item-action admin-nav-link admin-nav-store">Volver a la tienda</NavLink>
+                    {esAdministrador && <NavLink to="/" className="list-group-item list-group-item-action admin-nav-link admin-nav-store">Volver a la tienda</NavLink>}
                     <button type="button" className="list-group-item list-group-item-action admin-nav-link admin-nav-logout" onClick={handleLogout}>
                         Cerrar sesión
                     </button>

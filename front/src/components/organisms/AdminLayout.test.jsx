@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { Routes, Route } from 'react-router-dom'
 import AdminLayout from './AdminLayout'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB, login, getSession } from '../../services/db'
+import { initDB } from '../../services/db'
+import { iniciarSesion, getSession } from '../../test/authFixtures'
 
 // Layout con una vista hija y la pantalla de inicio a la que se vuelve al cerrar sesión
 const renderLayout = () =>
@@ -22,7 +23,7 @@ describe('AdminLayout', () => {
 
     // Render: menú con sus enlaces, usuario en sesión y la vista hija
     it('muestra el menú del administrador con todos los accesos y la vista hija', () => {
-        login('admin@duoc.cl', 'admin123')
+        iniciarSesion('admin@duoc.cl')
         renderLayout()
 
         const menu = screen.getByRole('navigation', { name: 'Menú de administración' })
@@ -37,7 +38,7 @@ describe('AdminLayout', () => {
 
     // Render condicional por rol: el vendedor no ve Usuarios
     it('el vendedor no ve el acceso a Usuarios', () => {
-        login('vendedor@duoc.cl', 'vende123')
+        iniciarSesion('vendedor@duoc.cl')
         renderLayout()
 
         expect(screen.getByRole('link', { name: 'Productos' })).toBeInTheDocument()
@@ -46,7 +47,7 @@ describe('AdminLayout', () => {
 
     // Estado de ruta: la sección actual queda resaltada
     it('marca con la clase active el enlace de la sección actual', () => {
-        login('admin@duoc.cl', 'admin123')
+        iniciarSesion('admin@duoc.cl')
         renderLayout()
 
         expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveClass('active')
@@ -55,7 +56,7 @@ describe('AdminLayout', () => {
 
     // Evento: cerrar sesión borra la sesión y lleva a la tienda
     it('Cerrar sesión borra la sesión y vuelve al inicio', async () => {
-        login('admin@duoc.cl', 'admin123')
+        iniciarSesion('admin@duoc.cl')
         renderLayout()
 
         await userEvent.click(screen.getByRole('button', { name: 'Cerrar sesión' }))

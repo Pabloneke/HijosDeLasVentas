@@ -1,7 +1,8 @@
 import { screen, within } from '@testing-library/react'
 import AdminDashboard from './AdminDashboard'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB, login, createOrder } from '../../services/db'
+import { initDB, createOrder } from '../../services/db'
+import { iniciarSesion } from '../../test/authFixtures'
 import { formatPrice } from '../../utils/precios'
 
 // Compra de ejemplo; userId null representa una compra sin sesión iniciada
@@ -15,7 +16,7 @@ const compra = (userId, total, fecha) => {
 describe('AdminDashboard', () => {
     beforeEach(() => {
         initDB()
-        login('admin@duoc.cl', 'admin123')
+        iniciarSesion('admin@duoc.cl')
     })
 
     // Prueba de render: saludo y tarjetas de resumen con los datos sembrados
@@ -86,7 +87,7 @@ describe('AdminDashboard', () => {
         expect(screen.getByRole('link', { name: 'Ver usuarios' })).toHaveAttribute('href', '/admin/usuarios')
         unmount()
 
-        login('vendedor@duoc.cl', 'vende123')
+        iniciarSesion('vendedor@duoc.cl')
         renderWithProviders(<AdminDashboard />)
         expect(screen.queryByRole('link', { name: 'Ver usuarios' })).not.toBeInTheDocument()
         expect(screen.getByRole('link', { name: 'Ver productos' })).toBeInTheDocument()

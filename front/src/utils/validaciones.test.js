@@ -9,8 +9,8 @@ const registroValido = {
     nombre: 'María José',
     apellidos: 'Pérez Soto',
     correo: 'maria@duoc.cl',
-    password: 'clave1',
-    confirmar: 'clave1',
+    password: 'clave123',
+    confirmar: 'clave123',
     region: 'Región del Biobío',
     comuna: 'Concepción',
     direccion: 'Calle Los Alerces 456',
@@ -74,7 +74,7 @@ describe('validaciones', () => {
         expect(validarLogin({ correo: '', password: 'clave1' }).correo).toBe('Ingresa tu correo')
         expect(validarLogin({ correo: 'ana', password: 'clave1' }).correo).toMatch(/formato/)
         expect(validarLogin({ correo: 'ana@hotmail.com', password: 'clave1' }).correo).toMatch(/@duoc\.cl/)
-        expect(validarLogin({ correo: 'ana@duoc.cl', password: '12' }).password).toMatch(/entre 4 y 10/)
+        expect(validarLogin({ correo: 'ana@duoc.cl', password: '' }).password).toMatch(/72 bytes/)
     })
 
     // Prueba 63 (formulario de registro): datos válidos no generan errores
@@ -102,10 +102,10 @@ describe('validaciones', () => {
     })
 
     // Prueba 65 (caso borde): dirección demasiado larga
-    it('validarRegistro rechaza una dirección de más de 300 caracteres', () => {
-        const errores = validarRegistro({ ...registroValido, direccion: 'x'.repeat(301) })
+    it('validarRegistro rechaza una dirección de más de 255 caracteres', () => {
+        const errores = validarRegistro({ ...registroValido, direccion: 'x'.repeat(256) })
 
-        expect(errores.direccion).toMatch(/300/)
+        expect(errores.direccion).toMatch(/255/)
     })
 
     // Prueba 90 (checkout): retiro en tienda no exige dirección

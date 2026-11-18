@@ -60,8 +60,13 @@ const errorPassword = (password) =>
 const soloErrores = (errores) =>
     Object.fromEntries(Object.entries(errores).filter(([, mensaje]) => mensaje));
 
+const passwordAdmiteBCrypt = (password) => new TextEncoder().encode(password).length <= 72;
+
 export const validarLogin = ({ correo, password }) =>
-    soloErrores({ correo: errorCorreo(correo), password: errorPassword(password) });
+    soloErrores({
+        correo: errorCorreo(correo.trim()),
+        password: password.trim() && passwordAdmiteBCrypt(password) ? '' : 'Ingresa una contraseña de hasta 72 bytes',
+    });
 
 export const validarRegistro = (datos) =>
     soloErrores({
@@ -69,11 +74,12 @@ export const validarRegistro = (datos) =>
         nombre: esNombreValido(datos.nombre) ? '' : 'El nombre solo admite letras y espacios (3 a 100 caracteres)',
         apellidos: esNombreValido(datos.apellidos) ? '' : 'Los apellidos solo admiten letras y espacios (3 a 100 caracteres)',
         correo: errorCorreo(datos.correo),
-        password: errorPassword(datos.password),
+        password: datos.password.trim() && datos.password.length >= 8 && passwordAdmiteBCrypt(datos.password)
+            ? '' : 'La contraseña debe tener al menos 8 caracteres y un máximo de 72 bytes',
         confirmar: datos.confirmar === datos.password ? '' : 'Las contraseñas no coinciden',
         region: datos.region ? '' : 'Selecciona una región',
         comuna: datos.comuna ? '' : 'Selecciona una comuna',
-        direccion: datos.direccion.trim() && datos.direccion.length <= 300 ? '' : 'Ingresa tu dirección (máximo 300 caracteres)',
+        direccion: datos.direccion.trim() && datos.direccion.trim().length <= 255 ? '' : 'Ingresa tu dirección (máximo 255 caracteres)',
     });
 
 // Mantenedor de productos (admin). Los campos numéricos llegan como texto desde los inputs.

@@ -2,14 +2,15 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdminProductos from './AdminProductos'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB, login, getProducts } from '../../services/db'
+import { initDB, getProducts } from '../../services/db'
+import { iniciarSesion } from '../../test/authFixtures'
 
 const filas = () => within(screen.getByRole('table', { name: 'Productos' })).getAllByRole('row').slice(1)
 
 describe('AdminProductos', () => {
     beforeEach(() => {
         initDB()
-        login('admin@duoc.cl', 'admin123')
+        iniciarSesion('admin@duoc.cl')
     })
 
     // Render de lista: una fila por producto de la "base de datos"
@@ -23,7 +24,7 @@ describe('AdminProductos', () => {
 
     // Render condicional por rol: el vendedor consulta, pero no puede crear, editar ni eliminar
     it('el vendedor ve la tabla sin acciones de edición', () => {
-        login('vendedor@duoc.cl', 'vende123')
+        iniciarSesion('vendedor@duoc.cl')
         renderWithProviders(<AdminProductos />)
 
         expect(filas()).toHaveLength(6)

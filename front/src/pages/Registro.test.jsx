@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { Routes, Route } from 'react-router-dom'
 import Registro from './Registro'
 import { renderWithProviders } from '../test/renderWithProviders'
-import { initDB, findUserByEmail, getUsers, getSession } from '../services/db'
+import { initDB, findUserByEmail, getUsers } from '../services/db'
+import { getSession, mockAuthApi } from '../test/authFixtures'
 
 const renderRegistro = () =>
     renderWithProviders(
@@ -21,8 +22,8 @@ const completar = async (cambios = {}) => {
         'Correo electrónico': 'maria@duoc.cl',
         Nombre: 'María José',
         Apellidos: 'Pérez Soto',
-        Contraseña: 'clave1',
-        'Confirmar contraseña': 'clave1',
+        Contraseña: 'clave123',
+        'Confirmar contraseña': 'clave123',
         Dirección: 'Calle Los Alerces 456',
         ...cambios,
     }
@@ -36,7 +37,8 @@ const completar = async (cambios = {}) => {
 const enviar = () => userEvent.click(screen.getByRole('button', { name: 'Registrarme' }))
 
 describe('Registro', () => {
-    beforeEach(() => initDB())
+    let fetchMock
+    beforeEach(() => { initDB(); fetchMock = mockAuthApi() })
 
     // Prueba 74 (RF4, estado dependiente): la comuna depende de la región elegida
     it('mantiene la comuna deshabilitada hasta elegir región y luego muestra sus comunas', async () => {
@@ -105,20 +107,23 @@ describe('Registro', () => {
         await completar()
         await enviar()
 
-        const creado = findUserByEmail('maria@duoc.cl')
-        expect(creado).toMatchObject({ tipo: 'cliente', run: '123456785', comuna: 'Concepción' })
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        const [url, opciones] = fetchMock.mock.calls[0]
+        expect(url).toMatch(/\/auth\/registro$/)
+        expect(JSON.parse(opciones.body)).toMatchObject({ run: '123456785', comuna: 'Concepción' })
+        expect(getSession().tipo).toBe('cliente')
         expect(getSession().correo).toBe('maria@duoc.cl')
         expect(screen.getByText('Página de inicio')).toBeInTheDocument()
     })
 
     // Prueba 80 (correo único): un correo ya registrado se informa en el campo
-    it('muestra "El correo ya está registrado" si el correo ya existe', async () => {
+    it('muestra "El correo o RUN ya está registrado" si el correo ya existe', async () => {
         renderRegistro()
 
         await completar({ 'Correo electrónico': 'carla@gmail.com' })
         await enviar()
 
-        expect(screen.getByText('El correo ya está registrado')).toBeInTheDocument()
+        expect(await screen.findByRole('alert')).toHaveTextContent('El correo o RUN ya está registrado')
         expect(getUsers()).toHaveLength(3)
     })
 })

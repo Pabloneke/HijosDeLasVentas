@@ -2,7 +2,8 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdminUsuarios from './AdminUsuarios'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB, login, getUsers, findUserByEmail } from '../../services/db'
+import { initDB, getUsers, findUserByEmail } from '../../services/db'
+import { iniciarSesion } from '../../test/authFixtures'
 
 const filas = () => within(screen.getByRole('table', { name: 'Usuarios' })).getAllByRole('row').slice(1)
 
@@ -26,7 +27,7 @@ const completarFormulario = async (datos = {}) => {
 describe('AdminUsuarios', () => {
     beforeEach(() => {
         initDB()
-        login('admin@duoc.cl', 'admin123')
+        iniciarSesion('admin@duoc.cl')
     })
 
     // Render de lista: una fila por usuario, con el tipo legible

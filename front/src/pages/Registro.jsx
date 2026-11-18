@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import FormField from '../components/atoms/FormField';
 import { useAuth } from '../context/AuthContext';
-import { createUser } from '../services/db';
 import { validarRegistro } from '../utils/validaciones';
 import { REGIONES } from '../utils/regiones';
 
@@ -12,11 +11,13 @@ const formVacio = {
 };
 
 const Registro = () => {
-    const { login } = useAuth();
+    const { registro } = useAuth();
     const navigate = useNavigate();
 
     const [form, setForm] = useState(formVacio);
     const [errores, setErrores] = useState({});
+    const [errorGeneral, setErrorGeneral] = useState('');
+    const [enviando, setEnviando] = useState(false);
 
     // Un solo manejador para todos los campos: usa el id del control como clave
     const handleChange = (e) => {
@@ -28,34 +29,33 @@ const Registro = () => {
         setForm({ ...form, region: e.target.value, comuna: '' });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        if (enviando) return;
+        setErrorGeneral('');
 
         const erroresForm = validarRegistro(form);
         setErrores(erroresForm);
         if (Object.keys(erroresForm).length > 0) return;
 
+        setEnviando(true);
         try {
-            createUser({
+            await registro({
                 run: form.run.trim().toUpperCase(),
                 nombre: form.nombre.trim(),
                 apellidos: form.apellidos.trim(),
                 correo: form.correo.trim(),
                 password: form.password,
-                tipo: 'cliente',
                 direccion: form.direccion.trim(),
                 region: form.region,
                 comuna: form.comuna,
             });
+            navigate('/');
         } catch (error) {
-            // Único error posible: el correo ya existe
-            setErrores({ correo: error.message });
-            return;
+            setErrorGeneral(error.message);
+        } finally {
+            setEnviando(false);
         }
-
-        // Tras registrarse el usuario queda con la sesión iniciada
-        login(form.correo, form.password);
-        navigate('/');
     };
 
     const comunas = REGIONES[form.region] || [];
@@ -71,6 +71,7 @@ const Registro = () => {
                             <h2>Registro de usuario</h2>
                         </div>
                         <form onSubmit={handleSubmit} noValidate>
+                            {errorGeneral && <div className="alert alert-danger" role="alert">{errorGeneral}</div>}
                             <div className="row">
                                 <div className="col-md-6">
                                     <FormField id="run" label="RUN (sin puntos ni guion)" placeholder="Ej: 123456785" maxLength={9}
@@ -89,11 +90,11 @@ const Registro = () => {
                                         value={form.apellidos} onChange={handleChange} error={errores.apellidos} />
                                 </div>
                                 <div className="col-md-6">
-                                    <FormField id="password" label="Contraseña" type="password" maxLength={10}
+                                    <FormField id="password" label="Contraseña" type="password"
                                         value={form.password} onChange={handleChange} error={errores.password} />
                                 </div>
                                 <div className="col-md-6">
-                                    <FormField id="confirmar" label="Confirmar contraseña" type="password" maxLength={10}
+                                    <FormField id="confirmar" label="Confirmar contraseña" type="password"
                                         value={form.confirmar} onChange={handleChange} error={errores.confirmar} />
                                 </div>
                                 <div className="col-md-6">
@@ -115,10 +116,10 @@ const Registro = () => {
                                     </FormField>
                                 </div>
                             </div>
-                            <FormField id="direccion" label="Dirección" maxLength={300}
+                            <FormField id="direccion" label="Dirección" maxLength={255}
                                 value={form.direccion} onChange={handleChange} error={errores.direccion} />
 
-                            <button type="submit" className="btn btn-primary w-100 fw-bold">Registrarme</button>
+                            <button type="submit" className="btn btn-primary w-100 fw-bold" disabled={enviando}>{enviando ? 'Registrando…' : 'Registrarme'}</button>
                         </form>
                         <p className="text-center text-muted mt-3 mb-0">
                             ¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link>
