@@ -22,7 +22,7 @@ El proyecto utiliza **React** y **Bootstrap 5.3.3** para facilitar la construcci
 
 * **Catálogo Dinámico:** Tarjetas de productos generadas dinámicamente desde el backend (`GET /api/v1/productos`), con vistas de detalle individual.
 * **Carrito de Compras (Context API):** Gestión global del estado del carrito, permitiendo agregar, eliminar y calcular el total en tiempo real sin *prop drilling*.
-* **Rutas Protegidas:** Sistema de autenticación simulado con roles (`administrador`, `vendedor`, `cliente`) utilizando `React Router DOM` para restringir el acceso al panel de control (`/admin`).
+* **Rutas Protegidas:** Autenticación con JWT contra el backend (el token de acceso dura 1 hora y se renueva solo con un *refresh token* en cookie HttpOnly) y roles (`administrador`, `vendedor`, `cliente`) con `React Router DOM` para restringir el acceso al panel de control (`/admin`).
 * **Arquitectura Escalable:** Estructura de carpetas basada en *Atomic Design* (Átomos, Moléculas, Organismos, Páginas).
 * **Diseño Responsive:** Adaptabilidad garantizada para 💻 Computadores, 📱 Tablets y 📲 Teléfonos móviles.
 
@@ -46,7 +46,7 @@ La identidad visual del proyecto utiliza una combinación de colores orientada a
 
 | Tecnología | Uso en el Proyecto |
 | :--- | :--- |
-| **React 18** | Librería principal para la construcción de interfaces de usuario. |
+| **React 19** | Librería principal para la construcción de interfaces de usuario. |
 | **Vite** | Entorno de desarrollo ultrarrápido y empaquetador (Bundler). |
 | **React Router DOM** | Enrutamiento del lado del cliente (SPA) y protección de rutas. |
 | **Context API** | Manejo de estados globales (Autenticación y Carrito). |
@@ -86,7 +86,9 @@ HijosDeLasVentas/
 
 ## 🚀 Instalación y Ejecución Local
 
-Para levantar este proyecto en tu entorno local, asegúrate de tener instalado **Node.js**.
+Necesitas **Node.js 20.19 o superior** y el **backend** corriendo, porque todos los datos (productos, usuarios, compras y sesión) vienen de su API REST.
+
+**Orden de arranque:** MySQL → backend ([HijosDelasVentasBack](https://github.com/Pabloneke/HijosDelasVentasBack), ver su README) → frontend.
 
 1. **Clonar el repositorio:**
    ```bash
@@ -111,14 +113,36 @@ Para levantar este proyecto en tu entorno local, asegúrate de tener instalado *
 
 5. **Ejecutar pruebas unitarias (opcional):**
    ```bash
-   npm run test
+   npm run test:run
    ```
+   Las pruebas reemplazan la API con `vi.mock`, así que no necesitan el backend.
+
+### 🔌 Conexión con el backend
+
+* El frontend llama a `http://localhost:8080/api/v1` por defecto.
+* Si el backend corre en otra dirección, crea `front/.env.local` con:
+  ```bash
+  VITE_API_URL=http://<servidor>:8080/api/v1
+  ```
+* El backend solo acepta peticiones (CORS) desde `http://localhost:5173`. Si Vite usa otro puerto porque el 5173 está ocupado, libéralo antes de abrir la tienda.
+
+### 👤 Usuarios de prueba
+
+Los carga el `data.sql` del backend:
+
+| Correo | Contraseña | Rol |
+| :--- | :--- | :--- |
+| `admin@duoc.cl` | `admin123` | Administrador |
+| `vendedor@duoc.cl` | `vende123` | Vendedor |
+| `carla@gmail.com` | `cliente123` | Cliente |
+
+Las cuentas nuevas se crean como **cliente** desde **Crear Cuenta**.
 
 ---
 
-## 🔮 Arquitectura Futura (Roadmap)
+## 🏗️ Arquitectura
 
-El proyecto evoluciona desde una SPA con datos simulados hacia una plataforma completa de comercio electrónico conectada a servicios backend:
+La SPA consume la API REST del backend Spring Boot, que protege los recursos con JWT y roles y guarda los datos en MySQL:
 
 ```text
                     ┌─────────────────┐
@@ -141,7 +165,7 @@ El proyecto evoluciona desde una SPA con datos simulados hacia una plataforma co
                              │
                              ▼
                        ┌──────────┐
-                       │  Oracle  │
+                       │  MySQL   │
                        └──────────┘
 ```
 
@@ -154,7 +178,8 @@ El proyecto evoluciona desde una SPA con datos simulados hacia una plataforma co
 * Vistas públicas completas: `Home`, `Productos`, `DetalleProducto`, `Ofertas`, `Nosotros`, `Blogs` y `Contacto`.
 * Flujo de carrito de compras y `Checkout` con persistencia y `CartContext`.
 * Sistema de `Login`, `Registro` y control de acceso por roles mediante `AuthContext` y `RutaProtegida`.
-* Panel de administración completo (`AdminDashboard`, `AdminProductos`, `AdminUsuarios`).
+* Panel de administración completo (`AdminDashboard`, `AdminProductos`, `AdminUsuarios`, `AdminOrdenes`).
+* Integración con el backend: catálogo, compras con boleta, mantenedores y órdenes mediante la API REST con JWT.
 * Validaciones de formularios, cálculo de precios y pruebas unitarias con Vitest.
 
 ---
