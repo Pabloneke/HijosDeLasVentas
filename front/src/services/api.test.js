@@ -1,6 +1,11 @@
 import { api, TOKEN_KEY, EVENTO_SESION_EXPIRADA } from './api'
 
-const respuesta = (status, cuerpo) => ({ status, ok: status < 300, json: vi.fn().mockResolvedValue(cuerpo) })
+// cuerpo: objeto (llega como JSON), string (texto plano) o undefined (vacío)
+const respuesta = (status, cuerpo) => ({
+    status,
+    ok: status < 300,
+    text: vi.fn().mockResolvedValue(cuerpo === undefined ? '' : typeof cuerpo === 'string' ? cuerpo : JSON.stringify(cuerpo)),
+})
 
 describe('api', () => {
     beforeEach(() => vi.stubGlobal('fetch', vi.fn()))
@@ -12,9 +17,10 @@ describe('api', () => {
 
         expect(await api.post('/productos', { name: 'Mouse' })).toEqual({ id: 1 })
 
-        const [url, { method, headers, body }] = fetch.mock.calls[0]
+        const [url, { method, headers, body, credentials }] = fetch.mock.calls[0]
         expect(url).toBe('http://localhost:8080/api/v1/productos')
         expect(method).toBe('POST')
+        expect(credentials).toBe('include') // para que viaje la cookie del refresh token
         expect(headers).toEqual({ 'Content-Type': 'application/json', Authorization: 'Bearer abc.def' })
         expect(JSON.parse(body)).toEqual({ name: 'Mouse' })
     })
@@ -23,6 +29,16 @@ describe('api', () => {
         fetch.mockResolvedValue(respuesta(400, { message: 'Stock insuficiente' }))
 
         await expect(api.post('/boletas', {})).rejects.toMatchObject({ message: 'Stock insuficiente', status: 400 })
+    })
+
+    // BoletaController responde el 400 de stock como texto plano, no como JSON
+    it('toma el mensaje de error aunque el backend responda en texto plano', async () => {
+        fetch.mockResolvedValue(respuesta(400, 'Stock insuficiente para el producto: Juego PS4'))
+
+        await expect(api.post('/boletas', {})).rejects.toMatchObject({
+            message: 'Stock insuficiente para el producto: Juego PS4',
+            status: 400,
+        })
     })
 
     it('un 401 borra el token y avisa que la sesión expiró', async () => {
@@ -47,11 +63,14 @@ describe('api', () => {
         expect(localStorage.getItem(TOKEN_KEY)).toBe('vigente')
     })
 
-    it('un 204 (DELETE) devuelve null sin leer el cuerpo', async () => {
+    it('un 204 devuelve null sin leer el cuerpo, y un 200 vacío (DELETE de usuarios) también', async () => {
         const sinContenido = respuesta(204)
-        fetch.mockResolvedValue(sinContenido)
+        fetch.mockResolvedValueOnce(sinContenido)
 
         expect(await api.delete('/productos/1')).toBeNull()
-        expect(sinContenido.json).not.toHaveBeenCalled()
+        expect(sinContenido.text).not.toHaveBeenCalled()
+
+        fetch.mockResolvedValueOnce(respuesta(200))
+        expect(await api.delete('/usuarios/3')).toBeNull()
     })
 })

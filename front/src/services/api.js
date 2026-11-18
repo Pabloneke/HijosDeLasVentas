@@ -15,6 +15,7 @@ const request = async (method, ruta, body) => {
             ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: body === undefined ? undefined : JSON.stringify(body),
+        credentials: 'include', // el backend entrega el refresh token en una cookie HttpOnly (/auth/login, /auth/refresh)
     });
 
     // 401 = token vencido. En /auth/* significa "credenciales incorrectas", no sesión expirada.
@@ -23,11 +24,15 @@ const request = async (method, ruta, body) => {
         window.dispatchEvent(new Event(EVENTO_SESION_EXPIRADA));
     }
 
-    const data = res.status === 204 ? null : await res.json().catch(() => null);
+    // El cuerpo puede venir vacío (204, o 200 de un DELETE), en JSON o en texto plano (ej. el 400 de POST /boletas).
+    const texto = res.status === 204 ? '' : await res.text();
+    let data = texto;
+    try { data = JSON.parse(texto); } catch { /* texto plano o vacío: se deja tal cual */ }
     if (!res.ok) {
-        throw Object.assign(new Error(data?.message || data?.error || `Error ${res.status}`), { status: res.status });
+        const mensaje = typeof data === 'string' ? data : data?.message || data?.error;
+        throw Object.assign(new Error(mensaje || `Error ${res.status}`), { status: res.status });
     }
-    return data;
+    return data === '' ? null : data;
 };
 
 export const api = {
