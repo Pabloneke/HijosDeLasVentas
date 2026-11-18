@@ -18,8 +18,9 @@ const request = async (method, ruta, body) => {
         credentials: 'include', // el backend entrega el refresh token en una cookie HttpOnly (/auth/login, /auth/refresh)
     });
 
-    // 401 = token vencido. En /auth/* significa "credenciales incorrectas", no sesión expirada.
-    if (res.status === 401 && !ruta.startsWith('/auth/')) {
+    // 401 con token = token vencido (sin token no hay sesión que cerrar).
+    // En /auth/* significa "credenciales incorrectas", no sesión expirada.
+    if (res.status === 401 && token && !ruta.startsWith('/auth/')) {
         localStorage.removeItem(TOKEN_KEY);
         window.dispatchEvent(new Event(EVENTO_SESION_EXPIRADA));
     }

@@ -54,6 +54,17 @@ describe('api', () => {
         window.removeEventListener(EVENTO_SESION_EXPIRADA, alExpirar)
     })
 
+    it('un 401 sin token (visitante) no avisa que la sesión expiró', async () => {
+        const alExpirar = vi.fn()
+        window.addEventListener(EVENTO_SESION_EXPIRADA, alExpirar)
+        fetch.mockResolvedValue(respuesta(401, {}))
+
+        await expect(api.get('/productos')).rejects.toMatchObject({ status: 401 })
+
+        expect(alExpirar).not.toHaveBeenCalled()
+        window.removeEventListener(EVENTO_SESION_EXPIRADA, alExpirar)
+    })
+
     it('un 401 en /auth/login (credenciales malas) no cierra la sesión', async () => {
         localStorage.setItem(TOKEN_KEY, 'vigente')
         fetch.mockResolvedValue(respuesta(401, { message: 'Credenciales inválidas' }))
