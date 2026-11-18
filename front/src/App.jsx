@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
+import { Navigate, Outlet, Routes, Route } from 'react-router-dom'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import { initDB } from './services/db'
 
@@ -24,6 +24,16 @@ import Carrito from './pages/Carrito'
 import Checkout from './pages/Checkout'
 import Ofertas from './pages/Ofertas'
 
+function RutaTienda() {
+  const { user } = useAuth();
+  return user?.tipo === 'vendedor' ? <Navigate to="/admin/productos" replace /> : <Outlet />;
+}
+
+function InicioAdmin() {
+  const { user } = useAuth();
+  return user?.tipo === 'vendedor' ? <Navigate to="/admin/productos" replace /> : <AdminDashboard />;
+}
+
 function App() {
   // Inicializamos la BD simulada al cargar la app
   useEffect(() => {
@@ -38,25 +48,27 @@ function App() {
 
           <div className="app-content">
             <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/productos" element={<Productos />} />
-            <Route path="/producto/:id" element={<DetalleProducto />} />
+            <Route element={<RutaTienda />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/productos" element={<Productos />} />
+              <Route path="/producto/:id" element={<DetalleProducto />} />
         
-            <Route path="/ofertas" element={<Ofertas />} />
-            <Route path="/contacto" element={<Contacto />} />
+              <Route path="/ofertas" element={<Ofertas />} />
+              <Route path="/contacto" element={<Contacto />} />
         
-            <Route path="/nosotros" element={<Nosotros />} />
-            <Route path="/blogs" element={<Blogs />} />
+              <Route path="/nosotros" element={<Nosotros />} />
+              <Route path="/blogs" element={<Blogs />} />
         
-            <Route path="/login" element={<Login />} />
-            <Route path="/registro" element={<Registro />} />
-            <Route path="/carrito" element={<Carrito />} />
-            <Route path="/checkout" element={<Checkout />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/registro" element={<Registro />} />
+              <Route path="/carrito" element={<Carrito />} />
+              <Route path="/checkout" element={<Checkout />} />
+            </Route>
 
-        {/* Zona privada: solo administrador y vendedor */}
+            {/* Zona privada: solo administrador y vendedor */}
             <Route element={<RutaProtegida roles={['administrador', 'vendedor']} />}>
               <Route element={<AdminLayout />}>
-                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin" element={<InicioAdmin />} />
                 <Route path="/admin/productos" element={<AdminProductos />} />
                 <Route path="/admin/ordenes" element={<AdminOrdenes />} />
                 <Route element={<RutaProtegida roles={['administrador']} />}>

@@ -4,7 +4,8 @@ import { MemoryRouter } from 'react-router-dom'
 import Navbar from './Navbar'
 import { AuthProvider } from '../../context/AuthContext'
 import { CartProvider } from '../../context/CartContext'
-import { initDB, login, getSession } from '../../services/db'
+import { initDB } from '../../services/db'
+import { iniciarSesion, getSession } from '../../test/authFixtures'
 
 // Navbar usa Link y useLocation, que solo funcionan dentro de un Router.
 // MemoryRouter simula la navegación en memoria; initialEntries fija la ruta actual.
@@ -60,7 +61,7 @@ describe('Navbar', () => {
 
         // Con sesión de cliente: saludo y cerrar sesión, sin acceso al panel
         it('con sesión de cliente saluda, permite cerrar sesión y no muestra Panel Admin', async () => {
-            login('carla@gmail.com', 'cliente123')
+            iniciarSesion('carla@gmail.com')
             renderNavbar()
 
             expect(screen.getByText('Hola, Carla')).toBeInTheDocument()
@@ -74,7 +75,7 @@ describe('Navbar', () => {
 
         // El administrador sí ve el acceso al panel
         it('con sesión de administrador muestra el enlace Panel Admin', () => {
-            login('admin@duoc.cl', 'admin123')
+            iniciarSesion('admin@duoc.cl')
             renderNavbar()
 
             expect(screen.getByRole('link', { name: 'Panel Admin' })).toHaveAttribute('href', '/admin')

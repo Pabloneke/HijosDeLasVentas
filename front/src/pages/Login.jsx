@@ -12,25 +12,30 @@ const Login = () => {
     const [form, setForm] = useState({ correo: '', password: '' });
     const [errores, setErrores] = useState({});
     const [errorGeneral, setErrorGeneral] = useState('');
+    const [enviando, setEnviando] = useState(false);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.id]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        if (enviando) return;
         setErrorGeneral('');
 
         const erroresForm = validarLogin(form);
         setErrores(erroresForm);
         if (Object.keys(erroresForm).length > 0) return;
 
+        setEnviando(true);
         try {
-            const sesion = login(form.correo, form.password);
+            const sesion = await login(form.correo.trim(), form.password);
             // El personal va al panel de administración; el cliente, al inicio
             navigate(sesion.tipo === 'cliente' ? '/' : '/admin');
         } catch (error) {
             setErrorGeneral(error.message);
+        } finally {
+            setEnviando(false);
         }
     };
 
@@ -50,10 +55,10 @@ const Login = () => {
 
                             <FormField id="correo" label="Correo electrónico" type="email" placeholder="tu@duoc.cl"
                                 value={form.correo} onChange={handleChange} error={errores.correo} />
-                            <FormField id="password" label="Contraseña" type="password" maxLength={10}
+                            <FormField id="password" label="Contraseña" type="password"
                                 value={form.password} onChange={handleChange} error={errores.password} />
 
-                            <button type="submit" className="btn btn-primary w-100 fw-bold">Ingresar</button>
+                            <button type="submit" className="btn btn-primary w-100 fw-bold" disabled={enviando}>{enviando ? 'Ingresando…' : 'Ingresar'}</button>
                         </form>
                         <p className="text-center text-muted mt-3 mb-0">
                             ¿No tienes cuenta? <Link to="/registro">Crear cuenta</Link>

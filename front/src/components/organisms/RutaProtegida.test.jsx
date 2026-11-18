@@ -2,7 +2,8 @@ import { screen } from '@testing-library/react'
 import { Routes, Route } from 'react-router-dom'
 import RutaProtegida from './RutaProtegida'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB, login } from '../../services/db'
+import { initDB } from '../../services/db'
+import { iniciarSesion } from '../../test/authFixtures'
 
 // Monta una ruta /admin protegida y las pantallas a las que se puede ser redirigido
 const renderAdmin = () =>
@@ -30,7 +31,7 @@ describe('RutaProtegida', () => {
 
     // Render condicional por rol: un cliente es devuelto al inicio
     it('un cliente es redirigido al inicio', () => {
-        login('carla@gmail.com', 'cliente123')
+        iniciarSesion('carla@gmail.com')
         renderAdmin()
 
         expect(screen.getByRole('heading', { name: 'Inicio' })).toBeInTheDocument()
@@ -41,8 +42,8 @@ describe('RutaProtegida', () => {
     it.each([
         ['administrador', 'admin@duoc.cl', 'admin123'],
         ['vendedor', 'vendedor@duoc.cl', 'vende123'],
-    ])('el %s puede ver el panel', (_rol, correo, password) => {
-        login(correo, password)
+    ])('el %s puede ver el panel', (_rol, correo) => {
+        iniciarSesion(correo)
         renderAdmin()
 
         expect(screen.getByRole('heading', { name: 'Panel' })).toBeInTheDocument()

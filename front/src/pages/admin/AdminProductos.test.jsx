@@ -2,7 +2,8 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdminProductos from './AdminProductos'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB, login } from '../../services/db'
+import { initDB } from '../../services/db'
+import { iniciarSesion } from '../../test/authFixtures'
 import { api } from '../../services/api'
 
 vi.mock('../../services/api', async (importOriginal) => ({
@@ -33,7 +34,7 @@ const esperarTabla = () => screen.findByRole('table', { name: 'Productos' })
 describe('AdminProductos', () => {
     beforeEach(() => {
         initDB() // solo para la sesión: los datos ya vienen de la API
-        login('admin@duoc.cl', 'admin123')
+        iniciarSesion('admin@duoc.cl')
         api.get.mockImplementation(async (ruta) => (ruta === '/categorias' ? categorias : productosApi))
     })
 
@@ -49,7 +50,7 @@ describe('AdminProductos', () => {
 
     // Render condicional por rol: el vendedor consulta, pero no puede crear, editar ni eliminar
     it('el vendedor ve la tabla sin acciones de edición', async () => {
-        login('vendedor@duoc.cl', 'vende123')
+        iniciarSesion('vendedor@duoc.cl')
         renderWithProviders(<AdminProductos />)
         await esperarTabla()
 

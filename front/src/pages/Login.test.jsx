@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { Routes, Route } from 'react-router-dom'
 import Login from './Login'
 import { renderWithProviders } from '../test/renderWithProviders'
-import { initDB, getSession } from '../services/db'
+import { initDB } from '../services/db'
+import { getSession, mockAuthApi } from '../test/authFixtures'
 
 // Rutas mínimas para comprobar a dónde navega el login según el rol
 const renderLogin = () =>
@@ -23,7 +24,7 @@ const llenar = async (correo, password) => {
 }
 
 describe('Login', () => {
-    beforeEach(() => initDB())
+    beforeEach(() => { initDB(); mockAuthApi() })
 
     // Prueba 69 (validación): enviar vacío muestra errores y no inicia sesión
     it('muestra errores de validación si se envía el formulario vacío', async () => {
@@ -32,7 +33,7 @@ describe('Login', () => {
         await userEvent.click(screen.getByRole('button', { name: 'Ingresar' }))
 
         expect(screen.getByText('Ingresa tu correo')).toBeInTheDocument()
-        expect(screen.getByText('La contraseña debe tener entre 4 y 10 caracteres')).toBeInTheDocument()
+        expect(screen.getByText('Ingresa una contraseña de hasta 72 bytes')).toBeInTheDocument()
         expect(getSession()).toBeNull()
     })
 

@@ -10,7 +10,7 @@ const RutaProtegida = ({ roles, children }) => {
     const { user } = useAuth();
 
     if (!user) return <Navigate to="/login" replace />;
-    if (!roles.includes(user.tipo)) return <Navigate to="/" replace />;
+    if (!roles.includes(user.tipo)) return <Navigate to={user.tipo === 'vendedor' ? '/admin/productos' : '/'} replace />;
 
     return children ?? <Outlet />;
 };

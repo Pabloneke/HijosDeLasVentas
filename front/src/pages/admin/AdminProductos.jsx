@@ -25,8 +25,8 @@ const AdminProductos = () => {
 
     useEffect(() => {
         api.get('/productos').then((data) => setProductos(data.map(productoDesdeApi)));
-        api.get('/categorias').then(setCategorias);
-    }, []);
+        if (esAdministrador) api.get('/categorias').then(setCategorias);
+    }, [esAdministrador]);
 
     const handleChange = (e) => setForm({ ...form, [e.target.id]: e.target.value });
 

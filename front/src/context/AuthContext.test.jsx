@@ -2,13 +2,14 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AuthProvider, useAuth } from './AuthContext'
 import { initDB } from '../services/db'
+import { mockAuthApi } from '../test/authFixtures'
 
 // Componente de prueba que consume el contexto y expone sus datos y acciones
 const Consumidor = () => {
     const { user, login, logout } = useAuth()
-    const intentar = (correo, pass) => {
+    const intentar = async (correo, pass) => {
         try {
-            login(correo, pass)
+            await login(correo, pass)
         } catch (error) {
             document.title = error.message
         }
@@ -26,7 +27,7 @@ const Consumidor = () => {
 const renderAuth = () => render(<AuthProvider><Consumidor /></AuthProvider>)
 
 describe('AuthContext', () => {
-    beforeEach(() => initDB())
+    beforeEach(() => { initDB(); mockAuthApi() })
 
     // Prueba 49 (estado global): login actualiza el estado y la sesión sobrevive a una recarga
     it('login actualiza el usuario y se recupera al volver a montar la app', async () => {

@@ -2,7 +2,8 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdminUsuarios from './AdminUsuarios'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB, login } from '../../services/db'
+import { initDB } from '../../services/db'
+import { iniciarSesion } from '../../test/authFixtures'
 import { api } from '../../services/api'
 
 vi.mock('../../services/api', async (importOriginal) => ({
@@ -40,7 +41,7 @@ const completarFormulario = async (datos = {}) => {
 describe('AdminUsuarios', () => {
     beforeEach(() => {
         initDB() // solo para la sesión: los datos ya vienen de la API
-        login('admin@duoc.cl', 'admin123')
+        iniciarSesion('admin@duoc.cl')
         api.get.mockResolvedValue(usuariosApi)
     })
 

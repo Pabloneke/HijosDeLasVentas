@@ -1,7 +1,8 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import AdminDashboard from './AdminDashboard'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB, login } from '../../services/db'
+import { initDB } from '../../services/db'
+import { iniciarSesion } from '../../test/authFixtures'
 import { api } from '../../services/api'
 import { formatPrice } from '../../utils/precios'
 
@@ -45,7 +46,7 @@ const productosActivos = (n) => waitFor(() =>
 describe('AdminDashboard', () => {
     beforeEach(() => {
         initDB() // solo para la sesión: los datos ya vienen de la API
-        login('admin@duoc.cl', 'admin123')
+        iniciarSesion('admin@duoc.cl')
         responder()
     })
 
@@ -126,7 +127,7 @@ describe('AdminDashboard', () => {
 
     // Permisos en pantalla: el vendedor no ve Usuarios y ni siquiera se pide /usuarios (daría 403)
     it('el vendedor no ve Usuarios ni consulta GET /usuarios', async () => {
-        login('vendedor@duoc.cl', 'vende123')
+        iniciarSesion('vendedor@duoc.cl')
         renderWithProviders(<AdminDashboard />)
         await productosActivos(6)
 
