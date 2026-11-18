@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { productoDesdeApi } from '../services/adaptadores';
 import { useCart } from '../context/CartContext';
+import { aplicarOferta } from '../utils/ofertas';
 
 const DetalleProducto = () => {
     const { id } = useParams();
@@ -16,7 +17,7 @@ const DetalleProducto = () => {
         api.get(`/productos/${id}`)
             .then((data) => {
                 if (!vigente) return;
-                setProducto(productoDesdeApi(data));
+                setProducto(aplicarOferta(productoDesdeApi(data))); // misma oferta que ve el catalogo
                 setError('');
             })
             .catch((e) => {
@@ -64,7 +65,15 @@ const DetalleProducto = () => {
                 <div className="col-md-6">
                     <span className="badge bg-secondary mb-2">{producto.category}</span>
                     <h2 className="fw-bold">{producto.name}</h2>
-                    <h3 className="text-primary fw-bold mt-3">${producto.price.toLocaleString('es-CL')}</h3>
+                    {producto.originalPrice ? (
+                        <div className="mt-3">
+                            <span className="badge bg-danger mb-2">-{producto.discountPercent}%</span>
+                            <div className="text-muted text-decoration-line-through">${producto.originalPrice.toLocaleString('es-CL')}</div>
+                            <h3 className="text-danger fw-bold">${producto.price.toLocaleString('es-CL')}</h3>
+                        </div>
+                    ) : (
+                        <h3 className="text-primary fw-bold mt-3">${producto.price.toLocaleString('es-CL')}</h3>
+                    )}
                     <p className="text-muted mt-4">
                         Garantía oficial y calidad asegurada por Hijos de las Ventas. Stock disponible para despacho inmediato a todo Chile.
                     </p>

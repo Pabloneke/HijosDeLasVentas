@@ -71,7 +71,6 @@ const Checkout = () => {
                 ...(form.entrega === 'despacho' && {
                     regionEntrega: form.region, comunaEntrega: form.comuna, direccionEntrega: form.direccion,
                 }),
-                ...(user && { usuario: { id: user.id } }),
                 items: items.map((i) => ({ producto: { id: i.id }, quantity: i.quantity })),
             });
             setOrdenConfirmada(ordenDesdeBoleta(boleta));

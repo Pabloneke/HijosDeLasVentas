@@ -31,6 +31,21 @@ describe('DetalleProducto', () => {
         expect(screen.getByText('Computación')).toBeInTheDocument()
     })
 
+    it('aplica el descuento del backend: muestra el precio rebajado y agrega ese precio al carrito', async () => {
+        api.get.mockResolvedValue({
+            id: 1, name: 'Perfume Rasasi Hawas', price: 65000, descuento: 20, stock: 12, image: '/img/a.webp',
+            category: { id: 4, nombre: 'Perfumería' },
+        })
+
+        renderDetalle(1)
+
+        expect(await screen.findByText('-20%')).toBeInTheDocument()
+        expect(screen.getByText('$65.000')).toHaveClass('text-decoration-line-through')
+        expect(screen.getByText('$52.000')).toBeInTheDocument()
+        await userEvent.click(screen.getByRole('button', { name: /Añadir al Carrito/ }))
+        expect(JSON.parse(localStorage.getItem('carrito'))[0]).toMatchObject({ id: 1, price: 52000 })
+    })
+
     it('si el backend responde 404 muestra "Producto no encontrado" (sin parpadearlo antes de tiempo)', async () => {
         api.get.mockRejectedValue(Object.assign(new Error('No encontrado'), { status: 404 }))
 

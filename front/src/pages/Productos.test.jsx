@@ -12,7 +12,7 @@ vi.mock('../services/api', () => ({
 }))
 
 const productosFalsos = [
-    { id: 1, name: 'Perfume Rasasi Hawas', price: 65000, category: { id: 4, nombre: 'Perfumería' }, image: '/img/a.webp' },
+    { id: 1, name: 'Perfume Rasasi Hawas', price: 65000, descuento: 20, category: { id: 4, nombre: 'Perfumería' }, image: '/img/a.webp' },
     { id: 2, name: 'MousePad XXL Gamer', price: 15000, category: { id: 1, nombre: 'Computación' }, image: '/img/b.webp' },
     { id: 3, name: 'Juego PS4', price: 20000, category: { id: 2, nombre: 'Gaming' }, image: '/img/c.webp' },
 ]
