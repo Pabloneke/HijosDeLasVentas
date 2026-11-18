@@ -1,15 +1,19 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { CartProvider } from '../context/CartContext'
-import { initDB } from '../services/db'
+import { api } from '../services/api'
 import Carrito from './Carrito'
 
-// Teclado Mecánico RGB: stock 4 en la base sembrada
+vi.mock('../services/api', () => ({
+    api: { get: vi.fn() },
+}))
+
+// Teclado Mecánico RGB: stock 4 en el backend
 const teclado = { id: 3, name: 'Teclado Mecánico RGB', price: 45000, image: '/img/Teclado.webp', quantity: 2, stock: 4 }
 
-const renderCarrito = () => {
-    initDB()
+const renderCarrito = (stockEnBackend = 4) => {
+    api.get.mockResolvedValue([{ id: 3, stock: stockEnBackend }])
     localStorage.setItem('carrito', JSON.stringify([teclado]))
     return render(
         <MemoryRouter>
@@ -63,6 +67,12 @@ describe('Carrito — cantidad', () => {
 
         expect(input).toHaveValue(4)
         expect(cantidadGuardada()).toBe(4)
+    })
+
+    it('al entrar recorta la cantidad al stock vigente que devuelve GET /productos', async () => {
+        renderCarrito(1) // el admin bajó el stock a 1 mientras el cliente tenía 2 en el carrito
+
+        await waitFor(() => expect(cantidadGuardada()).toBe(1))
     })
 
     it('el botón Eliminar sí quita el producto', async () => {
