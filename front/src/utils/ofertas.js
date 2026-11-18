@@ -1,24 +1,17 @@
-// Descuentos promocionales de demostración asociados a productos reales del catálogo.
-// Esta configuración no modifica los precios persistidos en la base de productos.
-export const DESCUENTOS = {
-    1: 20,
-    3: 15,
-    5: 25,
-    6: 10,
-};
-
+// El descuento viene del backend (Producto.descuento, porcentaje de 0 a 90; null = sin oferta).
+// La formula es la misma de BoletaService, asi lo que se muestra es lo que se cobra.
 export const aplicarOferta = (producto) => {
-    const discountPercent = DESCUENTOS[producto.id];
+    const discountPercent = producto.descuento;
     if (!discountPercent) return producto;
 
     return {
         ...producto,
         originalPrice: producto.price,
-        price: Math.round(producto.price * (1 - discountPercent / 100)),
+        price: Math.round(producto.price * (100 - discountPercent) / 100),
         discountPercent,
     };
 };
 
 export const crearOfertas = (productos) => productos
-    .filter((producto) => DESCUENTOS[producto.id])
+    .filter((producto) => producto.descuento)
     .map(aplicarOferta);
