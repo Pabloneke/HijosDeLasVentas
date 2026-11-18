@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const ProductCard = ({ id, name, price, originalPrice, discountPercent, category, image, stock, buttonLabel = 'Lo quiero', onAddToCart }) => {
     const imageRef = useRef(null);
@@ -49,7 +50,9 @@ const ProductCard = ({ id, name, price, originalPrice, discountPercent, category
             />
             <div className="card-body d-flex flex-column text-center">
                 <span className="badge bg-secondary mb-2 align-self-center">{category}</span>
-                <h5 className="card-title fw-bold">{name}</h5>
+                <h5 className="card-title fw-bold">
+                    <Link to={`/producto/${id}`} className="text-reset">{name}</Link>
+                </h5>
                 {originalPrice ? (
                     <div className="mt-auto">
                         <span className="badge bg-danger mb-2">-{discountPercent}%</span>
