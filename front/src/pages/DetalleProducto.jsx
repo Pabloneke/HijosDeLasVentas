@@ -9,12 +9,29 @@ const DetalleProducto = () => {
     const { addItem } = useCart();
     const [producto, setProducto] = useState(); // undefined = cargando, null = no existe
     const [mensaje, setMensaje] = useState('');
+    const [error, setError] = useState('');
 
     useEffect(() => {
+        let vigente = true; // si el id cambia antes de que llegue la respuesta, la vieja se ignora
         api.get(`/productos/${id}`)
-            .then((data) => setProducto(productoDesdeApi(data)))
-            .catch(() => setProducto(null));
+            .then((data) => {
+                if (!vigente) return;
+                setProducto(productoDesdeApi(data));
+                setError('');
+            })
+            .catch((e) => {
+                if (!vigente) return;
+                if (e.status === 404) setProducto(null);
+                else setError(e.message); // un fallo de red o del servidor no es "producto no encontrado"
+            });
+        return () => { vigente = false; };
     }, [id]);
+
+    if (error) return (
+        <div className="container my-5">
+            <div className="alert alert-danger" role="alert">{error}</div>
+        </div>
+    );
 
     if (producto === undefined) return null;
 
