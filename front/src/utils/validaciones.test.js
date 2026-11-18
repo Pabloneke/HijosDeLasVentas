@@ -38,10 +38,11 @@ describe('validaciones', () => {
 
     // Prueba 58 (RF3, contraseña): de 4 a 10 caracteres
     it('acepta contraseñas de 4 a 10 caracteres', () => {
-        expect(esPasswordValida('abcd')).toBe(true)
-        expect(esPasswordValida('abcdefghij')).toBe(true)
-        expect(esPasswordValida('abc')).toBe(false)
-        expect(esPasswordValida('abcdefghijk')).toBe(false)
+        expect(esPasswordValida('clave123')).toBe(true)
+        expect(esPasswordValida('a'.repeat(72))).toBe(true)
+        expect(esPasswordValida('clave12')).toBe(false) // 7 caracteres
+        expect(esPasswordValida('        ')).toBe(false) // solo espacios
+        expect(esPasswordValida('a'.repeat(73))).toBe(false) // supera los 72 bytes de BCrypt
     })
 
     // Prueba 59 (RF3, RUN): módulo 11 con dígito verificador numérico, K y 0
@@ -190,7 +191,7 @@ describe('validarProducto', () => {
 describe('validarUsuarioAdmin', () => {
     const usuarioValido = {
         run: '123456785', nombre: 'María José', apellidos: 'Pérez Soto', correo: 'maria@duoc.cl',
-        password: 'clave1', tipo: 'vendedor', region: 'Región del Biobío', comuna: 'Concepción', direccion: 'Calle 1',
+        password: 'clave123', tipo: 'vendedor', region: 'Región del Biobío', comuna: 'Concepción', direccion: 'Calle 1',
     }
 
     it('no devuelve errores con datos válidos', () => {

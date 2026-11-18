@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import Productos from './Productos'
 import { api } from '../services/api'
 import { CartProvider } from '../context/CartContext'
@@ -18,7 +19,7 @@ const productosFalsos = [
 
 describe('Productos', () => {
     const renderProductos = () => render(
-        <CartProvider><Productos /></CartProvider>
+        <MemoryRouter><CartProvider><Productos /></CartProvider></MemoryRouter>
     )
 
     // Prueba 5 (render de lista + mock): una tarjeta por cada producto de la "base de datos"

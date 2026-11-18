@@ -23,7 +23,7 @@ const esperarTabla = () => screen.findByRole('table', { name: 'Usuarios' })
 // Completa el formulario de usuario con datos válidos (RUN 124543215 es válido; se puede sobrescribir)
 const completarFormulario = async (datos = {}) => {
     const d = {
-        run: '124543215', nombre: 'Ana', apellidos: 'Pérez', correo: 'ana@duoc.cl', password: 'abc123',
+        run: '124543215', nombre: 'Ana', apellidos: 'Pérez', correo: 'ana@duoc.cl', password: 'clave123',
         tipo: 'vendedor', region: 'Región del Biobío', comuna: 'Concepción', direccion: 'Calle 1', ...datos,
     }
     await userEvent.type(screen.getByLabelText('RUN'), d.run)
@@ -66,7 +66,7 @@ describe('AdminUsuarios', () => {
 
         await waitFor(() => expect(filas()).toHaveLength(4))
         expect(api.post).toHaveBeenCalledWith('/usuarios', expect.objectContaining({
-            run: '124543215', tipo: 'vendedor', comuna: 'Concepción', correo: 'ana@duoc.cl', password: 'abc123',
+            run: '124543215', tipo: 'vendedor', comuna: 'Concepción', correo: 'ana@duoc.cl', password: 'clave123',
         }))
     })
 
@@ -104,7 +104,7 @@ describe('AdminUsuarios', () => {
 
         expect(screen.getByText(/RUN inválido/)).toBeInTheDocument()
         expect(screen.getByText('Debes seleccionar un tipo de usuario')).toBeInTheDocument()
-        expect(screen.getByText('La contraseña debe tener entre 4 y 10 caracteres')).toBeInTheDocument()
+        expect(screen.getByText('La contraseña debe tener al menos 8 caracteres y un máximo de 72 bytes')).toBeInTheDocument()
         expect(api.post).not.toHaveBeenCalled()
     })
 

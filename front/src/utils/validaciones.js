@@ -15,8 +15,12 @@ export const esDominioPermitido = (email) =>
 export const esNombreValido = (nombre) =>
     /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nombre) && nombre.length >= 3 && nombre.length <= 100;
 
-// Contraseña de 4 a 10 caracteres
-export const esPasswordValida = (password) => password.length >= 4 && password.length <= 10;
+// BCrypt solo considera los primeros 72 bytes: una contraseña más larga se rechaza
+const passwordAdmiteBCrypt = (password) => new TextEncoder().encode(password).length <= 72;
+
+// Contraseña nueva: al menos 8 caracteres y como máximo 72 bytes (la misma regla que el backend)
+export const esPasswordValida = (password) =>
+    password.trim() !== '' && password.length >= 8 && passwordAdmiteBCrypt(password);
 
 // RUN chileno sin puntos ni guion (ej: 123456785), largo 7 a 9, con dígito verificador (módulo 11)
 export const esRunValido = (run) => {
@@ -54,13 +58,11 @@ const errorCorreo = (correo) => {
 };
 
 const errorPassword = (password) =>
-    esPasswordValida(password) ? '' : 'La contraseña debe tener entre 4 y 10 caracteres';
+    esPasswordValida(password) ? '' : 'La contraseña debe tener al menos 8 caracteres y un máximo de 72 bytes';
 
 // Quita del objeto los campos sin error
 const soloErrores = (errores) =>
     Object.fromEntries(Object.entries(errores).filter(([, mensaje]) => mensaje));
-
-const passwordAdmiteBCrypt = (password) => new TextEncoder().encode(password).length <= 72;
 
 export const validarLogin = ({ correo, password }) =>
     soloErrores({
@@ -74,8 +76,7 @@ export const validarRegistro = (datos) =>
         nombre: esNombreValido(datos.nombre) ? '' : 'El nombre solo admite letras y espacios (3 a 100 caracteres)',
         apellidos: esNombreValido(datos.apellidos) ? '' : 'Los apellidos solo admiten letras y espacios (3 a 100 caracteres)',
         correo: errorCorreo(datos.correo),
-        password: datos.password.trim() && datos.password.length >= 8 && passwordAdmiteBCrypt(datos.password)
-            ? '' : 'La contraseña debe tener al menos 8 caracteres y un máximo de 72 bytes',
+        password: errorPassword(datos.password),
         confirmar: datos.confirmar === datos.password ? '' : 'Las contraseñas no coinciden',
         region: datos.region ? '' : 'Selecciona una región',
         comuna: datos.comuna ? '' : 'Selecciona una comuna',
