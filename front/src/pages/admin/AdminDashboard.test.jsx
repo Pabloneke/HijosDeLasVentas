@@ -1,7 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import AdminDashboard from './AdminDashboard'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB } from '../../services/db'
 import { iniciarSesion } from '../../test/authFixtures'
 import { api } from '../../services/api'
 import { formatPrice } from '../../utils/precios'
@@ -45,7 +44,6 @@ const productosActivos = (n) => waitFor(() =>
 
 describe('AdminDashboard', () => {
     beforeEach(() => {
-        initDB() // solo para la sesión: los datos ya vienen de la API
         iniciarSesion('admin@duoc.cl')
         responder()
     })

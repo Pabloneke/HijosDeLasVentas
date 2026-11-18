@@ -2,7 +2,6 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdminOrdenes from './AdminOrdenes'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB } from '../../services/db'
 import { iniciarSesion } from '../../test/authFixtures'
 import { api } from '../../services/api'
 import { formatPrice } from '../../utils/precios'
@@ -29,7 +28,6 @@ const boletasApi = [
 
 describe('AdminOrdenes', () => {
     beforeEach(() => {
-        initDB() // solo para la sesión: los datos ya vienen de la API
         iniciarSesion('vendedor@duoc.cl') // el rol más restringido que puede entrar aquí
         api.get.mockResolvedValue(boletasApi)
     })

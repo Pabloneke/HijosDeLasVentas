@@ -4,7 +4,6 @@ import { MemoryRouter } from 'react-router-dom'
 import Navbar from './Navbar'
 import { AuthProvider } from '../../context/AuthContext'
 import { CartProvider } from '../../context/CartContext'
-import { initDB } from '../../services/db'
 import { iniciarSesion, getSession } from '../../test/authFixtures'
 
 // Navbar usa Link y useLocation, que solo funcionan dentro de un Router.
@@ -48,8 +47,6 @@ describe('Navbar', () => {
     })
 
     describe('sesión', () => {
-        beforeEach(() => initDB())
-
         // Render condicional: sin sesión se ofrecen entrar o registrarse
         it('sin sesión muestra Iniciar Sesion y Crear Cuenta con su ruta', () => {
             renderNavbar()

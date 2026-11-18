@@ -2,11 +2,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
-import { initDB } from './services/db';
 import { iniciarSesion } from './test/authFixtures';
 
 it('el vendedor consulta productos y órdenes y no puede entrar a checkout ni usuarios', async () => {
-    initDB();
     iniciarSesion('vendedor@duoc.cl');
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(async (url) => ({
         ok: true,

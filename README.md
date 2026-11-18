@@ -20,7 +20,7 @@ El proyecto utiliza **React** y **Bootstrap 5.3.3** para facilitar la construcci
 
 ## ✨ Características Principales
 
-* **Catálogo Dinámico:** Tarjetas de productos generadas dinámicamente desde una base de datos simulada (`db.js`), con vistas de detalle individual.
+* **Catálogo Dinámico:** Tarjetas de productos generadas dinámicamente desde el backend (`GET /api/v1/productos`), con vistas de detalle individual.
 * **Carrito de Compras (Context API):** Gestión global del estado del carrito, permitiendo agregar, eliminar y calcular el total en tiempo real sin *prop drilling*.
 * **Rutas Protegidas:** Sistema de autenticación simulado con roles (`administrador`, `vendedor`, `cliente`) utilizando `React Router DOM` para restringir el acceso al panel de control (`/admin`).
 * **Arquitectura Escalable:** Estructura de carpetas basada en *Atomic Design* (Átomos, Moléculas, Organismos, Páginas).
@@ -73,7 +73,7 @@ HijosDeLasVentas/
     │   │
     │   ├── context/         # Estados globales (AuthContext, CartContext)
     │   ├── pages/           # Vistas enrutables (Home, Productos, DetalleProducto, Carrito, Checkout, admin/*)
-    │   ├── services/        # Simulación de Base de Datos en localStorage (db.js)
+    │   ├── services/        # Cliente HTTP del backend (api.js) y sesión (sesion.js)
     │   ├── test/            # Configuración de pruebas unitarias
     │   └── utils/           # Funciones de validación, ofertas, precios y regiones
     │

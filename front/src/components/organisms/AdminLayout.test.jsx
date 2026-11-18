@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event'
 import { Routes, Route } from 'react-router-dom'
 import AdminLayout from './AdminLayout'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB } from '../../services/db'
 import { iniciarSesion, getSession } from '../../test/authFixtures'
 
 // Layout con una vista hija y la pantalla de inicio a la que se vuelve al cerrar sesión
@@ -19,8 +18,6 @@ const renderLayout = () =>
     )
 
 describe('AdminLayout', () => {
-    beforeEach(() => initDB())
-
     // Render: menú con sus enlaces, usuario en sesión y la vista hija
     it('muestra el menú del administrador con todos los accesos y la vista hija', () => {
         iniciarSesion('admin@duoc.cl')
