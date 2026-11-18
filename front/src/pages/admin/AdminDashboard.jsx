@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { getProducts, getUsers, getUserById, getOrders, isStockCritico } from '../../services/db';
+import { api } from '../../services/api';
+import { ordenDesdeBoleta, productoDesdeApi } from '../../services/adaptadores';
+import { isStockCritico } from '../../utils/productos';
 import { formatPrice } from '../../utils/precios';
 
 const formatFecha = (iso) => new Date(iso).toLocaleDateString('es-CL');
@@ -12,7 +14,7 @@ const resumirComprasPorUsuario = (ordenes) => {
     const grupos = new Map();
     ordenes.forEach((orden) => {
         const userId = orden.cliente?.userId ?? null;
-        const grupo = grupos.get(userId) ?? { userId, compras: 0, total: 0, ultima: orden.fecha };
+        const grupo = grupos.get(userId) ?? { userId, usuario: orden.usuario, compras: 0, total: 0, ultima: orden.fecha };
         grupo.compras += 1;
         grupo.total += orden.total;
         if (orden.fecha > grupo.ultima) grupo.ultima = orden.fecha;
@@ -21,7 +23,7 @@ const resumirComprasPorUsuario = (ordenes) => {
 
     return [...grupos.values()]
         .map((grupo) => {
-            const usuario = grupo.userId === null ? null : getUserById(grupo.userId);
+            const { usuario } = grupo; // viene incrustado en la boleta
             let nombre = 'Invitado';
             if (grupo.userId !== null) {
                 nombre = usuario ? `${usuario.nombre} ${usuario.apellidos}`.trim() : 'Usuario eliminado';
@@ -42,11 +44,22 @@ const MetricCard = ({ label, value, destacada }) => (
 
 const AdminDashboard = () => {
     const { user } = useAuth();
+    const esAdministrador = user?.tipo === 'administrador';
+    const [productos, setProductos] = useState([]);
+    const [ordenes, setOrdenes] = useState([]);
+    const [totalUsuarios, setTotalUsuarios] = useState(0);
 
-    // Los datos se leen de la "base de datos" en cada render: son pocos y viven en localStorage
-    const productos = getProducts();
+    useEffect(() => {
+        // GET /usuarios es solo del administrador: al vendedor no se le pide (daría 403)
+        Promise.all([api.get('/productos'), api.get('/boletas'), esAdministrador ? api.get('/usuarios') : []])
+            .then(([listaProductos, boletas, usuarios]) => {
+                setProductos(listaProductos.map(productoDesdeApi));
+                setOrdenes(boletas.map(ordenDesdeBoleta));
+                setTotalUsuarios(usuarios.length);
+            });
+    }, [esAdministrador]);
+
     const stockCritico = productos.filter(isStockCritico);
-    const ordenes = getOrders();
     const comprasPorUsuario = resumirComprasPorUsuario(ordenes);
 
     return (
@@ -61,7 +74,7 @@ const AdminDashboard = () => {
 
             <section className="row g-3 mb-4" aria-label="Resumen">
                 <MetricCard label="Productos activos" value={productos.length} />
-                <MetricCard label="Usuarios registrados" value={getUsers().length} />
+                {esAdministrador && <MetricCard label="Usuarios registrados" value={totalUsuarios} />}
                 <MetricCard label="Con stock crítico" value={stockCritico.length} destacada />
                 <MetricCard label="Compras realizadas" value={ordenes.length} />
             </section>

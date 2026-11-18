@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/molecules/ProductCard';
-import { getProducts } from '../services/db';
+import { api } from '../services/api';
+import { productoDesdeApi } from '../services/adaptadores';
 import { useCart } from '../context/CartContext';
 import { aplicarOferta } from '../utils/ofertas';
 
@@ -11,8 +12,7 @@ const Productos = () => {
 
     // useEffect se ejecuta una vez cuando la página carga
     useEffect(() => {
-        const data = getProducts();
-        setProductos(data);
+        api.get('/productos').then((data) => setProductos(data.map(productoDesdeApi)));
     }, []);
 
     const handleAddToCart = (product, sourceElement) => addItem(product, sourceElement);

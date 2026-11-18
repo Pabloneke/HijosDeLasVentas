@@ -4,7 +4,8 @@ import FormField from '../components/atoms/FormField';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import Boleta from '../components/organisms/Boleta';
-import { procesarCompra } from '../services/db';
+import { api } from '../services/api';
+import { ordenDesdeBoleta } from '../services/adaptadores';
 import { numeroBoleta } from '../utils/boleta';
 import { validarCheckout } from '../utils/validaciones';
 import { REGIONES } from '../utils/regiones';
@@ -42,6 +43,7 @@ const Checkout = () => {
     const [ordenConfirmada, setOrdenConfirmada] = useState(null);
     const [verBoleta, setVerBoleta] = useState(false);
     const [errorCompra, setErrorCompra] = useState('');
+    const [enviando, setEnviando] = useState(false);
 
     const handleChange = (event) => {
         const { id, value } = event.target;
@@ -52,28 +54,34 @@ const Checkout = () => {
         }));
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        if (enviando) return;
         const nuevosErrores = validarCheckout(form);
         setErrores(nuevosErrores);
         if (Object.keys(nuevosErrores).length > 0) return;
 
-        // Revalida el stock contra el mantenedor, lo descuenta y registra la orden
+        // El backend valida el stock, lo descuenta y guarda la boleta en una transacción (400 si no alcanza)
+        setEnviando(true);
         try {
-            const entrega = form.entrega === 'retiro'
-                ? { modalidad: 'retiro' }
-                : { modalidad: 'despacho', region: form.region, comuna: form.comuna, direccion: form.direccion };
-            const orden = procesarCompra(items, {
-                userId: user?.id ?? null,
-                nombre: form.nombre,
-                correo: form.correo,
-            }, entrega);
-            setOrdenConfirmada(orden);
+            const boleta = await api.post('/boletas', {
+                clienteNombre: form.nombre,
+                clienteCorreo: form.correo,
+                modalidadEntrega: form.entrega,
+                ...(form.entrega === 'despacho' && {
+                    regionEntrega: form.region, comunaEntrega: form.comuna, direccionEntrega: form.direccion,
+                }),
+                ...(user && { usuario: { id: user.id } }),
+                items: items.map((i) => ({ producto: { id: i.id }, quantity: i.quantity })),
+            });
+            setOrdenConfirmada(ordenDesdeBoleta(boleta));
             setErrorCompra('');
             setConfirmado(true);
             clearCart();
         } catch (error) {
             setErrorCompra(error.message);
+        } finally {
+            setEnviando(false);
         }
     };
 
@@ -237,7 +245,7 @@ const Checkout = () => {
                             <p className="small text-muted">
                                 Checkout de demostración: tus datos de pago se validan solo en este navegador y no se almacenan ni se envían.
                             </p>
-                            <button type="submit" className="btn btn-success w-100 fw-bold">Revisar y confirmar pedido</button>
+                            <button type="submit" className="btn btn-success w-100 fw-bold" disabled={enviando}>Revisar y confirmar pedido</button>
                         </form>
                     </div>
                 </section>

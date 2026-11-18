@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FormField from '../../components/atoms/FormField';
 import { useAuth } from '../../context/AuthContext';
-import {
-    CATEGORIAS, getProducts, createProduct, updateProduct, deleteProduct, isStockCritico,
-} from '../../services/db';
+import { api } from '../../services/api';
+import { productoDesdeApi } from '../../services/adaptadores';
+import { isStockCritico } from '../../utils/productos';
 import { validarProducto } from '../../utils/validaciones';
 import { formatPrice } from '../../utils/precios';
 
@@ -15,14 +15,18 @@ const AdminProductos = () => {
     const { user } = useAuth();
     const esAdministrador = user?.tipo === 'administrador';
 
-    const [productos, setProductos] = useState(() => getProducts());
+    const [productos, setProductos] = useState([]);
+    const [categorias, setCategorias] = useState([]);
     // null = formulario cerrado; { id: null } = producto nuevo; { id: n } = editando el producto n
     const [editando, setEditando] = useState(null);
     const [form, setForm] = useState(formVacio);
     const [errores, setErrores] = useState({});
     const [alertaStock, setAlertaStock] = useState('');
 
-    const recargar = () => setProductos(getProducts());
+    useEffect(() => {
+        api.get('/productos').then((data) => setProductos(data.map(productoDesdeApi)));
+        api.get('/categorias').then(setCategorias);
+    }, []);
 
     const handleChange = (e) => setForm({ ...form, [e.target.id]: e.target.value });
 
@@ -38,7 +42,7 @@ const AdminProductos = () => {
             price: String(producto.price),
             stock: String(producto.stock ?? 0),
             stockCritico: String(producto.stockCritico ?? 0),
-            category: producto.category,
+            category: String(producto.categoryId),
             image: producto.image ?? '',
         });
         setErrores({});
@@ -50,7 +54,7 @@ const AdminProductos = () => {
         setErrores({});
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const erroresForm = validarProducto(form);
@@ -62,29 +66,39 @@ const AdminProductos = () => {
             price: Number(form.price),
             stock: Number(form.stock),
             stockCritico: form.stockCritico.trim() === '' ? 0 : Number(form.stockCritico),
-            category: form.category,
-            ...(form.image.trim() && { image: form.image.trim() }),
+            category: { id: Number(form.category) },
+            image: form.image.trim() || '/img/logo.png',
         };
 
-        const guardado = editando.id === null
-            ? createProduct(datos)
-            : updateProduct(editando.id, datos);
+        try {
+            const guardado = productoDesdeApi(editando.id === null
+                ? await api.post('/productos', datos)
+                : await api.put(`/productos/${editando.id}`, { ...datos, id: editando.id }));
+            setProductos(editando.id === null
+                ? [...productos, guardado]
+                : productos.map((p) => (p.id === guardado.id ? guardado : p)));
 
-        // RF5: avisa si el stock ingresado quedó igual o bajo el umbral crítico
-        setAlertaStock(
-            guardado && isStockCritico(guardado)
-                ? `Atención: el stock de "${guardado.name}" (${guardado.stock}) quedó igual o por debajo del stock crítico (${guardado.stockCritico}).`
-                : ''
-        );
-        recargar();
-        cerrarFormulario();
+            // RF5: avisa si el stock ingresado quedó igual o bajo el umbral crítico
+            setAlertaStock(
+                isStockCritico(guardado)
+                    ? `Atención: el stock de "${guardado.name}" (${guardado.stock}) quedó igual o por debajo del stock crítico (${guardado.stockCritico}).`
+                    : ''
+            );
+            cerrarFormulario();
+        } catch (error) {
+            setAlertaStock(error.message); // reutiliza la alerta para mostrar el error del backend
+        }
     };
 
-    const handleEliminar = (producto) => {
+    const handleEliminar = async (producto) => {
         if (!window.confirm(`¿Eliminar "${producto.name}" del catálogo?`)) return;
-        deleteProduct(producto.id);
-        setAlertaStock('');
-        recargar();
+        try {
+            await api.delete(`/productos/${producto.id}`);
+            setProductos(productos.filter((p) => p.id !== producto.id));
+            setAlertaStock('');
+        } catch (error) {
+            setAlertaStock(error.message);
+        }
     };
 
     return (
@@ -162,8 +176,8 @@ const AdminProductos = () => {
                         </div>
                         <FormField id="category" label="Categoría" as="select" value={form.category} onChange={handleChange} error={errores.category}>
                             <option value="">-- Seleccione categoría --</option>
-                            {CATEGORIAS.map((categoria) => (
-                                <option key={categoria} value={categoria}>{categoria}</option>
+                            {categorias.map((categoria) => (
+                                <option key={categoria.id} value={categoria.id}>{categoria.nombre}</option>
                             ))}
                         </FormField>
                         <FormField id="image" label="Ruta de la imagen (opcional)" placeholder="/img/logo.png" value={form.image} onChange={handleChange} error={errores.image} />

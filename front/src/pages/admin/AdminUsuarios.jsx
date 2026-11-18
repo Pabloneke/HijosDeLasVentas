@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FormField from '../../components/atoms/FormField';
 import { useAuth } from '../../context/AuthContext';
-import { getUsers, createUser, updateUser, deleteUser } from '../../services/db';
+import { api } from '../../services/api';
 import { validarUsuarioAdmin } from '../../utils/validaciones';
 import { REGIONES } from '../../utils/regiones';
 
@@ -16,14 +16,16 @@ const formVacio = {
 const AdminUsuarios = () => {
     const { user } = useAuth();
 
-    const [usuarios, setUsuarios] = useState(() => getUsers());
+    const [usuarios, setUsuarios] = useState([]);
     // null = formulario cerrado; { id: null } = usuario nuevo; { id: n } = editando al usuario n
     const [editando, setEditando] = useState(null);
     const [form, setForm] = useState(formVacio);
     const [errores, setErrores] = useState({});
     const [aviso, setAviso] = useState('');
 
-    const recargar = () => setUsuarios(getUsers());
+    useEffect(() => {
+        api.get('/usuarios').then(setUsuarios);
+    }, []);
 
     const contarAdministradores = () => usuarios.filter((u) => u.tipo === 'administrador').length;
 
@@ -52,7 +54,7 @@ const AdminUsuarios = () => {
         setErrores({});
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const esEdicion = editando.id !== null;
 
@@ -62,6 +64,12 @@ const AdminUsuarios = () => {
         const run = form.run.trim().toUpperCase();
         if (!erroresForm.run && usuarios.some((u) => u.run === run && u.id !== editando.id)) {
             erroresForm.run = 'Ya existe un usuario con ese RUN';
+        }
+
+        // El correo es el login: tampoco puede repetirse
+        const correo = form.correo.trim().toLowerCase();
+        if (!erroresForm.correo && usuarios.some((u) => u.correo.toLowerCase() === correo && u.id !== editando.id)) {
+            erroresForm.correo = 'El correo ya está registrado';
         }
 
         // Siempre debe quedar al menos un administrador que pueda entrar al panel
@@ -86,20 +94,22 @@ const AdminUsuarios = () => {
         };
 
         try {
-            if (esEdicion) updateUser(editando.id, datos);
-            else createUser(datos);
+            if (esEdicion) {
+                const actualizado = await api.put(`/usuarios/${editando.id}`, { ...datos, id: editando.id });
+                setUsuarios(usuarios.map((u) => (u.id === actualizado.id ? actualizado : u)));
+            } else {
+                setUsuarios([...usuarios, await api.post('/usuarios', datos)]);
+            }
         } catch (error) {
-            // Único error posible: el correo ya pertenece a otro usuario
-            setErrores({ correo: error.message });
+            setAviso(error.message);
             return;
         }
 
         setAviso('');
-        recargar();
         cerrarFormulario();
     };
 
-    const handleEliminar = (usuario) => {
+    const handleEliminar = async (usuario) => {
         if (usuario.id === user?.id) {
             setAviso('No puedes eliminar tu propia cuenta.');
             return;
@@ -110,9 +120,13 @@ const AdminUsuarios = () => {
         }
         if (!window.confirm(`¿Eliminar a ${usuario.nombre} ${usuario.apellidos}?`)) return;
 
-        deleteUser(usuario.id);
-        setAviso('');
-        recargar();
+        try {
+            await api.delete(`/usuarios/${usuario.id}`);
+            setUsuarios(usuarios.filter((u) => u.id !== usuario.id));
+            setAviso('');
+        } catch (error) {
+            setAviso(error.message);
+        }
     };
 
     const comunas = REGIONES[form.region] || [];

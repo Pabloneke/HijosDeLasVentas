@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import ProductCard from '../components/molecules/ProductCard';
 import { useCart } from '../context/CartContext';
-import { getProducts } from '../services/db';
+import { api } from '../services/api';
+import { productoDesdeApi } from '../services/adaptadores';
 import { crearOfertas } from '../utils/ofertas';
 
 const Ofertas = () => {
@@ -9,7 +10,7 @@ const Ofertas = () => {
     const { addItem } = useCart();
 
     useEffect(() => {
-        setOfertas(crearOfertas(getProducts()));
+        api.get('/productos').then((data) => setOfertas(crearOfertas(data.map(productoDesdeApi))));
     }, []);
 
     return (

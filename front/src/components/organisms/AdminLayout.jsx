@@ -30,6 +30,7 @@ const AdminLayout = () => {
                 <nav className="admin-nav list-group list-group-flush p-2" aria-label="Menú de administración">
                     <NavLink to="/admin" end className={claseItem}>Dashboard</NavLink>
                     <NavLink to="/admin/productos" className={claseItem}>Productos</NavLink>
+                    <NavLink to="/admin/ordenes" className={claseItem}>Órdenes</NavLink>
                     {esAdministrador && (
                         <NavLink to="/admin/usuarios" className={claseItem}>Usuarios</NavLink>
                     )}

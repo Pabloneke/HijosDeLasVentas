@@ -3,8 +3,23 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { AuthProvider } from '../context/AuthContext'
 import { CartProvider } from '../context/CartContext'
-import { getOrders, getProductById, initDB } from '../services/db'
+import { api } from '../services/api'
 import Checkout from './Checkout'
+
+vi.mock('../services/api', async (importOriginal) => ({
+    ...(await importOriginal()),
+    api: { post: vi.fn() },
+}))
+
+// Boleta como la devuelve POST /boletas
+const boletaApi = {
+    id: 1, fecha: '2026-10-22T15:30:00', total: 130000,
+    clienteNombre: 'Ana Pérez', clienteCorreo: 'ana@duoc.cl',
+    modalidadEntrega: 'despacho', direccionEntrega: 'Calle 1',
+    regionEntrega: 'Región Metropolitana de Santiago', comunaEntrega: 'Santiago',
+    usuario: null,
+    items: [{ id: 1, quantity: 2, price: 65000, producto: { id: 1, name: 'Perfume Rasasi Hawas' } }],
+}
 
 const producto = {
     id: 1,
@@ -15,7 +30,6 @@ const producto = {
 }
 
 const renderCheckout = (items = [producto]) => {
-    initDB() // siembra los productos con su stock (el Perfume tiene 12 unidades)
     localStorage.setItem('carrito', JSON.stringify(items))
     return render(
         <MemoryRouter initialEntries={['/checkout']}>
@@ -58,34 +72,43 @@ describe('Checkout', () => {
         expect(screen.getByText('Selecciona una región')).toBeInTheDocument()
     })
 
-    it('confirma la compra, descuenta el stock, registra la orden y vacía el carrito', async () => {
+    it('confirma la compra con POST /boletas y vacía el carrito', async () => {
+        api.post.mockResolvedValue(boletaApi)
         renderCheckout()
 
         await completarYConfirmar()
 
-        expect(screen.getByText('Solicitud de compra registrada')).toBeInTheDocument()
+        expect(await screen.findByText('Solicitud de compra registrada')).toBeInTheDocument()
         expect(screen.getByText(/No se realizó ningún cobro/)).toBeInTheDocument()
-        expect(getProductById(1).stock).toBe(12 - producto.quantity)
-        expect(getOrders()).toHaveLength(1)
+        expect(api.post).toHaveBeenCalledWith('/boletas', {
+            clienteNombre: 'Ana Pérez',
+            clienteCorreo: 'ana@duoc.cl',
+            modalidadEntrega: 'despacho',
+            regionEntrega: 'Región Metropolitana de Santiago',
+            comunaEntrega: 'Santiago',
+            direccionEntrega: 'Calle 1',
+            items: [{ producto: { id: 1 }, quantity: 2 }],
+        })
         expect(JSON.parse(localStorage.getItem('carrito'))).toEqual([])
     })
 
-    it('no confirma la compra si la cantidad supera el stock disponible', async () => {
+    it('no confirma la compra si el backend rechaza por stock insuficiente', async () => {
+        api.post.mockRejectedValue(new Error('Stock insuficiente. Perfume Rasasi Hawas: solo quedan 12 unidades'))
         renderCheckout([{ ...producto, quantity: 999 }])
 
         await completarYConfirmar()
 
-        expect(screen.getByRole('alert')).toHaveTextContent(/Perfume Rasasi Hawas: solo quedan 12 unidades/)
+        expect(await screen.findByRole('alert')).toHaveTextContent(/Perfume Rasasi Hawas: solo quedan 12 unidades/)
         expect(screen.queryByText('Solicitud de compra registrada')).not.toBeInTheDocument()
-        expect(getProductById(1).stock).toBe(12)
-        expect(getOrders()).toEqual([])
         expect(JSON.parse(localStorage.getItem('carrito'))).toHaveLength(1)
     })
 
     it('permite ver e imprimir la boleta aunque el carrito ya esté vacío', async () => {
         const print = vi.spyOn(window, 'print').mockImplementation(() => {})
+        api.post.mockResolvedValue(boletaApi)
         renderCheckout()
         await completarYConfirmar()
+        await screen.findByText('Solicitud de compra registrada')
         const user = userEvent.setup()
 
         expect(screen.queryByRole('article', { name: /Boleta/ })).not.toBeInTheDocument()
