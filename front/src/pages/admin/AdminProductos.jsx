@@ -22,10 +22,16 @@ const AdminProductos = () => {
     const [form, setForm] = useState(formVacio);
     const [errores, setErrores] = useState({});
     const [alertaStock, setAlertaStock] = useState('');
+    const [guardando, setGuardando] = useState(false);
 
     useEffect(() => {
-        api.get('/productos').then((data) => setProductos(data.map(productoDesdeApi)));
-        if (esAdministrador) api.get('/categorias').then(setCategorias);
+        // GET /categorias es solo del administrador: al vendedor no se le pide (daría 403)
+        Promise.all([api.get('/productos'), esAdministrador ? api.get('/categorias') : []])
+            .then(([listaProductos, listaCategorias]) => {
+                setProductos(listaProductos.map(productoDesdeApi));
+                setCategorias(listaCategorias);
+            })
+            .catch((e) => setAlertaStock(e.message));
     }, [esAdministrador]);
 
     const handleChange = (e) => setForm({ ...form, [e.target.id]: e.target.value });
@@ -56,6 +62,7 @@ const AdminProductos = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (guardando) return;
 
         const erroresForm = validarProducto(form);
         setErrores(erroresForm);
@@ -70,6 +77,7 @@ const AdminProductos = () => {
             image: form.image.trim() || '/img/logo.png',
         };
 
+        setGuardando(true);
         try {
             const guardado = productoDesdeApi(editando.id === null
                 ? await api.post('/productos', datos)
@@ -87,6 +95,8 @@ const AdminProductos = () => {
             cerrarFormulario();
         } catch (error) {
             setAlertaStock(error.message); // reutiliza la alerta para mostrar el error del backend
+        } finally {
+            setGuardando(false);
         }
     };
 
@@ -182,7 +192,7 @@ const AdminProductos = () => {
                         </FormField>
                         <FormField id="image" label="Ruta de la imagen (opcional)" placeholder="/img/logo.png" value={form.image} onChange={handleChange} error={errores.image} />
 
-                        <button type="submit" className="btn btn-primary fw-bold me-2">Guardar producto</button>
+                        <button type="submit" className="btn btn-primary fw-bold me-2" disabled={guardando}>Guardar producto</button>
                         <button type="button" className="btn btn-outline-secondary" onClick={cerrarFormulario}>Cancelar</button>
                     </form>
                 </section>

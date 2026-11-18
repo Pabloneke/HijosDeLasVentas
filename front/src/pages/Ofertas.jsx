@@ -7,10 +7,13 @@ import { crearOfertas } from '../utils/ofertas';
 
 const Ofertas = () => {
     const [ofertas, setOfertas] = useState([]);
+    const [error, setError] = useState('');
     const { addItem } = useCart();
 
     useEffect(() => {
-        api.get('/productos').then((data) => setOfertas(crearOfertas(data.map(productoDesdeApi))));
+        api.get('/productos')
+            .then((data) => setOfertas(crearOfertas(data.map(productoDesdeApi))))
+            .catch((e) => setError(e.message));
     }, []);
 
     return (
@@ -31,6 +34,8 @@ const Ofertas = () => {
                 <span className="badge bg-primary rounded-pill px-3 py-2">{ofertas.length} ofertas activas</span>
             </div>
 
+            {error && <div className="alert alert-danger" role="alert">{error}</div>}
+
             {ofertas.length > 0 ? (
                 <section className="row g-4 justify-content-center" aria-label="Productos en oferta">
                     {ofertas.map((oferta) => (
@@ -44,9 +49,11 @@ const Ofertas = () => {
                     ))}
                 </section>
             ) : (
-                <section className="text-center text-muted py-5">
-                    <p className="lead mb-0">No hay ofertas disponibles en este momento.</p>
-                </section>
+                !error && (
+                    <section className="text-center text-muted py-5">
+                        <p className="lead mb-0">No hay ofertas disponibles en este momento.</p>
+                    </section>
+                )
             )}
         </main>
     );
