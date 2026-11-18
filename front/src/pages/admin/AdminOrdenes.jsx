@@ -10,9 +10,12 @@ import { formatPrice } from '../../utils/precios';
 const AdminOrdenes = () => {
     const [ordenes, setOrdenes] = useState([]);
     const [seleccionada, setSeleccionada] = useState(null);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        api.get('/boletas').then((boletas) => setOrdenes(boletas.map(ordenDesdeBoleta)));
+        api.get('/boletas')
+            .then((boletas) => setOrdenes(boletas.map(ordenDesdeBoleta)))
+            .catch((e) => setError(e.message));
     }, []);
 
     return (
@@ -23,6 +26,8 @@ const AdminOrdenes = () => {
                     <h2 className="mb-0">Órdenes</h2>
                 </div>
             </div>
+
+            {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
             <section className="admin-panel p-3 p-lg-4 mb-4">
                 {ordenes.length > 0 ? (
@@ -54,7 +59,7 @@ const AdminOrdenes = () => {
                         </table>
                     </div>
                 ) : (
-                    <p className="text-muted mb-0">Aún no hay órdenes registradas.</p>
+                    !error && <p className="text-muted mb-0">Aún no hay órdenes registradas.</p>
                 )}
             </section>
 

@@ -8,11 +8,14 @@ import { aplicarOferta } from '../utils/ofertas';
 const Productos = () => {
     // Estado para guardar los productos que vienen de la "base de datos"
     const [productos, setProductos] = useState([]);
+    const [error, setError] = useState('');
     const { addItem } = useCart();
 
     // useEffect se ejecuta una vez cuando la página carga
     useEffect(() => {
-        api.get('/productos').then((data) => setProductos(data.map(productoDesdeApi)));
+        api.get('/productos')
+            .then((data) => setProductos(data.map(productoDesdeApi)))
+            .catch((e) => setError(e.message));
     }, []);
 
     const handleAddToCart = (product, sourceElement) => addItem(product, sourceElement);
@@ -22,6 +25,8 @@ const Productos = () => {
             <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
                 <h2 className="text-center mb-0">Nuestro Catálogo Dinámico</h2>
             </div>
+
+            {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
             {/* Grilla de productos dinámica */}
             <section className="row g-4 justify-content-center">
@@ -39,7 +44,7 @@ const Productos = () => {
                         );
                     })
                 ) : (
-                    <p className="text-center text-muted">No hay productos disponibles.</p>
+                    !error && <p className="text-center text-muted">No hay productos disponibles.</p>
                 )}
             </section>
         </main>
