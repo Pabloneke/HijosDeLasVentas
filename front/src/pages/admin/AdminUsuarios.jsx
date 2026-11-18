@@ -221,7 +221,7 @@ const AdminUsuarios = () => {
                                 <FormField id="correo" label="Correo electrónico" type="email" value={form.correo} onChange={handleChange} error={errores.correo} />
                             </div>
                             <div className="col-md-6">
-                                <FormField id="password" label={editando.id === null ? 'Contraseña' : 'Contraseña (vacía = no cambiarla)'} type="password" maxLength={10}
+                                <FormField id="password" label={editando.id === null ? 'Contraseña' : 'Contraseña (vacía = no cambiarla)'} type="password"
                                     value={form.password} onChange={handleChange} error={errores.password} />
                             </div>
                         </div>
