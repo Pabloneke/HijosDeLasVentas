@@ -22,9 +22,10 @@ const AdminUsuarios = () => {
     const [form, setForm] = useState(formVacio);
     const [errores, setErrores] = useState({});
     const [aviso, setAviso] = useState('');
+    const [guardando, setGuardando] = useState(false);
 
     useEffect(() => {
-        api.get('/usuarios').then(setUsuarios);
+        api.get('/usuarios').then(setUsuarios).catch((e) => setAviso(e.message));
     }, []);
 
     const contarAdministradores = () => usuarios.filter((u) => u.tipo === 'administrador').length;
@@ -43,7 +44,9 @@ const AdminUsuarios = () => {
 
     const abrirEdicion = (usuario) => {
         // La contraseña no se muestra: vacía significa "no cambiarla"
-        setForm({ ...formVacio, ...usuario, password: '' });
+        // Los campos opcionales pueden llegar null del backend: se llevan a '' para los inputs
+        const valores = Object.fromEntries(Object.keys(formVacio).map((campo) => [campo, usuario[campo] ?? '']));
+        setForm({ ...valores, password: '' });
         setErrores({});
         setAviso('');
         setEditando({ id: usuario.id });
@@ -56,6 +59,7 @@ const AdminUsuarios = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (guardando) return;
         const esEdicion = editando.id !== null;
 
         const erroresForm = validarUsuarioAdmin(form, { editando: esEdicion });
@@ -93,6 +97,7 @@ const AdminUsuarios = () => {
             ...(form.password && { password: form.password }),
         };
 
+        setGuardando(true);
         try {
             if (esEdicion) {
                 const actualizado = await api.put(`/usuarios/${editando.id}`, { ...datos, id: editando.id });
@@ -103,6 +108,8 @@ const AdminUsuarios = () => {
         } catch (error) {
             setAviso(error.message);
             return;
+        } finally {
+            setGuardando(false);
         }
 
         setAviso('');
@@ -238,7 +245,7 @@ const AdminUsuarios = () => {
                         </div>
                         <FormField id="direccion" label="Dirección" value={form.direccion} onChange={handleChange} error={errores.direccion} />
 
-                        <button type="submit" className="btn btn-primary fw-bold me-2">Guardar usuario</button>
+                        <button type="submit" className="btn btn-primary fw-bold me-2" disabled={guardando}>Guardar usuario</button>
                         <button type="button" className="btn btn-outline-secondary" onClick={cerrarFormulario}>Cancelar</button>
                     </form>
                 </section>

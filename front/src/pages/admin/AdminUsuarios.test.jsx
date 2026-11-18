@@ -71,6 +71,30 @@ describe('AdminUsuarios', () => {
         }))
     })
 
+    it('un doble clic en Guardar envía un solo POST', async () => {
+        api.post.mockReturnValue(new Promise(() => {})) // el servidor aún no responde
+        renderWithProviders(<AdminUsuarios />)
+        await esperarTabla()
+
+        await userEvent.click(screen.getByRole('button', { name: '+ Nuevo usuario' }))
+        await completarFormulario()
+        await userEvent.dblClick(screen.getByRole('button', { name: 'Guardar usuario' }))
+
+        expect(api.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('permite editar un usuario cuyos datos opcionales llegan null del backend', async () => {
+        api.get.mockResolvedValue([{ ...usuariosApi[2], direccion: null, region: null, comuna: null }])
+        renderWithProviders(<AdminUsuarios />)
+        await esperarTabla()
+
+        await userEvent.click(screen.getByRole('button', { name: 'Editar carla@gmail.com' }))
+        await userEvent.click(screen.getByRole('button', { name: 'Guardar usuario' }))
+
+        // no revienta: la validación marca los campos vacíos en vez de fallar con un TypeError
+        expect(screen.getByText('La dirección es obligatoria (máximo 300 caracteres)')).toBeInTheDocument()
+    })
+
     // Validación: formulario vacío no guarda y muestra mensajes
     it('muestra errores y no llama a la API si faltan datos', async () => {
         renderWithProviders(<AdminUsuarios />)
