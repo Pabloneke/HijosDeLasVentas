@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { getProducts } from '../services/db';
+import { api } from '../services/api';
 
 const formatPrice = (value) => new Intl.NumberFormat('es-CL', {
     style: 'currency',
@@ -47,7 +47,9 @@ const Carrito = () => {
     // Al entrar al carrito se alinea con el stock actual del mantenedor
     // (el admin pudo bajarlo, o el producto pudo agotarse o eliminarse).
     useEffect(() => {
-        syncStock(Object.fromEntries(getProducts().map((p) => [p.id, p.stock])));
+        api.get('/productos')
+            .then((productos) => syncStock(Object.fromEntries(productos.map((p) => [p.id, p.stock]))))
+            .catch(() => {}); // sin API se conserva el stock que ya traía el carrito
     }, []);
 
     return (

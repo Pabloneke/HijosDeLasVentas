@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getProducts } from '../services/db';
+import { api } from '../services/api';
+import { productoDesdeApi } from '../services/adaptadores';
 import { useCart } from '../context/CartContext';
 
 const DetalleProducto = () => {
     const { id } = useParams();
     const { addItem } = useCart();
-    const [producto, setProducto] = useState(null);
+    const [producto, setProducto] = useState(); // undefined = cargando, null = no existe
     const [mensaje, setMensaje] = useState('');
 
     useEffect(() => {
-        const productos = getProducts();
-        const found = productos.find(p => p.id === parseInt(id));
-        setProducto(found);
+        api.get(`/productos/${id}`)
+            .then((data) => setProducto(productoDesdeApi(data)))
+            .catch(() => setProducto(null));
     }, [id]);
+
+    if (producto === undefined) return null;
 
     if (!producto) return (
         <div className="container my-5 text-center">

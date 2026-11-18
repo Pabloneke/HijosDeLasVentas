@@ -4,16 +4,16 @@ import { MemoryRouter } from 'react-router-dom'
 import { CartProvider } from '../context/CartContext'
 import Ofertas from './Ofertas'
 import { crearOfertas } from '../utils/ofertas'
-import { getProducts } from '../services/db'
+import { api } from '../services/api'
 
-vi.mock('../services/db', () => ({
-    getProducts: vi.fn(),
+vi.mock('../services/api', () => ({
+    api: { get: vi.fn() },
 }))
 
 const productos = [
-    { id: 1, name: 'Perfume Rasasi Hawas', price: 65000, category: 'Perfumería', image: '/img/a.webp' },
-    { id: 2, name: 'MousePad XXL Gamer', price: 15000, category: 'Computación', image: '/img/b.webp' },
-    { id: 3, name: 'Teclado Mecánico RGB', price: 45000, category: 'Computación', image: '/img/c.webp' },
+    { id: 1, name: 'Perfume Rasasi Hawas', price: 65000, category: { id: 4, nombre: 'Perfumería' }, image: '/img/a.webp' },
+    { id: 2, name: 'MousePad XXL Gamer', price: 15000, category: { id: 1, nombre: 'Computación' }, image: '/img/b.webp' },
+    { id: 3, name: 'Teclado Mecánico RGB', price: 45000, category: { id: 1, nombre: 'Computación' }, image: '/img/c.webp' },
 ]
 
 const renderOfertas = () => render(
@@ -30,11 +30,11 @@ describe('Ofertas', () => {
         ])
     })
 
-    it('muestra solo los productos configurados como oferta', () => {
-        getProducts.mockReturnValue(productos)
+    it('muestra solo los productos configurados como oferta', async () => {
+        api.get.mockResolvedValue(productos)
         renderOfertas()
 
-        expect(screen.getByRole('heading', { name: 'Perfume Rasasi Hawas' })).toBeInTheDocument()
+        expect(await screen.findByRole('heading', { name: 'Perfume Rasasi Hawas' })).toBeInTheDocument()
         expect(screen.getByRole('heading', { name: 'Teclado Mecánico RGB' })).toBeInTheDocument()
         expect(screen.queryByRole('heading', { name: 'MousePad XXL Gamer' })).not.toBeInTheDocument()
         expect(screen.getAllByRole('button', { name: 'Agregar al carrito' })).toHaveLength(2)
@@ -42,10 +42,10 @@ describe('Ofertas', () => {
     })
 
     it('agrega la oferta al carrito global con el precio rebajado', async () => {
-        getProducts.mockReturnValue(productos)
+        api.get.mockResolvedValue(productos)
         renderOfertas()
 
-        await userEvent.click(screen.getAllByRole('button', { name: 'Agregar al carrito' })[0])
+        await userEvent.click((await screen.findAllByRole('button', { name: 'Agregar al carrito' }))[0])
 
         expect(JSON.parse(localStorage.getItem('carrito'))).toEqual([
             {

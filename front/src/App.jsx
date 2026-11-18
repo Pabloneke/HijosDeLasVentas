@@ -11,7 +11,7 @@ import AdminLayout from './components/organisms/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminProductos from './pages/admin/AdminProductos'
 import AdminUsuarios from './pages/admin/AdminUsuarios'
-import ConsultaAdmin from './pages/admin/ConsultaAdmin'
+import AdminOrdenes from './pages/admin/AdminOrdenes'
 import Home from './pages/Home'
 import Productos from './pages/Productos'
 import DetalleProducto from './pages/DetalleProducto'
@@ -32,11 +32,6 @@ function RutaTienda() {
 function InicioAdmin() {
   const { user } = useAuth();
   return user?.tipo === 'vendedor' ? <Navigate to="/admin/productos" replace /> : <AdminDashboard />;
-}
-
-function ProductosAdmin() {
-  const { user } = useAuth();
-  return user?.tipo === 'vendedor' ? <ConsultaAdmin recurso="productos" /> : <AdminProductos />;
 }
 
 function App() {
@@ -74,8 +69,8 @@ function App() {
             <Route element={<RutaProtegida roles={['administrador', 'vendedor']} />}>
               <Route element={<AdminLayout />}>
                 <Route path="/admin" element={<InicioAdmin />} />
-                <Route path="/admin/productos" element={<ProductosAdmin />} />
-                <Route path="/admin/ordenes" element={<ConsultaAdmin key="ordenes" recurso="ordenes" />} />
+                <Route path="/admin/productos" element={<AdminProductos />} />
+                <Route path="/admin/ordenes" element={<AdminOrdenes />} />
                 <Route element={<RutaProtegida roles={['administrador']} />}>
                   <Route path="/admin/usuarios" element={<AdminUsuarios />} />
                 </Route>
