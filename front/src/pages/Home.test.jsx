@@ -29,8 +29,8 @@ describe('Home', () => {
             </MemoryRouter>
         )
 
-        expect(screen.getByRole('link', { name: 'Hacer un pedido ahora' })).toHaveAttribute('href', '/contacto')
-        expect(screen.getByRole('link', { name: 'Ver productos' })).toHaveAttribute('href', '/productos')
+        expect(screen.getByRole('link', { name: 'Hacer un pedido ahora' })).toHaveAttribute('href', '/productos')
+        expect(screen.getByRole('link', { name: 'Ver ofertas' })).toHaveAttribute('href', '/ofertas')
     })
 
     it('renderiza la cinta promocional repetida', () => {

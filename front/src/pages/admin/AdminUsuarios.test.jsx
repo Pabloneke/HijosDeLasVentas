@@ -2,7 +2,6 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdminUsuarios from './AdminUsuarios'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB } from '../../services/db'
 import { iniciarSesion } from '../../test/authFixtures'
 import { api } from '../../services/api'
 
@@ -40,7 +39,6 @@ const completarFormulario = async (datos = {}) => {
 
 describe('AdminUsuarios', () => {
     beforeEach(() => {
-        initDB() // solo para la sesión: los datos ya vienen de la API
         iniciarSesion('admin@duoc.cl')
         api.get.mockResolvedValue(usuariosApi)
     })
@@ -70,6 +68,30 @@ describe('AdminUsuarios', () => {
         expect(api.post).toHaveBeenCalledWith('/usuarios', expect.objectContaining({
             run: '124543215', tipo: 'vendedor', comuna: 'Concepción', correo: 'ana@duoc.cl', password: 'abc123',
         }))
+    })
+
+    it('un doble clic en Guardar envía un solo POST', async () => {
+        api.post.mockReturnValue(new Promise(() => {})) // el servidor aún no responde
+        renderWithProviders(<AdminUsuarios />)
+        await esperarTabla()
+
+        await userEvent.click(screen.getByRole('button', { name: '+ Nuevo usuario' }))
+        await completarFormulario()
+        await userEvent.dblClick(screen.getByRole('button', { name: 'Guardar usuario' }))
+
+        expect(api.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('permite editar un usuario cuyos datos opcionales llegan null del backend', async () => {
+        api.get.mockResolvedValue([{ ...usuariosApi[2], direccion: null, region: null, comuna: null }])
+        renderWithProviders(<AdminUsuarios />)
+        await esperarTabla()
+
+        await userEvent.click(screen.getByRole('button', { name: 'Editar carla@gmail.com' }))
+        await userEvent.click(screen.getByRole('button', { name: 'Guardar usuario' }))
+
+        // no revienta: la validación marca los campos vacíos en vez de fallar con un TypeError
+        expect(screen.getByText('La dirección es obligatoria (máximo 300 caracteres)')).toBeInTheDocument()
     })
 
     // Validación: formulario vacío no guarda y muestra mensajes

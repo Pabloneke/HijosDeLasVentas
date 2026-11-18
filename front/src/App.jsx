@@ -1,8 +1,6 @@
-import { useEffect } from 'react'
 import { Navigate, Outlet, Routes, Route } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
-import { initDB } from './services/db'
 
 import Navbar from './components/organisms/Navbar'
 import Footer from './components/organisms/Footer'
@@ -35,11 +33,6 @@ function InicioAdmin() {
 }
 
 function App() {
-  // Inicializamos la BD simulada al cargar la app
-  useEffect(() => {
-    initDB();
-  }, []);
-
   return (
     <AuthProvider>
       <CartProvider>

@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 import { Routes, Route } from 'react-router-dom'
 import RutaProtegida from './RutaProtegida'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB } from '../../services/db'
 import { iniciarSesion } from '../../test/authFixtures'
 
 // Monta una ruta /admin protegida y las pantallas a las que se puede ser redirigido
@@ -19,8 +18,6 @@ const renderAdmin = () =>
     )
 
 describe('RutaProtegida', () => {
-    beforeEach(() => initDB())
-
     // Redirección: sin sesión no se puede ver el panel
     it('sin sesión redirige al login', () => {
         renderAdmin()

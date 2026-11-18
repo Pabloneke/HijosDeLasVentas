@@ -48,6 +48,7 @@ const AdminDashboard = () => {
     const [productos, setProductos] = useState([]);
     const [ordenes, setOrdenes] = useState([]);
     const [totalUsuarios, setTotalUsuarios] = useState(0);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         // GET /usuarios es solo del administrador: al vendedor no se le pide (daría 403)
@@ -56,7 +57,8 @@ const AdminDashboard = () => {
                 setProductos(listaProductos.map(productoDesdeApi));
                 setOrdenes(boletas.map(ordenDesdeBoleta));
                 setTotalUsuarios(usuarios.length);
-            });
+            })
+            .catch((e) => setError(e.message));
     }, [esAdministrador]);
 
     const stockCritico = productos.filter(isStockCritico);
@@ -71,6 +73,8 @@ const AdminDashboard = () => {
                     <p className="text-muted mb-0">Aquí tienes un resumen de la actividad de tu tienda.</p>
                 </div>
             </div>
+
+            {error && <div className="alert alert-danger mt-3" role="alert">{error}</div>}
 
             <section className="row g-3 mb-4" aria-label="Resumen">
                 <MetricCard label="Productos activos" value={productos.length} />

@@ -1,5 +1,13 @@
 import { vi } from 'vitest';
-import { findUserByEmail } from '../services/db';
+
+// Usuarios de prueba (los mismos 3 que siembra data.sql en el backend).
+// La contraseña solo sirve para simular el login en mockAuthApi.
+const USUARIOS = [
+    { id: 1, run: '190110222', nombre: 'Paulo', apellidos: 'Catalán', correo: 'admin@duoc.cl', password: 'admin123', tipo: 'administrador', direccion: 'Av. Siempre Viva 123', region: 'Región Metropolitana de Santiago', comuna: 'Santiago' },
+    { id: 2, run: '182345679', nombre: 'Mauricio', apellidos: 'Ahumada', correo: 'vendedor@duoc.cl', password: 'vende123', tipo: 'vendedor', direccion: 'Calle Los Alerces 456', region: 'Región del Biobío', comuna: 'Concepción' },
+    { id: 3, run: '20987654K', nombre: 'Carla', apellidos: 'Gómez', correo: 'carla@gmail.com', password: 'cliente123', tipo: 'cliente', direccion: 'Pasaje Las Rosas 789', region: 'Región de Valparaíso', comuna: 'Viña del Mar' },
+];
+const findUserByEmail = (correo) => USUARIOS.find((u) => u.correo.toLowerCase() === String(correo).trim().toLowerCase());
 
 const key = 'hijosdelasventas.auth';
 const payload = (usuario) => ({ accessToken: 'jwt-de-prueba', expiresIn: 3600, usuario });

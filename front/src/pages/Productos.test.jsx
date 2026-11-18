@@ -43,6 +43,15 @@ describe('Productos', () => {
         expect(screen.queryByRole('button', { name: 'Lo quiero' })).not.toBeInTheDocument()
     })
 
+    it('si la API falla muestra el error y no "No hay productos disponibles."', async () => {
+        api.get.mockRejectedValue(new Error('Error 500'))
+
+        renderProductos()
+
+        expect(await screen.findByRole('alert')).toHaveTextContent('Error 500')
+        expect(screen.queryByText('No hay productos disponibles.')).not.toBeInTheDocument()
+    })
+
     // Prueba 7: el clic guarda el producto y muestra la confirmación no bloqueante
     it('agrega el producto al carrito y muestra confirmación', async () => {
         api.get.mockResolvedValue(productosFalsos)

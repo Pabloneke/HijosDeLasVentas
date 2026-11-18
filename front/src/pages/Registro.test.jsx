@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event'
 import { Routes, Route } from 'react-router-dom'
 import Registro from './Registro'
 import { renderWithProviders } from '../test/renderWithProviders'
-import { initDB, findUserByEmail, getUsers } from '../services/db'
 import { getSession, mockAuthApi } from '../test/authFixtures'
 
 const renderRegistro = () =>
@@ -38,7 +37,7 @@ const enviar = () => userEvent.click(screen.getByRole('button', { name: 'Registr
 
 describe('Registro', () => {
     let fetchMock
-    beforeEach(() => { initDB(); fetchMock = mockAuthApi() })
+    beforeEach(() => { fetchMock = mockAuthApi() })
 
     // Prueba 74 (RF4, estado dependiente): la comuna depende de la región elegida
     it('mantiene la comuna deshabilitada hasta elegir región y luego muestra sus comunas', async () => {
@@ -67,15 +66,13 @@ describe('Registro', () => {
     // Prueba 76 (RF3, validación): formulario vacío muestra un error por campo y no crea usuario
     it('muestra errores en todos los campos si se envía vacío y no crea ningún usuario', async () => {
         renderRegistro()
-        const antes = getUsers().length
-
         await enviar()
 
         expect(screen.getByText(/RUN inválido/)).toBeInTheDocument()
         expect(screen.getByText('Ingresa tu correo')).toBeInTheDocument()
         expect(screen.getByText('Selecciona una región')).toBeInTheDocument()
         expect(screen.getByText('Selecciona una comuna')).toBeInTheDocument()
-        expect(getUsers()).toHaveLength(antes)
+        expect(fetchMock).not.toHaveBeenCalled() // la validación frena el envío
     })
 
     // Prueba 77 (RF3, validación): RUN con dígito verificador incorrecto
@@ -86,7 +83,7 @@ describe('Registro', () => {
         await enviar()
 
         expect(screen.getByText(/RUN inválido/)).toBeInTheDocument()
-        expect(findUserByEmail('maria@duoc.cl')).toBeNull()
+        expect(fetchMock).not.toHaveBeenCalled() // la validación frena el envío
     })
 
     // Prueba 78 (RF3, validación): las contraseñas deben coincidir
@@ -97,7 +94,7 @@ describe('Registro', () => {
         await enviar()
 
         expect(screen.getByText('Las contraseñas no coinciden')).toBeInTheDocument()
-        expect(findUserByEmail('maria@duoc.cl')).toBeNull()
+        expect(fetchMock).not.toHaveBeenCalled() // la validación frena el envío
     })
 
     // Prueba 79 (flujo completo): registra al cliente, inicia su sesión y vuelve al inicio
@@ -124,6 +121,6 @@ describe('Registro', () => {
         await enviar()
 
         expect(await screen.findByRole('alert')).toHaveTextContent('El correo o RUN ya está registrado')
-        expect(getUsers()).toHaveLength(3)
+        expect(getSession()).toBeNull() // el 409 no inicia sesión
     })
 })

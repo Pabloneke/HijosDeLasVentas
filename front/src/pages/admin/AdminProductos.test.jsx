@@ -2,7 +2,6 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdminProductos from './AdminProductos'
 import { renderWithProviders } from '../../test/renderWithProviders'
-import { initDB } from '../../services/db'
 import { iniciarSesion } from '../../test/authFixtures'
 import { api } from '../../services/api'
 
@@ -33,7 +32,6 @@ const esperarTabla = () => screen.findByRole('table', { name: 'Productos' })
 
 describe('AdminProductos', () => {
     beforeEach(() => {
-        initDB() // solo para la sesión: los datos ya vienen de la API
         iniciarSesion('admin@duoc.cl')
         api.get.mockImplementation(async (ruta) => (ruta === '/categorias' ? categorias : productosApi))
     })
@@ -80,6 +78,21 @@ describe('AdminProductos', () => {
         })
         expect(filas()).toHaveLength(7)
         expect(screen.queryByRole('button', { name: 'Guardar producto' })).not.toBeInTheDocument()
+    })
+
+    it('un doble clic en Guardar envía un solo POST', async () => {
+        api.post.mockReturnValue(new Promise(() => {})) // el servidor aún no responde
+        renderWithProviders(<AdminProductos />)
+        await esperarTabla()
+
+        await userEvent.click(screen.getByRole('button', { name: '+ Nuevo producto' }))
+        await userEvent.type(screen.getByLabelText('Nombre'), 'Audífonos Gamer')
+        await userEvent.type(screen.getByLabelText('Precio'), '30000')
+        await userEvent.type(screen.getByLabelText('Stock'), '20')
+        await userEvent.selectOptions(screen.getByLabelText('Categoría'), 'Gaming')
+        await userEvent.dblClick(screen.getByRole('button', { name: 'Guardar producto' }))
+
+        expect(api.post).toHaveBeenCalledTimes(1)
     })
 
     // Validación: no guarda un formulario inválido y muestra los mensajes por campo
